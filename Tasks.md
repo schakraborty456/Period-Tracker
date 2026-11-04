@@ -7,7 +7,7 @@ Work in order. One task at a time. Tick the box when done and update Memory.md.
 - [ ] 0.2 Add a Web App and copy the config keys
 - [ ] 0.3 Enable Authentication (Email/Password)
 - [ ] 0.4 Create a Firestore database (production mode)
-- [ ] 0.5 Create a GitHub repo
+- [x] 0.5 Create a GitHub repo
 - [ ] 0.6 Install Node.js and Firebase CLI
 
 ## Phase 1: Setup and Auth (V1)
