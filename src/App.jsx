@@ -1,7 +1,11 @@
 import React from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { AuthProvider } from './context/AuthContext'
+import { useAuth } from './hooks/useAuth'
 
 function HomePlaceholder() {
+  const { currentUser } = useAuth()
+
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4 text-textMain">
       <div className="max-w-md w-full bg-surface rounded-2xl shadow-sm p-6 text-center border border-pink-100">
@@ -15,7 +19,7 @@ function HomePlaceholder() {
           Personalized cycle predictions & nutrition guide
         </p>
         <div className="inline-block bg-primary-soft text-primary text-xs px-3 py-1.5 rounded-full font-medium">
-          Task 1.1 Complete • Setup Ready
+          {currentUser ? `Logged in as ${currentUser.email}` : 'AuthContext Ready • No user logged in'}
         </div>
       </div>
     </div>
@@ -24,10 +28,12 @@ function HomePlaceholder() {
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<HomePlaceholder />} />
-      </Routes>
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<HomePlaceholder />} />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   )
 }

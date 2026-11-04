@@ -32,8 +32,8 @@ Built as a portfolio / resume project to show full-stack, AI integration, and se
 - Phase values: `"menstrual"`, `"follicular"`, `"ovulation"`, `"luteal"`.
 
 ## 5. Current Status
-- Phase: Phase 1 (Setup and Auth) in progress. Tasks 1.1 and 1.2 completed.
-- Next task: Task 1.3 in Tasks.md (Build AuthContext: signup, login, logout, session persistence).
+- Phase: Phase 1 (Setup and Auth) in progress. Tasks 1.1, 1.2, and 1.3 completed.
+- Next task: Task 1.4 in Tasks.md (Build Signup and Login pages: mobile-first, per Design.md).
 
 ## 6. Open Questions
 - Who will review the nutrition content (doctor / nutritionist)?
@@ -52,5 +52,6 @@ Built as a portfolio / resume project to show full-stack, AI integration, and se
 | 2026-11-04 | Project planned. Created PRD, Architecture, Design, Rules, Memory, Tasks. |
 | 2026-11-05 | Completed Task 1.1: Created Vite + React project, configured Tailwind CSS with Design.md design tokens, installed React Router and date-fns, created folder structure from Architecture.md with placeholders, added .gitignore. Verified build and dev server. |
 | 2026-11-05 | Completed Task 1.2: Installed Firebase SDK, created .env with config, added .env.example, configured src/firebase.js with modular v9+ auth and firestore instances. |
+| 2026-11-05 | Completed Task 1.3: Built AuthContext and useAuth hook managing signup, login, logout, and auth state persistence via onAuthStateChanged. Wrapped App in AuthProvider. |
 
 (Add a new row after each completed task: date, what changed, any decision made.)
