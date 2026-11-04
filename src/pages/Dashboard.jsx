@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { getUserProfile, getUserPeriods } from '../services/firestore';
+import { calculateCycleSummary } from '../utils/cycleCalculator';
 import Button from '../components/Button';
 
 export default function Dashboard() {
@@ -49,6 +50,15 @@ export default function Dashboard() {
     eggetarian: '🥚 Eggetarian',
   };
 
+  const cycleSummary =
+    periods[0]?.startDate && profile
+      ? calculateCycleSummary(
+          periods[0].startDate,
+          profile.avgCycleLength,
+          profile.avgPeriodLength
+        )
+      : null;
+
   return (
     <div className="min-h-screen bg-background text-textMain px-4 py-6 md:py-10">
       <div className="max-w-xl mx-auto space-y-6">
@@ -82,74 +92,134 @@ export default function Dashboard() {
             <p className="text-xs text-textMuted">Loading your cycle details...</p>
           </div>
         ) : profile ? (
-          /* Profile & Onboarding Complete Card */
-          <div className="bg-surface rounded-2xl p-6 shadow-sm border border-pink-100 relative overflow-hidden space-y-5">
-            <div className="flex items-center justify-between">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold border border-emerald-100">
-                <span>✓</span>
-                <span>Profile & Cycle Saved</span>
-              </span>
-              <span className="text-xs text-textMuted">
-                {currentUser?.email}
-              </span>
-            </div>
+          <>
+            {/* Live Cycle Prediction Card */}
+            {cycleSummary && (
+              <div className="bg-surface rounded-2xl p-6 shadow-sm border border-pink-100 space-y-4 relative overflow-hidden">
+                <div
+                  className="absolute top-0 right-0 w-32 h-32 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none opacity-40"
+                  style={{ backgroundColor: cycleSummary.phaseDetails.color }}
+                />
 
-            <div>
-              <h2 className="text-xl font-bold font-heading text-textMain">
-                Welcome back{profile.name ? `, ${profile.name}` : ''}!
-              </h2>
-              <p className="text-xs text-textMuted mt-1">
-                Your profile and cycle baseline are stored safely in Firestore.
-              </p>
-            </div>
+                <div className="flex items-center justify-between relative z-10">
+                  <span
+                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold shadow-xs"
+                    style={{
+                      backgroundColor: cycleSummary.phaseDetails.badgeBg,
+                      color: cycleSummary.phaseDetails.color,
+                    }}
+                  >
+                    <span>{cycleSummary.phaseDetails.icon}</span>
+                    <span>{cycleSummary.phaseDetails.name}</span>
+                  </span>
+                  <span className="text-xs font-semibold text-textMuted bg-background px-2.5 py-1 rounded-full border border-pink-100">
+                    Day {cycleSummary.cycleDay} of cycle
+                  </span>
+                </div>
 
-            {/* Metrics grid */}
-            <div className="grid grid-cols-2 gap-3 pt-2">
-              <div className="bg-background rounded-xl p-3 border border-pink-100/70">
-                <p className="text-[11px] uppercase tracking-wider text-textMuted font-medium">
-                  Average Cycle
-                </p>
-                <p className="text-base font-bold font-heading text-primary mt-0.5">
-                  {profile.avgCycleLength} <span className="text-xs font-normal text-textMuted">days</span>
+                <div className="relative z-10">
+                  <h2 className="text-xl font-bold font-heading text-textMain">
+                    {cycleSummary.isLate
+                      ? `Period is ${cycleSummary.daysLate} day${cycleSummary.daysLate > 1 ? 's' : ''} late`
+                      : cycleSummary.daysUntilNextPeriod === 0
+                      ? 'Period expected today'
+                      : `Next period expected in ${cycleSummary.daysUntilNextPeriod} days`}
+                  </h2>
+                  <p className="text-xs text-textMuted mt-1 leading-relaxed">
+                    {cycleSummary.phaseDetails.description}
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 pt-3 border-t border-pink-50 text-xs relative z-10">
+                  <div className="bg-background rounded-xl p-3 border border-pink-100/70">
+                    <span className="text-textMuted block text-[11px] uppercase tracking-wider font-medium">
+                      Next Period
+                    </span>
+                    <span className="font-bold text-primary text-sm mt-0.5 block">
+                      {cycleSummary.nextPeriodDate}
+                    </span>
+                  </div>
+                  <div className="bg-background rounded-xl p-3 border border-pink-100/70">
+                    <span className="text-textMuted block text-[11px] uppercase tracking-wider font-medium">
+                      Ovulation Window
+                    </span>
+                    <span className="font-bold text-textMain text-sm mt-0.5 block">
+                      {cycleSummary.ovulationDate}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Profile Baseline Card */}
+            <div className="bg-surface rounded-2xl p-6 shadow-sm border border-pink-100 relative overflow-hidden space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold border border-emerald-100">
+                  <span>✓</span>
+                  <span>Profile & Baseline Saved</span>
+                </span>
+                <span className="text-xs text-textMuted">
+                  {currentUser?.email}
+                </span>
+              </div>
+
+              <div>
+                <h3 className="text-base font-bold font-heading text-textMain">
+                  Your Cycle Baseline
+                </h3>
+                <p className="text-xs text-textMuted mt-0.5">
+                  Stored securely in Firestore for personalized insights.
                 </p>
               </div>
 
-              <div className="bg-background rounded-xl p-3 border border-pink-100/70">
-                <p className="text-[11px] uppercase tracking-wider text-textMuted font-medium">
-                  Period Length
-                </p>
-                <p className="text-base font-bold font-heading text-primary mt-0.5">
-                  {profile.avgPeriodLength} <span className="text-xs font-normal text-textMuted">days</span>
-                </p>
+              {/* Metrics grid */}
+              <div className="grid grid-cols-2 gap-3 pt-1">
+                <div className="bg-background rounded-xl p-3 border border-pink-100/70">
+                  <p className="text-[11px] uppercase tracking-wider text-textMuted font-medium">
+                    Average Cycle
+                  </p>
+                  <p className="text-base font-bold font-heading text-primary mt-0.5">
+                    {profile.avgCycleLength} <span className="text-xs font-normal text-textMuted">days</span>
+                  </p>
+                </div>
+
+                <div className="bg-background rounded-xl p-3 border border-pink-100/70">
+                  <p className="text-[11px] uppercase tracking-wider text-textMuted font-medium">
+                    Period Length
+                  </p>
+                  <p className="text-base font-bold font-heading text-primary mt-0.5">
+                    {profile.avgPeriodLength} <span className="text-xs font-normal text-textMuted">days</span>
+                  </p>
+                </div>
+
+                <div className="bg-background rounded-xl p-3 border border-pink-100/70">
+                  <p className="text-[11px] uppercase tracking-wider text-textMuted font-medium">
+                    Diet Preference
+                  </p>
+                  <p className="text-xs font-semibold text-textMain mt-1">
+                    {dietLabels[profile.dietPreference] || profile.dietPreference}
+                  </p>
+                </div>
+
+                <div className="bg-background rounded-xl p-3 border border-pink-100/70">
+                  <p className="text-[11px] uppercase tracking-wider text-textMuted font-medium">
+                    Last Period Start
+                  </p>
+                  <p className="text-xs font-semibold text-textMain mt-1">
+                    {periods[0]?.startDate || 'Recorded'}
+                  </p>
+                </div>
               </div>
 
-              <div className="bg-background rounded-xl p-3 border border-pink-100/70">
-                <p className="text-[11px] uppercase tracking-wider text-textMuted font-medium">
-                  Diet Preference
-                </p>
-                <p className="text-xs font-semibold text-textMain mt-1">
-                  {dietLabels[profile.dietPreference] || profile.dietPreference}
-                </p>
-              </div>
-
-              <div className="bg-background rounded-xl p-3 border border-pink-100/70">
-                <p className="text-[11px] uppercase tracking-wider text-textMuted font-medium">
-                  Last Period Start
-                </p>
-                <p className="text-xs font-semibold text-textMain mt-1">
-                  {periods[0]?.startDate || 'Recorded'}
-                </p>
+              <div className="pt-1">
+                <Link to="/onboarding" className="block">
+                  <Button variant="secondary" fullWidth className="text-xs">
+                    Edit Cycle Details
+                  </Button>
+                </Link>
               </div>
             </div>
-
-            <div className="pt-2">
-              <Link to="/onboarding" className="block">
-                <Button variant="secondary" fullWidth className="text-xs">
-                  Edit Cycle Details
-                </Button>
-              </Link>
-            </div>
-          </div>
+          </>
         ) : (
           /* Profile Empty / Onboarding Required Card */
           <div className="bg-surface rounded-2xl p-6 shadow-sm border border-pink-100 relative overflow-hidden space-y-4">
@@ -173,16 +243,6 @@ export default function Dashboard() {
             </Link>
           </div>
         )}
-
-        {/* Next step teaser */}
-        <div className="bg-surface rounded-2xl p-6 shadow-sm border border-pink-100">
-          <h3 className="text-xs font-semibold font-heading text-textMain uppercase tracking-wider mb-2">
-            Next in Phase 2
-          </h3>
-          <p className="text-xs text-textMuted leading-relaxed">
-            Task 2.3: Pure deterministic cycle calculator functions (<code className="bg-pink-50 px-1 py-0.5 rounded text-primary">cycleCalculator.js</code>) to predict your next period, ovulation day, and current phase.
-          </p>
-        </div>
       </div>
     </div>
   );
