@@ -32,8 +32,8 @@ Built as a portfolio / resume project to show full-stack, AI integration, and se
 - Phase values: `"menstrual"`, `"follicular"`, `"ovulation"`, `"luteal"`.
 
 ## 5. Current Status
-- Phase: Phase 2 (Onboarding and Cycle Logic) in progress. Tasks 2.1, 2.2, and 2.3 completed.
-- Next task: Task 2.4 in Tasks.md (Write unit tests for the calculator: normal, short, long, late, boundaries, leap year).
+- Phase: Phase 2 (Onboarding and Cycle Logic) in progress. Tasks 2.1 through 2.4 completed.
+- Next task: Task 2.5 in Tasks.md (Add irregular-cycle detection and the average of the last 3 cycles).
 
 ## 6. Open Questions
 - Who will review the nutrition content (doctor / nutritionist)?
@@ -59,5 +59,6 @@ Built as a portfolio / resume project to show full-stack, AI integration, and se
 | 2026-11-05 | Completed Task 2.1: Built 3-step mobile-first Onboarding form (Cycle details with date validation, About You with age and diet cards, Consent & medical disclaimer), added route in App.jsx. |
 | 2026-11-05 | Completed Task 2.2: Built services/firestore.js with modular v9+ functions (saveUserProfile, getUserProfile, addPeriod, getUserPeriods, saveOnboardingData) and connected onboarding submission and dashboard data retrieval. |
 | 2026-11-05 | Completed Task 2.3: Built pure date helper utilities in dateHelpers.js and deterministic cycle calculation functions in cycleCalculator.js (next period, ovulation, fertile window, cycle day, phase identification, late handling). |
+| 2026-11-05 | Completed Task 2.4: Installed Vitest and configured npm test in package.json. Wrote comprehensive unit tests covering normal, short, long, late cycles, month/year boundaries, and leap year (all 19 tests pass). |
 
 (Add a new row after each completed task: date, what changed, any decision made.)
