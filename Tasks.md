@@ -3,8 +3,8 @@
 Work in order. One task at a time. Tick the box when done and update Memory.md.
 
 ## Phase 0: Preparation (owner does this)
-- [ ] 0.1 Create a Firebase project in the Firebase console
-- [ ] 0.2 Add a Web App and copy the config keys
+- [x] 0.1 Create a Firebase project in the Firebase console
+- [x] 0.2 Add a Web App and copy the config keys
 - [ ] 0.3 Enable Authentication (Email/Password)
 - [ ] 0.4 Create a Firestore database (production mode)
 - [x] 0.5 Create a GitHub repo
@@ -12,7 +12,7 @@ Work in order. One task at a time. Tick the box when done and update Memory.md.
 
 ## Phase 1: Setup and Auth (V1)
 - [x] 1.1 Create Vite + React project, install Tailwind CSS, React Router, date-fns
-- [ ] 1.2 Set up `firebase.js` with environment variables and add `.env.example`
+- [x] 1.2 Set up `firebase.js` with environment variables and add `.env.example`
 - [ ] 1.3 Build AuthContext (signup, login, logout, session persistence)
 - [ ] 1.4 Build Signup and Login pages (mobile-first, per Design.md)
 - [ ] 1.5 Add protected routes and a placeholder Dashboard
