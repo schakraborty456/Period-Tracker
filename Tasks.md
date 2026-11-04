@@ -23,7 +23,7 @@ Work in order. One task at a time. Tick the box when done and update Memory.md.
 - [x] 2.2 Save profile and first period to Firestore through `services/firestore.js`
 - [x] 2.3 Write `utils/cycleCalculator.js` (next period, ovulation, fertile window, current phase)
 - [x] 2.4 Write unit tests for the calculator (normal, short, long, late, boundaries, leap year)
-- [ ] 2.5 Add irregular-cycle detection and the average of the last 3 cycles
+- [x] 2.5 Add irregular-cycle detection and the average of the last 3 cycles
 
 ## Phase 3: Dashboard and Nutrition (V1)
 - [ ] 3.1 Create `data/nutritionTips.js` (4 phases x veg / non-veg / eggetarian), marked "needs review"

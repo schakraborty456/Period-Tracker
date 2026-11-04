@@ -7,6 +7,9 @@ import {
   getCurrentPhase,
   calculateCycleSummary,
   getPhaseDetails,
+  detectIrregularCycle,
+  getCycleLengthsFromPeriods,
+  getEffectiveCycleLength,
 } from './cycleCalculator.js';
 import {
   parseLocalDate,
@@ -252,6 +255,93 @@ describe('cycleCalculator - Pure Cycle Logic', () => {
     it('calculates calendar day differences accurately across months', () => {
       expect(getDaysDifference('2026-03-05', '2026-03-01')).toBe(4);
       expect(getDaysDifference('2026-03-01', '2026-02-28')).toBe(1);
+    });
+  });
+
+  describe('9. Irregular Cycle Detection (Task 2.5)', () => {
+    it('detects cycles shorter than 21 days as irregular', () => {
+      const result = detectIrregularCycle(19);
+      expect(result.isIrregular).toBe(true);
+      expect(result.reason).toBe('too_short');
+      expect(result.message).toContain('shorter than 21 days');
+    });
+
+    it('detects cycles longer than 38 days as irregular', () => {
+      const result = detectIrregularCycle(42);
+      expect(result.isIrregular).toBe(true);
+      expect(result.reason).toBe('too_long');
+      expect(result.message).toContain('longer than 38 days');
+    });
+
+    it('considers normal 28 day cycle regular', () => {
+      const result = detectIrregularCycle(28);
+      expect(result.isIrregular).toBe(false);
+      expect(result.reason).toBe(null);
+    });
+
+    it('detects cycle length variation greater than 7 days', () => {
+      // Cycles: 25, 34, 28 -> max 34, min 25 -> variation 9 days (> 7)
+      const result = detectIrregularCycle([25, 34, 28]);
+      expect(result.isIrregular).toBe(true);
+      expect(result.reason).toBe('high_variation');
+      expect(result.variation).toBe(9);
+    });
+
+    it('considers variation of 7 days or less regular', () => {
+      // Cycles: 26, 31, 28 -> max 31, min 26 -> variation 5 days (<= 7)
+      const result = detectIrregularCycle([26, 31, 28]);
+      expect(result.isIrregular).toBe(false);
+      expect(result.variation).toBe(0);
+    });
+  });
+
+  describe('10. Average of Last 3 Cycles (Task 2.5)', () => {
+    it('extracts cycle lengths from consecutive periods', () => {
+      const periods = [
+        { startDate: '2026-01-01' },
+        { startDate: '2026-01-29' }, // 28 days
+        { startDate: '2026-02-27' }, // 29 days (2026 Feb has 28 days: Jan 29 to Feb 27 = 29 days)
+        { startDate: '2026-03-27' }, // 28 days
+      ];
+      const lengths = getCycleLengthsFromPeriods(periods);
+      expect(lengths).toEqual([28, 29, 28]);
+    });
+
+    it('uses fallback when fewer than 3 recorded cycles', () => {
+      const result = getEffectiveCycleLength([28], 30);
+      expect(result.isAveraged).toBe(false);
+      expect(result.effectiveCycleLength).toBe(28);
+
+      const emptyResult = getEffectiveCycleLength([], 30);
+      expect(emptyResult.isAveraged).toBe(false);
+      expect(emptyResult.effectiveCycleLength).toBe(30);
+    });
+
+    it('uses average of last 3 cycles when 3 or more exist', () => {
+      // 27 + 29 + 31 = 87 / 3 = 29
+      const result = getEffectiveCycleLength([27, 29, 31], 28);
+      expect(result.isAveraged).toBe(true);
+      expect(result.effectiveCycleLength).toBe(29);
+      expect(result.cyclesCount).toBe(3);
+    });
+
+    it('uses only the latest 3 cycles when more than 3 exist', () => {
+      // [40, 26, 28, 30] -> uses last 3: 26, 28, 30 -> avg = 28
+      const result = getEffectiveCycleLength([40, 26, 28, 30], 28);
+      expect(result.isAveraged).toBe(true);
+      expect(result.effectiveCycleLength).toBe(28);
+      expect(result.cyclesCount).toBe(3);
+    });
+
+    it('integrates effective cycle and irregular detection into calculateCycleSummary', () => {
+      const summary = calculateCycleSummary('2026-03-01', [26, 36, 28], 5, '2026-03-15');
+      // [26, 36, 28]: variation 36 - 26 = 10 (> 7) -> isIrregular: true
+      // average: (26 + 36 + 28) / 3 = 90 / 3 = 30 days
+      expect(summary.isAveraged).toBe(true);
+      expect(summary.effectiveCycleLength).toBe(30);
+      expect(summary.isIrregular).toBe(true);
+      expect(summary.irregularReason).toBe('high_variation');
+      expect(summary.nextPeriodDate).toBe('2026-03-31'); // March 1 + 30 days
     });
   });
 });

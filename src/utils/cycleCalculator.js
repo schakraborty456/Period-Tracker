@@ -117,6 +117,142 @@ export function getCurrentPhase(
 }
 
 /**
+ * Detects whether a set of cycle lengths is considered irregular.
+ *
+ * Per Architecture.md:
+ * - Cycle length shorter than 21 days or longer than 38 days.
+ * - Cycle lengths vary by more than 7 days between the longest and shortest.
+ *
+ * @param {number|number[]} cycleInput - A single cycle length or an array of cycle lengths
+ * @returns {{ isIrregular: boolean, reason: string|null, variation: number, message: string|null }}
+ */
+export function detectIrregularCycle(cycleInput) {
+  if (cycleInput === undefined || cycleInput === null) {
+    return { isIrregular: false, reason: null, variation: 0, message: null };
+  }
+
+  const rawArray = Array.isArray(cycleInput) ? cycleInput : [cycleInput];
+  const validLengths = rawArray.map(Number).filter((n) => !isNaN(n) && n > 0);
+
+  if (validLengths.length === 0) {
+    return { isIrregular: false, reason: null, variation: 0, message: null };
+  }
+
+  // 1. Check boundary rule (< 21 or > 38 days)
+  const tooShort = validLengths.some((l) => l < 21);
+  const tooLong = validLengths.some((l) => l > 38);
+
+  if (tooShort || tooLong) {
+    return {
+      isIrregular: true,
+      reason: tooShort ? 'too_short' : 'too_long',
+      variation: 0,
+      message: tooShort
+        ? 'A cycle shorter than 21 days is considered irregular.'
+        : 'A cycle longer than 38 days is considered irregular.',
+    };
+  }
+
+  // 2. Check variation rule (variation > 7 days)
+  if (validLengths.length >= 2) {
+    const minLen = Math.min(...validLengths);
+    const maxLen = Math.max(...validLengths);
+    const variation = maxLen - minLen;
+
+    if (variation > 7) {
+      return {
+        isIrregular: true,
+        reason: 'high_variation',
+        variation,
+        message: `Cycle lengths vary by ${variation} days (a variation over 7 days is considered irregular).`,
+      };
+    }
+  }
+
+  return {
+    isIrregular: false,
+    reason: null,
+    variation: 0,
+    message: null,
+  };
+}
+
+/**
+ * Extracts consecutive cycle lengths (in days) from an array of recorded periods.
+ *
+ * @param {Array<{ startDate: string }>} periods - Array of periods with startDate
+ * @returns {number[]} Array of completed cycle lengths in chronological order
+ */
+export function getCycleLengthsFromPeriods(periods) {
+  if (!periods || periods.length < 2) return [];
+
+  // Sort chronologically ascending (oldest first)
+  const sorted = [...periods].sort((a, b) =>
+    getDaysDifference(a.startDate, b.startDate)
+  );
+
+  const lengths = [];
+  for (let i = 1; i < sorted.length; i++) {
+    const len = getDaysDifference(sorted[i].startDate, sorted[i - 1].startDate);
+    if (len > 0) {
+      lengths.push(len);
+    }
+  }
+
+  return lengths;
+}
+
+/**
+ * Calculates the effective cycle length to use for predictions:
+ * - If 3 or more completed cycle lengths exist, uses the average of the last 3.
+ * - Otherwise falls back to provided default (or 28 days).
+ *
+ * @param {number[]} cycleLengths - Completed cycle lengths
+ * @param {number} [fallbackCycleLength=28]
+ * @returns {{ effectiveCycleLength: number, isAveraged: boolean, cyclesCount: number }}
+ */
+export function getEffectiveCycleLength(cycleLengths, fallbackCycleLength = 28) {
+  const fallback = Number(fallbackCycleLength) || 28;
+
+  if (!cycleLengths || cycleLengths.length === 0) {
+    return {
+      effectiveCycleLength: fallback,
+      isAveraged: false,
+      cyclesCount: 0,
+    };
+  }
+
+  const valid = cycleLengths.map(Number).filter((n) => !isNaN(n) && n > 0);
+
+  if (valid.length >= 3) {
+    const last3 = valid.slice(-3);
+    const sum = last3.reduce((acc, curr) => acc + curr, 0);
+    const avg = Math.round(sum / 3);
+    return {
+      effectiveCycleLength: avg,
+      isAveraged: true,
+      cyclesCount: last3.length,
+    };
+  }
+
+  if (valid.length > 0) {
+    const sum = valid.reduce((acc, curr) => acc + curr, 0);
+    const avg = Math.round(sum / valid.length);
+    return {
+      effectiveCycleLength: avg,
+      isAveraged: false,
+      cyclesCount: valid.length,
+    };
+  }
+
+  return {
+    effectiveCycleLength: fallback,
+    isAveraged: false,
+    cyclesCount: 0,
+  };
+}
+
+/**
  * Returns user-facing phase information and styling tokens.
  *
  * @param {'menstrual'|'follicular'|'ovulation'|'luteal'} phase
@@ -159,20 +295,40 @@ export function getPhaseDetails(phase) {
 
 /**
  * Calculates a complete cycle summary for dashboard and logging.
+ * Supports cycle history to automatically apply 3-cycle average and irregular cycle detection.
  *
  * @param {string|Date} lastPeriodStartDate
- * @param {number} [cycleLength=28]
+ * @param {number|number[]|object} cycleInput - Single cycle length, array of lengths, or options object
  * @param {number} [periodLength=5]
  * @param {string|Date} [targetDate=new Date()]
  * @returns {object} Full cycle calculation state
  */
 export function calculateCycleSummary(
   lastPeriodStartDate,
-  cycleLength = 28,
+  cycleInput = 28,
   periodLength = 5,
   targetDate = new Date()
 ) {
-  const cycle = Number(cycleLength) || 28;
+  let fallbackCycle = 28;
+  let cycleHistory = [];
+
+  if (Array.isArray(cycleInput)) {
+    cycleHistory = cycleInput;
+    fallbackCycle = cycleInput[cycleInput.length - 1] || 28;
+  } else if (typeof cycleInput === 'object' && cycleInput !== null) {
+    fallbackCycle = Number(cycleInput.cycleLength) || 28;
+    cycleHistory = cycleInput.cycleHistory || [];
+  } else {
+    fallbackCycle = Number(cycleInput) || 28;
+    cycleHistory = [fallbackCycle];
+  }
+
+  const { effectiveCycleLength, isAveraged, cyclesCount } = getEffectiveCycleLength(
+    cycleHistory,
+    fallbackCycle
+  );
+
+  const cycle = effectiveCycleLength;
   const period = Number(periodLength) || 5;
 
   const cycleDay = getCycleDay(lastPeriodStartDate, targetDate);
@@ -191,6 +347,11 @@ export function calculateCycleSummary(
 
   const ovulationDay = cycle + 1 - 14;
 
+  // Irregular cycle analysis
+  const irregularStatus = detectIrregularCycle(
+    cycleHistory.length > 0 ? cycleHistory : [cycle]
+  );
+
   return {
     cycleDay,
     currentPhase,
@@ -203,5 +364,13 @@ export function calculateCycleSummary(
     ovulationDay,
     fertileWindow,
     isFertile,
+    // Task 2.5 additions:
+    effectiveCycleLength,
+    isAveraged,
+    cyclesCount,
+    isIrregular: irregularStatus.isIrregular,
+    irregularReason: irregularStatus.reason,
+    irregularMessage: irregularStatus.message,
+    cycleVariation: irregularStatus.variation,
   };
 }

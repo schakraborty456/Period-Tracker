@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { getUserProfile, getUserPeriods } from '../services/firestore';
-import { calculateCycleSummary } from '../utils/cycleCalculator';
+import { calculateCycleSummary, getCycleLengthsFromPeriods } from '../utils/cycleCalculator';
 import Button from '../components/Button';
 
 export default function Dashboard() {
@@ -50,11 +50,15 @@ export default function Dashboard() {
     eggetarian: '🥚 Eggetarian',
   };
 
+  const cycleLengths = getCycleLengthsFromPeriods(periods);
   const cycleSummary =
     periods[0]?.startDate && profile
       ? calculateCycleSummary(
           periods[0].startDate,
-          profile.avgCycleLength,
+          {
+            cycleLength: profile.avgCycleLength,
+            cycleHistory: cycleLengths.length > 0 ? cycleLengths : [profile.avgCycleLength],
+          },
           profile.avgPeriodLength
         )
       : null;
@@ -147,6 +151,32 @@ export default function Dashboard() {
                       {cycleSummary.ovulationDate}
                     </span>
                   </div>
+                </div>
+
+                {cycleSummary.isAveraged && (
+                  <div className="text-[11px] text-textMuted bg-background px-3 py-1.5 rounded-lg border border-pink-100/80 flex items-center justify-between">
+                    <span>Cycle calculation method:</span>
+                    <span className="font-medium text-textMain">Average of last 3 cycles ({cycleSummary.effectiveCycleLength} days)</span>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Irregular cycle notice */}
+            {cycleSummary?.isIrregular && (
+              <div
+                role="note"
+                className="bg-amber-50/90 border border-amber-200 rounded-2xl p-4 text-xs text-amber-900 flex items-start gap-3 shadow-xs"
+              >
+                <span className="text-lg leading-none mt-0.5">⚠️</span>
+                <div className="space-y-1">
+                  <p className="font-semibold text-amber-950 font-heading">
+                    Irregular Cycle Notice
+                  </p>
+                  <p className="text-amber-800 leading-relaxed">
+                    {cycleSummary.irregularMessage ||
+                      'Cycle variation observed. Predictions are shown as expected ranges.'}
+                  </p>
                 </div>
               </div>
             )}
