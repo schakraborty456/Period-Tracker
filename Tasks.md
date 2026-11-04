@@ -14,7 +14,7 @@ Work in order. One task at a time. Tick the box when done and update Memory.md.
 - [x] 1.1 Create Vite + React project, install Tailwind CSS, React Router, date-fns
 - [x] 1.2 Set up `firebase.js` with environment variables and add `.env.example`
 - [x] 1.3 Build AuthContext (signup, login, logout, session persistence)
-- [ ] 1.4 Build Signup and Login pages (mobile-first, per Design.md)
+- [x] 1.4 Build Signup and Login pages (mobile-first, per Design.md)
 - [ ] 1.5 Add protected routes and a placeholder Dashboard
 - [ ] 1.6 Write initial `firestore.rules` (user can only access own data)
 
