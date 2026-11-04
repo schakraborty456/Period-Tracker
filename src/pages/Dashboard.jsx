@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import Button from '../components/Button';
 
@@ -60,7 +61,7 @@ export default function Dashboard() {
             You are successfully authenticated. Your personal cycle predictions, phase guidance, and daily logs will appear here once onboarding is completed in Phase 2.
           </p>
 
-          <div className="bg-background rounded-xl p-4 border border-pink-100/80">
+          <div className="bg-background rounded-xl p-4 border border-pink-100/80 mb-5">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
               <span className="text-textMuted">Account Email:</span>
               <span className="font-medium text-textMain bg-white px-2.5 py-1 rounded-lg border border-pink-100">
@@ -68,6 +69,12 @@ export default function Dashboard() {
               </span>
             </div>
           </div>
+
+          <Link to="/onboarding" className="block">
+            <Button variant="primary" fullWidth>
+              Start Cycle Onboarding →
+            </Button>
+          </Link>
         </div>
 
         {/* Up Next Preview Card */}

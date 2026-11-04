@@ -19,7 +19,7 @@ Work in order. One task at a time. Tick the box when done and update Memory.md.
 - [x] 1.6 Write initial `firestore.rules` (user can only access own data)
 
 ## Phase 2: Onboarding and Cycle Logic (V1)
-- [ ] 2.1 Build 3-step Onboarding form (dates, lengths, diet, age, consent)
+- [x] 2.1 Build 3-step Onboarding form (dates, lengths, diet, age, consent)
 - [ ] 2.2 Save profile and first period to Firestore through `services/firestore.js`
 - [ ] 2.3 Write `utils/cycleCalculator.js` (next period, ovulation, fertile window, current phase)
 - [ ] 2.4 Write unit tests for the calculator (normal, short, long, late, boundaries, leap year)
