@@ -32,8 +32,8 @@ Built as a portfolio / resume project to show full-stack, AI integration, and se
 - Phase values: `"menstrual"`, `"follicular"`, `"ovulation"`, `"luteal"`.
 
 ## 5. Current Status
-- Phase: Phase 1 (Setup and Auth) in progress. Tasks 1.1, 1.2, 1.3, and 1.4 completed.
-- Next task: Task 1.5 in Tasks.md (Add protected routes and a placeholder Dashboard).
+- Phase: Phase 1 (Setup and Auth) in progress. Tasks 1.1 through 1.5 completed.
+- Next task: Task 1.6 in Tasks.md (Write initial firestore.rules: user can only access own data).
 
 ## 6. Open Questions
 - Who will review the nutrition content (doctor / nutritionist)?
@@ -54,5 +54,6 @@ Built as a portfolio / resume project to show full-stack, AI integration, and se
 | 2026-11-05 | Completed Task 1.2: Installed Firebase SDK, created .env with config, added .env.example, configured src/firebase.js with modular v9+ auth and firestore instances. |
 | 2026-11-05 | Completed Task 1.3: Built AuthContext and useAuth hook managing signup, login, logout, and auth state persistence via onAuthStateChanged. Wrapped App in AuthProvider. |
 | 2026-11-05 | Completed Task 1.4: Created reusable Button and Input components, built mobile-first Login and Signup pages per Design.md with validation, loading states, friendly error messages, and configured routes in App.jsx. |
+| 2026-11-05 | Completed Task 1.5: Built ProtectedRoute component to guard private routes based on auth state, created mobile-first placeholder Dashboard with user info & sign out, and updated routing in App.jsx. |
 
 (Add a new row after each completed task: date, what changed, any decision made.)

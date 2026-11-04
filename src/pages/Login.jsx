@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import Button from '../components/Button';
 import Input from '../components/Input';
@@ -12,13 +12,15 @@ export default function Login() {
 
   const { login, currentUser } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from?.pathname || '/';
 
   // If already authenticated, redirect to home
   useEffect(() => {
     if (currentUser) {
-      navigate('/', { replace: true });
+      navigate(from, { replace: true });
     }
-  }, [currentUser, navigate]);
+  }, [currentUser, navigate, from]);
 
   function getErrorMessage(errCode) {
     switch (errCode) {
@@ -47,7 +49,7 @@ export default function Login() {
     try {
       setLoading(true);
       await login(email, password);
-      navigate('/');
+      navigate(from, { replace: true });
     } catch (err) {
       setError(getErrorMessage(err.code));
     } finally {
@@ -133,3 +135,4 @@ export default function Login() {
     </div>
   );
 }
+

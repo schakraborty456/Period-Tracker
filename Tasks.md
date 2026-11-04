@@ -15,7 +15,7 @@ Work in order. One task at a time. Tick the box when done and update Memory.md.
 - [x] 1.2 Set up `firebase.js` with environment variables and add `.env.example`
 - [x] 1.3 Build AuthContext (signup, login, logout, session persistence)
 - [x] 1.4 Build Signup and Login pages (mobile-first, per Design.md)
-- [ ] 1.5 Add protected routes and a placeholder Dashboard
+- [x] 1.5 Add protected routes and a placeholder Dashboard
 - [ ] 1.6 Write initial `firestore.rules` (user can only access own data)
 
 ## Phase 2: Onboarding and Cycle Logic (V1)
