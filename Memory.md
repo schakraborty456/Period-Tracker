@@ -32,8 +32,8 @@ Built as a portfolio / resume project to show full-stack, AI integration, and se
 - Phase values: `"menstrual"`, `"follicular"`, `"ovulation"`, `"luteal"`.
 
 ## 5. Current Status
-- Phase: Phase 2 (Onboarding and Cycle Logic) in progress. Task 2.1 completed.
-- Next task: Task 2.2 in Tasks.md (Save profile and first period to Firestore through services/firestore.js).
+- Phase: Phase 2 (Onboarding and Cycle Logic) in progress. Tasks 2.1 and 2.2 completed.
+- Next task: Task 2.3 in Tasks.md (Write utils/cycleCalculator.js: next period, ovulation, fertile window, current phase).
 
 ## 6. Open Questions
 - Who will review the nutrition content (doctor / nutritionist)?
@@ -57,5 +57,6 @@ Built as a portfolio / resume project to show full-stack, AI integration, and se
 | 2026-11-05 | Completed Task 1.5: Built ProtectedRoute component to guard private routes based on auth state, created mobile-first placeholder Dashboard with user info & sign out, and updated routing in App.jsx. |
 | 2026-11-05 | Completed Task 1.6: Wrote initial firestore.rules restricting access strictly to authenticated users for their own document tree (`/users/{userId}/**`), added firebase.json. Phase 1 complete! |
 | 2026-11-05 | Completed Task 2.1: Built 3-step mobile-first Onboarding form (Cycle details with date validation, About You with age and diet cards, Consent & medical disclaimer), added route in App.jsx. |
+| 2026-11-05 | Completed Task 2.2: Built services/firestore.js with modular v9+ functions (saveUserProfile, getUserProfile, addPeriod, getUserPeriods, saveOnboardingData) and connected onboarding submission and dashboard data retrieval. |
 
 (Add a new row after each completed task: date, what changed, any decision made.)

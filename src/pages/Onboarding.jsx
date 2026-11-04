@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { format, subDays } from 'date-fns';
 import { useAuth } from '../hooks/useAuth';
+import { saveOnboardingData } from '../services/firestore';
 import Button from '../components/Button';
 import Input from '../components/Input';
 
@@ -25,6 +26,8 @@ export default function Onboarding({ onComplete }) {
   });
 
   const [errors, setErrors] = useState({});
+  const [saving, setSaving] = useState(false);
+  const [submitError, setSubmitError] = useState('');
 
   function updateField(field, value) {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -91,11 +94,25 @@ export default function Onboarding({ onComplete }) {
     e.preventDefault();
     if (!validateStep(3)) return;
 
-    if (onComplete) {
-      onComplete(formData);
-    } else {
-      // In Task 2.1, form is completed; in Task 2.2, firestore saving will be hooked in
-      navigate('/');
+    if (!currentUser) {
+      setSubmitError('You must be signed in to save your onboarding information.');
+      return;
+    }
+
+    try {
+      setSaving(true);
+      setSubmitError('');
+      await saveOnboardingData(currentUser.uid, formData);
+      if (onComplete) {
+        onComplete(formData);
+      } else {
+        navigate('/');
+      }
+    } catch (err) {
+      console.error('Error saving onboarding data:', err);
+      setSubmitError('Failed to save your details to Firebase. Please check your connection and try again.');
+    } finally {
+      setSaving(false);
     }
   }
 
@@ -352,6 +369,15 @@ export default function Onboarding({ onComplete }) {
                   {errors.termsConsent && (
                     <p className="text-xs text-danger font-medium">{errors.termsConsent}</p>
                   )}
+                  {submitError && (
+                    <div
+                      role="alert"
+                      className="p-3 rounded-xl bg-red-50 border border-red-200 text-danger text-xs font-medium flex items-start gap-2"
+                    >
+                      <span>⚠️</span>
+                      <span>{submitError}</span>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
@@ -363,6 +389,7 @@ export default function Onboarding({ onComplete }) {
                   type="button"
                   variant="secondary"
                   onClick={handleBack}
+                  disabled={saving}
                   className="flex-1"
                 >
                   Back
@@ -382,7 +409,8 @@ export default function Onboarding({ onComplete }) {
                   type="submit"
                   variant="primary"
                   className="flex-1"
-                  disabled={!formData.termsConsent}
+                  loading={saving}
+                  disabled={!formData.termsConsent || saving}
                 >
                   Complete Setup
                 </Button>
@@ -394,3 +422,4 @@ export default function Onboarding({ onComplete }) {
     </div>
   );
 }
+

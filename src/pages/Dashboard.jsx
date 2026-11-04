@@ -1,11 +1,36 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import { getUserProfile, getUserPeriods } from '../services/firestore';
 import Button from '../components/Button';
 
 export default function Dashboard() {
   const { currentUser, logout } = useAuth();
+  const [profile, setProfile] = useState(null);
+  const [periods, setPeriods] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [loggingOut, setLoggingOut] = useState(false);
+
+  useEffect(() => {
+    async function loadUserData() {
+      if (!currentUser) return;
+      try {
+        setLoading(true);
+        const [userProf, userPeriods] = await Promise.all([
+          getUserProfile(currentUser.uid),
+          getUserPeriods(currentUser.uid),
+        ]);
+        setProfile(userProf);
+        setPeriods(userPeriods);
+      } catch (err) {
+        console.error('Error loading user data from Firestore:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadUserData();
+  }, [currentUser]);
 
   async function handleLogout() {
     try {
@@ -17,6 +42,12 @@ export default function Dashboard() {
       setLoggingOut(false);
     }
   }
+
+  const dietLabels = {
+    'non-veg': '🍗 Non-Vegetarian',
+    veg: '🥗 Vegetarian',
+    eggetarian: '🥚 Eggetarian',
+  };
 
   return (
     <div className="min-h-screen bg-background text-textMain px-4 py-6 md:py-10">
@@ -44,67 +75,115 @@ export default function Dashboard() {
           </Button>
         </header>
 
-        {/* Hero Card */}
-        <div className="bg-surface rounded-2xl p-6 shadow-sm border border-pink-100 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-primary-soft/40 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none" />
-
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary-soft text-primary text-xs font-semibold mb-3">
-            <span>✨</span>
-            <span>Protected Dashboard</span>
+        {/* Loading state */}
+        {loading ? (
+          <div className="bg-surface rounded-2xl p-8 shadow-sm border border-pink-100 text-center">
+            <div className="w-8 h-8 border-3 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+            <p className="text-xs text-textMuted">Loading your cycle details...</p>
           </div>
-
-          <h2 className="text-xl font-bold font-heading text-textMain mb-2">
-            Welcome to your Dashboard!
-          </h2>
-
-          <p className="text-textMuted text-sm leading-relaxed mb-5">
-            You are successfully authenticated. Your personal cycle predictions, phase guidance, and daily logs will appear here once onboarding is completed in Phase 2.
-          </p>
-
-          <div className="bg-background rounded-xl p-4 border border-pink-100/80 mb-5">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
-              <span className="text-textMuted">Account Email:</span>
-              <span className="font-medium text-textMain bg-white px-2.5 py-1 rounded-lg border border-pink-100">
+        ) : profile ? (
+          /* Profile & Onboarding Complete Card */
+          <div className="bg-surface rounded-2xl p-6 shadow-sm border border-pink-100 relative overflow-hidden space-y-5">
+            <div className="flex items-center justify-between">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold border border-emerald-100">
+                <span>✓</span>
+                <span>Profile & Cycle Saved</span>
+              </span>
+              <span className="text-xs text-textMuted">
                 {currentUser?.email}
               </span>
             </div>
+
+            <div>
+              <h2 className="text-xl font-bold font-heading text-textMain">
+                Welcome back{profile.name ? `, ${profile.name}` : ''}!
+              </h2>
+              <p className="text-xs text-textMuted mt-1">
+                Your profile and cycle baseline are stored safely in Firestore.
+              </p>
+            </div>
+
+            {/* Metrics grid */}
+            <div className="grid grid-cols-2 gap-3 pt-2">
+              <div className="bg-background rounded-xl p-3 border border-pink-100/70">
+                <p className="text-[11px] uppercase tracking-wider text-textMuted font-medium">
+                  Average Cycle
+                </p>
+                <p className="text-base font-bold font-heading text-primary mt-0.5">
+                  {profile.avgCycleLength} <span className="text-xs font-normal text-textMuted">days</span>
+                </p>
+              </div>
+
+              <div className="bg-background rounded-xl p-3 border border-pink-100/70">
+                <p className="text-[11px] uppercase tracking-wider text-textMuted font-medium">
+                  Period Length
+                </p>
+                <p className="text-base font-bold font-heading text-primary mt-0.5">
+                  {profile.avgPeriodLength} <span className="text-xs font-normal text-textMuted">days</span>
+                </p>
+              </div>
+
+              <div className="bg-background rounded-xl p-3 border border-pink-100/70">
+                <p className="text-[11px] uppercase tracking-wider text-textMuted font-medium">
+                  Diet Preference
+                </p>
+                <p className="text-xs font-semibold text-textMain mt-1">
+                  {dietLabels[profile.dietPreference] || profile.dietPreference}
+                </p>
+              </div>
+
+              <div className="bg-background rounded-xl p-3 border border-pink-100/70">
+                <p className="text-[11px] uppercase tracking-wider text-textMuted font-medium">
+                  Last Period Start
+                </p>
+                <p className="text-xs font-semibold text-textMain mt-1">
+                  {periods[0]?.startDate || 'Recorded'}
+                </p>
+              </div>
+            </div>
+
+            <div className="pt-2">
+              <Link to="/onboarding" className="block">
+                <Button variant="secondary" fullWidth className="text-xs">
+                  Edit Cycle Details
+                </Button>
+              </Link>
+            </div>
           </div>
+        ) : (
+          /* Profile Empty / Onboarding Required Card */
+          <div className="bg-surface rounded-2xl p-6 shadow-sm border border-pink-100 relative overflow-hidden space-y-4">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary-soft text-primary text-xs font-semibold">
+              <span>✨</span>
+              <span>Action Needed</span>
+            </div>
 
-          <Link to="/onboarding" className="block">
-            <Button variant="primary" fullWidth>
-              Start Cycle Onboarding →
-            </Button>
-          </Link>
-        </div>
+            <h2 className="text-xl font-bold font-heading text-textMain">
+              Let's Personalize Your Cycle
+            </h2>
 
-        {/* Up Next Preview Card */}
+            <p className="text-textMuted text-sm leading-relaxed">
+              Complete your 3-step onboarding to save your last period date, typical cycle lengths, and diet preferences to Firestore.
+            </p>
+
+            <Link to="/onboarding" className="block pt-2">
+              <Button variant="primary" fullWidth>
+                Start Onboarding Now →
+              </Button>
+            </Link>
+          </div>
+        )}
+
+        {/* Next step teaser */}
         <div className="bg-surface rounded-2xl p-6 shadow-sm border border-pink-100">
-          <h3 className="text-sm font-semibold font-heading text-textMain uppercase tracking-wider mb-3">
-            Upcoming Roadmap (Phase 2 & 3)
+          <h3 className="text-xs font-semibold font-heading text-textMain uppercase tracking-wider mb-2">
+            Next in Phase 2
           </h3>
-          <ul className="space-y-2.5 text-xs text-textMuted">
-            <li className="flex items-center gap-2">
-              <span className="w-5 h-5 rounded-full bg-pink-100 text-primary flex items-center justify-center font-bold text-[10px]">
-                1
-              </span>
-              <span>3-Step Onboarding (Last period date, cycle & period lengths)</span>
-            </li>
-            <li className="flex items-center gap-2">
-              <span className="w-5 h-5 rounded-full bg-pink-100 text-primary flex items-center justify-center font-bold text-[10px]">
-                2
-              </span>
-              <span>Rule-based cycle calculator (predict next period & current phase)</span>
-            </li>
-            <li className="flex items-center gap-2">
-              <span className="w-5 h-5 rounded-full bg-pink-100 text-primary flex items-center justify-center font-bold text-[10px]">
-                3
-              </span>
-              <span>Phase-wise nutrition tips (veg / non-veg / eggetarian)</span>
-            </li>
-          </ul>
+          <p className="text-xs text-textMuted leading-relaxed">
+            Task 2.3: Pure deterministic cycle calculator functions (<code className="bg-pink-50 px-1 py-0.5 rounded text-primary">cycleCalculator.js</code>) to predict your next period, ovulation day, and current phase.
+          </p>
         </div>
       </div>
     </div>
   );
 }
-
