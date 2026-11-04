@@ -1,0 +1,20 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Only the authenticated user can read or write their own user document
+    // and all subcollections (periods, dailyLogs).
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+
+      match /{document=**} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+    }
+
+    // Default deny for all other collections
+    match /{document=**} {
+      allow read, write: false;
+    }
+  }
+}
