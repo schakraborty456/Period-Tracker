@@ -4,6 +4,7 @@ import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Dashboard from './pages/Dashboard';
 import Onboarding from './pages/Onboarding';
+import Tips from './pages/Tips';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Button from './components/Button';
@@ -71,11 +72,7 @@ export default function App() {
             path="/tips"
             element={
               <ProtectedRoute>
-                <FeaturePlaceholder
-                  title="Nutrition & Self-Care Tips"
-                  taskInfo="Phase 3 (Task 3.4)"
-                  icon="🥗"
-                />
+                <Tips />
               </ProtectedRoute>
             }
           />
