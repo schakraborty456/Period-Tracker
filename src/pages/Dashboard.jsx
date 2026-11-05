@@ -12,6 +12,7 @@ import Card from '../components/Card';
 import PhaseBadge from '../components/PhaseBadge';
 import CycleRing from '../components/CycleRing';
 import BottomNav from '../components/BottomNav';
+import TodayNutritionCard from '../components/TodayNutritionCard';
 
 export default function Dashboard() {
   const { currentUser, logout } = useAuth();
@@ -252,6 +253,12 @@ export default function Dashboard() {
                 </div>
               </div>
             )}
+
+            {/* TODAY'S NUTRITION & SELF-CARE GUIDE (Task 3.3) */}
+            <TodayNutritionCard
+              phase={cycleSummary?.currentPhase || 'menstrual'}
+              dietPreference={profile.dietPreference || 'non-veg'}
+            />
 
             {/* 4 PHASES BREAKDOWN STRIP */}
             <Card className="space-y-3">

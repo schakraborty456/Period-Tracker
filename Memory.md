@@ -32,8 +32,8 @@ Built as a portfolio / resume project to show full-stack, AI integration, and se
 - Phase values: `"menstrual"`, `"follicular"`, `"ovulation"`, `"luteal"`.
 
 ## 5. Current Status
-- Phase: Phase 3 (Dashboard and Nutrition) in progress. Tasks 3.1 and 3.2 completed.
-- Next task: Task 3.3 in Tasks.md (Show today's nutrition and self-care tips filtered by diet).
+- Phase: Phase 3 (Dashboard and Nutrition) in progress. Tasks 3.1, 3.2, and 3.3 completed.
+- Next task: Task 3.4 in Tasks.md (Build Tips page with phase tabs).
 
 ## 6. Open Questions
 - Who will review the nutrition content (doctor / nutritionist)?
@@ -63,5 +63,6 @@ Built as a portfolio / resume project to show full-stack, AI integration, and se
 | 2026-11-05 | Completed Task 2.5: Implemented detectIrregularCycle (<21 or >38 days, or >7 days variation), getCycleLengthsFromPeriods, and 3-cycle averaging (getEffectiveCycleLength). Integrated into Dashboard with respectful irregular notice and added 10 unit tests (29 passing). Phase 2 complete! |
 | 2026-11-05 | Completed Task 3.1: Created data/nutritionTips.js with 4 cycle phases x 3 diet options (veg, non-veg, eggetarian) featuring locally familiar foods (dal, shak, mach, gur, til, kola), marked "needs expert review", helper functions, and 8 automated unit tests (37 passing total). |
 | 2026-11-05 | Completed Task 3.2: Built reusable PhaseBadge, Card, CycleRing (SVG 4-phase dial with day marker), and mobile BottomNav. Elevated Dashboard with Phase Hero Card, live countdown, 4-phase breakdown strip, and quick log action. |
+| 2026-11-05 | Completed Task 3.3: Built TodayNutritionCard component with interactive diet toggles (Non-Veg, Veg, Eggetarian), Eat vs Avoid tabs, self-care suggestions, and content review status badge. Integrated into Dashboard under cycle status. |
 
 (Add a new row after each completed task: date, what changed, any decision made.)

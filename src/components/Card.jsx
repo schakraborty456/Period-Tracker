@@ -10,3 +10,4 @@ export default function Card({ children, className = '', ...props }) {
     </div>
   );
 }
+
