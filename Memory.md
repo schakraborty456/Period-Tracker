@@ -32,8 +32,8 @@ Built as a portfolio / resume project to show full-stack, AI integration, and se
 - Phase values: `"menstrual"`, `"follicular"`, `"ovulation"`, `"luteal"`.
 
 ## 5. Current Status
-- Phase: Phase 4 (Daily Log) completed! Phase 5 (Polish, PWA, and Deploy) next.
-- Next task: Task 5.1 in Tasks.md (Settings page: profile edit, delete account and data).
+- Phase: Phase 5 (Polish, PWA, and Deploy) in progress. Task 5.1 completed.
+- Next task: Task 5.2 in Tasks.md (Privacy policy and consent screens).
 
 ## 6. Open Questions
 - Who will review the nutrition content (doctor / nutritionist)?
@@ -70,5 +70,6 @@ Built as a portfolio / resume project to show full-stack, AI integration, and se
 | 2026-11-05 | Completed Task 4.2: Implemented Firestore saveDailyLog, getDailyLog, and getUserDailyLogs query functions with input sanitization and merge support. Verified multi-date load/save logic in Log page and added automated integration test suite in firestore.test.js (43 passing tests total). |
 | 2026-11-05 | Completed Task 4.3: Implemented shouldSuggestNewPeriod in cycleCalculator.js and recordNewPeriodAndRecalculate in firestore.js. When active flow is logged for a new cycle, automatically calculates completed previous cycle length, creates period record, recalculates 3-cycle average, and syncs profile. Added 7 unit tests (50 passing tests total). |
 | 2026-11-05 | Completed Task 4.4: Built RecentLogsCard component displaying recent daily logs with relative dates (Today, Yesterday), flow level, mood emojis, water intake, symptom tags, and notes snippet, plus inviting empty state with quick log CTA. Connected to Dashboard. Phase 4 complete! |
+| 2026-11-05 | Completed Task 5.1: Built Settings page (src/pages/Settings.jsx) with profile and cycle editing, diet switcher, AI consent controls, sign out, and full GDPR-compliant "Delete Account & All Data" modal flow (wiping Firestore periods, dailyLogs, profile, and Auth account). Added deleteUserAllData with tests (51 passing tests). |
 
 (Add a new row after each completed task: date, what changed, any decision made.)

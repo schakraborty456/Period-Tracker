@@ -6,6 +6,7 @@ import Dashboard from './pages/Dashboard';
 import Onboarding from './pages/Onboarding';
 import Tips from './pages/Tips';
 import Log from './pages/Log';
+import Settings from './pages/Settings';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Button from './components/Button';
@@ -77,11 +78,7 @@ export default function App() {
             path="/settings"
             element={
               <ProtectedRoute>
-                <FeaturePlaceholder
-                  title="Account Settings"
-                  taskInfo="Phase 5 (Task 5.1)"
-                  icon="⚙️"
-                />
+                <Settings />
               </ProtectedRoute>
             }
           />

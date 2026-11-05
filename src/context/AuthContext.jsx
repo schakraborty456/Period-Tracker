@@ -3,6 +3,7 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
+  deleteUser,
   onAuthStateChanged,
 } from 'firebase/auth';
 import { auth } from '../firebase';
@@ -25,6 +26,11 @@ export function AuthProvider({ children }) {
     return signOut(auth);
   }
 
+  function deleteAccount() {
+    if (!currentUser) throw new Error('No user is currently signed in');
+    return deleteUser(currentUser);
+  }
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setCurrentUser(user);
@@ -40,6 +46,7 @@ export function AuthProvider({ children }) {
     signup,
     login,
     logout,
+    deleteAccount,
   };
 
   return (

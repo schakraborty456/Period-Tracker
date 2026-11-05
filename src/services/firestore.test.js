@@ -4,6 +4,7 @@ import {
   getDailyLog,
   getUserDailyLogs,
   recordNewPeriodAndRecalculate,
+  deleteUserAllData,
 } from './firestore';
 import { getDefaultDailyLog } from '../data/symptoms';
 
@@ -31,12 +32,14 @@ const mockServerTimestamp = vi.fn(() => 'MOCK_TIMESTAMP');
 
 const mockAddDoc = vi.fn();
 const mockUpdateDoc = vi.fn();
+const mockDeleteDoc = vi.fn();
 
 vi.mock('firebase/firestore', () => ({
   doc: (...args) => mockDoc(...args),
   setDoc: (...args) => mockSetDoc(...args),
   getDoc: (...args) => mockGetDoc(...args),
   getDocs: (...args) => mockGetDocs(...args),
+  deleteDoc: (...args) => mockDeleteDoc(...args),
   collection: (...args) => mockCollection(...args),
   query: (...args) => mockQuery(...args),
   orderBy: (...args) => mockOrderBy(...args),
@@ -253,6 +256,40 @@ describe('Daily Log Firestore Service & Data Handling (Task 4.2)', () => {
       expect(mockUpdateDoc).toHaveBeenCalledWith(
         expect.objectContaining({ path: `users/${userId}` }),
         expect.objectContaining({ avgCycleLength: 28 })
+      );
+    });
+  });
+
+  describe('deleteUserAllData (Task 5.1)', () => {
+    it('wipes all subcollections (periods, dailyLogs) and user profile document', async () => {
+      const mockPeriodRef = { path: `users/${userId}/periods/p1` };
+      const mockLogRef = { path: `users/${userId}/dailyLogs/2026-11-05` };
+
+      // 1. Periods query returns 1 doc
+      mockGetDocs.mockResolvedValueOnce({
+        docs: [{ ref: mockPeriodRef }],
+      });
+      // 2. DailyLogs query returns 1 doc
+      mockGetDocs.mockResolvedValueOnce({
+        docs: [{ ref: mockLogRef }],
+      });
+      // 3. deleteDoc resolves
+      mockDeleteDoc.mockResolvedValue(undefined);
+
+      const success = await deleteUserAllData(userId);
+
+      expect(success).toBe(true);
+
+      // Verify each period doc deleted
+      expect(mockDeleteDoc).toHaveBeenCalledWith(mockPeriodRef);
+
+      // Verify each daily log doc deleted
+      expect(mockDeleteDoc).toHaveBeenCalledWith(mockLogRef);
+
+      // Verify user document deleted
+      expect(mockDoc).toHaveBeenCalledWith({ __mockDb: true }, 'users', userId);
+      expect(mockDeleteDoc).toHaveBeenCalledWith(
+        expect.objectContaining({ path: `users/${userId}` })
       );
     });
   });

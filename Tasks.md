@@ -39,7 +39,7 @@ Work in order. One task at a time. Tick the box when done and update Memory.md.
 - [x] 4.4 Show recent logs on the Dashboard
 
 ## Phase 5: Polish, PWA, and Deploy (V1)
-- [ ] 5.1 Settings page (profile edit, delete account and data)
+- [x] 5.1 Settings page (profile edit, delete account and data)
 - [ ] 5.2 Privacy policy and consent screens
 - [ ] 5.3 Add vite-plugin-pwa (manifest, icons, offline shell)
 - [ ] 5.4 Accessibility and responsive review

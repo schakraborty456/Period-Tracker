@@ -3,6 +3,7 @@ import {
   getDoc,
   setDoc,
   updateDoc,
+  deleteDoc,
   collection,
   addDoc,
   getDocs,
@@ -245,4 +246,32 @@ export async function recordNewPeriodAndRecalculate(userId, newStartDate) {
     cycleLength: completedCycleLength,
     newAvgCycleLength,
   };
+}
+
+/**
+ * Permanently deletes all user data from Cloud Firestore (Task 5.1).
+ * Deletes all subcollection docs in `users/{userId}/periods` and `users/{userId}/dailyLogs`,
+ * then deletes the user document in `users/{userId}`.
+ *
+ * @param {string} userId
+ * @returns {Promise<boolean>}
+ */
+export async function deleteUserAllData(userId) {
+  // 1. Delete all period records
+  const periodsRef = collection(db, 'users', userId, 'periods');
+  const periodsSnap = await getDocs(periodsRef);
+  const periodDeletions = periodsSnap.docs.map((d) => deleteDoc(d.ref));
+  await Promise.all(periodDeletions);
+
+  // 2. Delete all daily log records
+  const logsRef = collection(db, 'users', userId, 'dailyLogs');
+  const logsSnap = await getDocs(logsRef);
+  const logDeletions = logsSnap.docs.map((d) => deleteDoc(d.ref));
+  await Promise.all(logDeletions);
+
+  // 3. Delete user profile doc
+  const userRef = doc(db, 'users', userId);
+  await deleteDoc(userRef);
+
+  return true;
 }
