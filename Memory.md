@@ -32,8 +32,8 @@ Built as a portfolio / resume project to show full-stack, AI integration, and se
 - Phase values: `"menstrual"`, `"follicular"`, `"ovulation"`, `"luteal"`.
 
 ## 5. Current Status
-- Phase: Phase 3 (Dashboard and Nutrition) in progress. Task 3.1 completed.
-- Next task: Task 3.2 in Tasks.md (Build Dashboard: phase card, cycle day, days until next period, phase ring).
+- Phase: Phase 3 (Dashboard and Nutrition) in progress. Tasks 3.1 and 3.2 completed.
+- Next task: Task 3.3 in Tasks.md (Show today's nutrition and self-care tips filtered by diet).
 
 ## 6. Open Questions
 - Who will review the nutrition content (doctor / nutritionist)?
@@ -62,5 +62,6 @@ Built as a portfolio / resume project to show full-stack, AI integration, and se
 | 2026-11-05 | Completed Task 2.4: Installed Vitest and configured npm test in package.json. Wrote comprehensive unit tests covering normal, short, long, late cycles, month/year boundaries, and leap year (all 19 tests pass). |
 | 2026-11-05 | Completed Task 2.5: Implemented detectIrregularCycle (<21 or >38 days, or >7 days variation), getCycleLengthsFromPeriods, and 3-cycle averaging (getEffectiveCycleLength). Integrated into Dashboard with respectful irregular notice and added 10 unit tests (29 passing). Phase 2 complete! |
 | 2026-11-05 | Completed Task 3.1: Created data/nutritionTips.js with 4 cycle phases x 3 diet options (veg, non-veg, eggetarian) featuring locally familiar foods (dal, shak, mach, gur, til, kola), marked "needs expert review", helper functions, and 8 automated unit tests (37 passing total). |
+| 2026-11-05 | Completed Task 3.2: Built reusable PhaseBadge, Card, CycleRing (SVG 4-phase dial with day marker), and mobile BottomNav. Elevated Dashboard with Phase Hero Card, live countdown, 4-phase breakdown strip, and quick log action. |
 
 (Add a new row after each completed task: date, what changed, any decision made.)

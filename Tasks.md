@@ -27,7 +27,7 @@ Work in order. One task at a time. Tick the box when done and update Memory.md.
 
 ## Phase 3: Dashboard and Nutrition (V1)
 - [x] 3.1 Create `data/nutritionTips.js` (4 phases x veg / non-veg / eggetarian), marked "needs review"
-- [ ] 3.2 Build Dashboard: phase card, cycle day, days until next period, phase ring
+- [x] 3.2 Build Dashboard: phase card, cycle day, days until next period, phase ring
 - [ ] 3.3 Show today's nutrition and self-care tips filtered by diet
 - [ ] 3.4 Build Tips page with phase tabs
 - [ ] 3.5 Add late-period state and disclaimer banner
