@@ -2,7 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
 import { useAuth } from '../hooks/useAuth';
-import { saveDailyLog, getDailyLog } from '../services/firestore';
+import {
+  saveDailyLog,
+  getDailyLog,
+  getUserProfile,
+  getUserPeriods,
+  recordNewPeriodAndRecalculate,
+} from '../services/firestore';
 import {
   formatLocalDate,
   parseLocalDate,
@@ -10,6 +16,7 @@ import {
   subLocalDays,
   getDaysDifference,
 } from '../utils/dateHelpers';
+import { shouldSuggestNewPeriod } from '../utils/cycleCalculator';
 import {
   FLOW_OPTIONS,
   MOOD_OPTIONS,
@@ -36,7 +43,13 @@ export default function Log() {
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-  // Load log data whenever selectedDate or currentUser changes
+  // Cycle tracking & period start detection state (Task 4.3)
+  const [userProfile, setUserProfile] = useState(null);
+  const [latestPeriod, setLatestPeriod] = useState(null);
+  const [markAsNewPeriod, setMarkAsNewPeriod] = useState(false);
+  const [cycleUpdateMessage, setCycleUpdateMessage] = useState('');
+
+  // Load log data and cycle profile whenever selectedDate or currentUser changes
   useEffect(() => {
     async function fetchLog() {
       if (!currentUser || !selectedDate) return;
@@ -45,9 +58,21 @@ export default function Log() {
         setErrorMessage('');
         setSaveSuccess(false);
 
-        const existingLog = await getDailyLog(currentUser.uid, selectedDate);
+        const [existingLog, profile, periods] = await Promise.all([
+          getDailyLog(currentUser.uid, selectedDate),
+          getUserProfile(currentUser.uid),
+          getUserPeriods(currentUser.uid),
+        ]);
+
+        setUserProfile(profile);
+        const mostRecentPeriod = periods?.[0] || null;
+        setLatestPeriod(mostRecentPeriod);
+
+        let currentFlow = 'none';
+
         if (existingLog) {
-          setFlow(existingLog.flow || 'none');
+          currentFlow = existingLog.flow || 'none';
+          setFlow(currentFlow);
           setMood(existingLog.mood || '');
           setSymptoms(Array.isArray(existingLog.symptoms) ? existingLog.symptoms : []);
           setWaterGlasses(
@@ -57,12 +82,22 @@ export default function Log() {
         } else {
           // Reset to default empty log for unlogged days
           const defaults = getDefaultDailyLog(selectedDate);
+          currentFlow = defaults.flow;
           setFlow(defaults.flow);
           setMood(defaults.mood);
           setSymptoms(defaults.symptoms);
           setWaterGlasses(defaults.waterGlasses);
           setNotes(defaults.notes);
         }
+
+        // Evaluate period start suggestion
+        const suggestion = shouldSuggestNewPeriod(
+          selectedDate,
+          currentFlow,
+          mostRecentPeriod?.startDate,
+          profile?.avgPeriodLength || 5
+        );
+        setMarkAsNewPeriod(suggestion.shouldSuggest);
       } catch (err) {
         console.error('Error loading daily log:', err);
         setErrorMessage('Unable to load logs for this date. You can still create a new entry.');
@@ -111,6 +146,20 @@ export default function Log() {
   const isToday = selectedDate === todayStr;
   const isFutureDate = selectedDate > todayStr;
   const daysDiffFromToday = getDaysDifference(selectedDate, todayStr);
+  const isBleeding = flow === 'light' || flow === 'medium' || flow === 'heavy';
+
+  function handleFlowSelect(flowId) {
+    setFlow(flowId);
+    setSaveSuccess(false);
+
+    const suggestion = shouldSuggestNewPeriod(
+      selectedDate,
+      flowId,
+      latestPeriod?.startDate,
+      userProfile?.avgPeriodLength || 5
+    );
+    setMarkAsNewPeriod(suggestion.shouldSuggest);
+  }
 
   const displayDateText = isToday
     ? 'Today'
@@ -126,7 +175,9 @@ export default function Log() {
       setSaving(true);
       setErrorMessage('');
       setSaveSuccess(false);
+      setCycleUpdateMessage('');
 
+      // 1. Save daily log
       await saveDailyLog(currentUser.uid, selectedDate, {
         flow,
         mood,
@@ -135,8 +186,30 @@ export default function Log() {
         notes,
       });
 
+      // 2. If marked as new period start, record new period and update cycle averages (Task 4.3)
+      if (markAsNewPeriod && isBleeding) {
+        const periodResult = await recordNewPeriodAndRecalculate(currentUser.uid, selectedDate);
+        if (periodResult.isNew) {
+          if (periodResult.cycleLength) {
+            setCycleUpdateMessage(
+              `🌸 New cycle started on ${selectedDate}! Recorded previous cycle length of ${periodResult.cycleLength} days and updated your average cycle length to ${periodResult.newAvgCycleLength} days.`
+            );
+          } else {
+            setCycleUpdateMessage(
+              `🌸 New cycle started on ${selectedDate}!`
+            );
+          }
+          // Update local state
+          setLatestPeriod({ startDate: selectedDate, cycleLength: null });
+          setUserProfile((prev) => ({
+            ...prev,
+            avgCycleLength: periodResult.newAvgCycleLength || prev?.avgCycleLength,
+          }));
+        }
+      }
+
       setSaveSuccess(true);
-      setTimeout(() => setSaveSuccess(false), 4000);
+      setTimeout(() => setSaveSuccess(false), 5000);
     } catch (err) {
       console.error('Failed to save daily log:', err);
       setErrorMessage('Could not save your log. Please check your connection and try again.');
@@ -240,6 +313,22 @@ export default function Log() {
           </div>
         )}
 
+        {/* Cycle update banner (Task 4.3) */}
+        {cycleUpdateMessage && (
+          <div
+            role="status"
+            className="p-3.5 rounded-xl bg-primary-soft/80 border border-primary/30 text-xs text-primary flex items-start gap-2.5 shadow-xs"
+          >
+            <span className="text-base leading-none mt-0.5">🌸</span>
+            <div className="space-y-0.5">
+              <p className="font-bold text-primary">New Cycle Recorded</p>
+              <p className="text-[11px] leading-relaxed text-textMain">
+                {cycleUpdateMessage}
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Loading Skeleton */}
         {loading ? (
           <Card className="text-center p-8 space-y-2">
@@ -274,10 +363,7 @@ export default function Log() {
                     <button
                       key={f.id}
                       type="button"
-                      onClick={() => {
-                        setFlow(f.id);
-                        setSaveSuccess(false);
-                      }}
+                      onClick={() => handleFlowSelect(f.id)}
                       className={`p-3 rounded-xl border text-left transition-all relative flex flex-col justify-between min-h-[68px] ${
                         isSelected
                           ? 'border-primary bg-primary-soft/50 shadow-xs ring-1 ring-primary/40'
@@ -300,6 +386,45 @@ export default function Log() {
                   );
                 })}
               </div>
+
+              {/* New Cycle Start Checkbox & Callout (Task 4.3) */}
+              {isBleeding && (
+                <div className="bg-primary-soft/40 border border-primary/20 rounded-xl p-3.5 space-y-2 mt-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-primary flex items-center gap-1.5">
+                      <span>🌸</span>
+                      <span>Cycle Start Tracking</span>
+                    </span>
+                    {latestPeriod?.startDate && (
+                      <span className="text-[10px] text-textMuted">
+                        Previous start: {latestPeriod.startDate}
+                      </span>
+                    )}
+                  </div>
+
+                  <label className="flex items-start gap-2.5 cursor-pointer pt-0.5">
+                    <input
+                      type="checkbox"
+                      checked={markAsNewPeriod}
+                      onChange={(e) => setMarkAsNewPeriod(e.target.checked)}
+                      className="mt-0.5 w-4 h-4 rounded text-primary focus:ring-primary accent-primary cursor-pointer"
+                    />
+                    <div className="text-xs space-y-0.5">
+                      <span className="font-semibold text-textMain block">
+                        Mark {isToday ? 'today' : selectedDate} as the start of a new period cycle
+                      </span>
+                      <span className="text-[11px] text-textMuted block leading-relaxed">
+                        {latestPeriod?.startDate
+                          ? `Will calculate previous cycle length (${Math.max(
+                              1,
+                              getDaysDifference(selectedDate, latestPeriod.startDate)
+                            )} days) and automatically update your cycle predictions.`
+                          : 'Will record this as your primary period start date.'}
+                      </span>
+                    </div>
+                  </label>
+                </div>
+              )}
             </Card>
 
             {/* 2. MOOD EMOJI SELECTOR */}

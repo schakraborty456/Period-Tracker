@@ -253,6 +253,55 @@ export function getEffectiveCycleLength(cycleLengths, fallbackCycleLength = 28) 
 }
 
 /**
+ * Evaluates whether a logged bleeding event represents the start of a new menstrual cycle (Task 4.3).
+ *
+ * @param {string|Date} logDate - Date of the daily log
+ * @param {'none'|'spotting'|'light'|'medium'|'heavy'} flow - Bleeding level
+ * @param {string|Date|null} lastPeriodStartDate - Start date of the latest recorded period
+ * @param {number} [avgPeriodLength=5] - Recorded typical bleeding duration
+ * @returns {{ shouldSuggest: boolean, daysSinceLastPeriod: number, reason: string }}
+ */
+export function shouldSuggestNewPeriod(logDate, flow, lastPeriodStartDate, avgPeriodLength = 5) {
+  const isBleeding = flow === 'light' || flow === 'medium' || flow === 'heavy';
+  if (!isBleeding) {
+    return { shouldSuggest: false, daysSinceLastPeriod: 0, reason: 'No active flow' };
+  }
+
+  if (!lastPeriodStartDate) {
+    return { shouldSuggest: true, daysSinceLastPeriod: 0, reason: 'First recorded period' };
+  }
+
+  const daysDiff = getDaysDifference(logDate, lastPeriodStartDate);
+
+  // Exact same day as already recorded period
+  if (daysDiff === 0) {
+    return { shouldSuggest: false, daysSinceLastPeriod: 0, reason: 'Matches current period start' };
+  }
+
+  // Past dates before current period
+  if (daysDiff < 0) {
+    return { shouldSuggest: false, daysSinceLastPeriod: daysDiff, reason: 'Precedes current period' };
+  }
+
+  // Ongoing bleeding days within typical period duration (e.g., Day 2, 3, 4, 5)
+  const periodDuration = Math.max(3, Number(avgPeriodLength) || 5);
+  if (daysDiff < Math.max(14, periodDuration + 3)) {
+    return {
+      shouldSuggest: false,
+      daysSinceLastPeriod: daysDiff,
+      reason: 'Part of ongoing period or early cycle',
+    };
+  }
+
+  // Bleeding occurring >= 14 days after previous period indicates a new cycle start
+  return {
+    shouldSuggest: true,
+    daysSinceLastPeriod: daysDiff,
+    reason: 'New cycle start detected',
+  };
+}
+
+/**
  * Returns user-facing phase information and styling tokens.
  *
  * @param {'menstrual'|'follicular'|'ovulation'|'luteal'} phase

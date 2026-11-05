@@ -12,6 +12,8 @@ import {
   serverTimestamp,
 } from 'firebase/firestore';
 import { db } from '../firebase';
+import { getDaysDifference } from '../utils/dateHelpers';
+import { getCycleLengthsFromPeriods, getEffectiveCycleLength } from '../utils/cycleCalculator';
 
 /**
  * Saves or updates a user profile in `users/{userId}`.
@@ -158,4 +160,89 @@ export async function getUserDailyLogs(userId, limitCount = 30) {
     id: docSnap.id,
     ...docSnap.data(),
   }));
+}
+
+/**
+ * Automatically creates a new period record, calculates the completed cycle length
+ * of the previous period, updates the user's cycle average, and syncs Firestore (Task 4.3).
+ *
+ * @param {string} userId
+ * @param {string} newStartDate - 'YYYY-MM-DD'
+ * @returns {Promise<{ isNew: boolean, periodId: string, cycleLength: number|null, newAvgCycleLength: number|null }>}
+ */
+export async function recordNewPeriodAndRecalculate(userId, newStartDate) {
+  // 1. Fetch current user periods and profile
+  const [periods, profile] = await Promise.all([
+    getUserPeriods(userId),
+    getUserProfile(userId),
+  ]);
+
+  // 2. Prevent duplicate period records for the exact same start date
+  const existingPeriod = periods.find((p) => p.startDate === newStartDate);
+  if (existingPeriod) {
+    return {
+      isNew: false,
+      periodId: existingPeriod.id,
+      cycleLength: existingPeriod.cycleLength || null,
+      newAvgCycleLength: profile?.avgCycleLength || 28,
+    };
+  }
+
+  // 3. Find the immediately preceding period chronologically
+  const precedingPeriods = periods
+    .filter((p) => p.startDate < newStartDate)
+    .sort((a, b) => (a.startDate > b.startDate ? -1 : 1));
+
+  const previousPeriod = precedingPeriods[0] || null;
+  let completedCycleLength = null;
+
+  // 4. If previous period exists, compute its completed cycle length and update it
+  if (previousPeriod) {
+    completedCycleLength = getDaysDifference(newStartDate, previousPeriod.startDate);
+    if (completedCycleLength > 0) {
+      const prevDocRef = doc(db, 'users', userId, 'periods', previousPeriod.id);
+      await updateDoc(prevDocRef, {
+        cycleLength: completedCycleLength,
+        updatedAt: serverTimestamp(),
+      });
+      previousPeriod.cycleLength = completedCycleLength;
+    }
+  }
+
+  // 5. Create the new period document
+  const newPeriodRef = await addDoc(collection(db, 'users', userId, 'periods'), {
+    startDate: newStartDate,
+    endDate: null,
+    cycleLength: null,
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+  });
+
+  // 6. Recalculate cycle averages with all updated periods
+  const allUpdatedPeriods = [
+    { id: newPeriodRef.id, startDate: newStartDate, cycleLength: null },
+    ...periods.map((p) => (p.id === previousPeriod?.id ? previousPeriod : p)),
+  ];
+
+  const cycleLengths = getCycleLengthsFromPeriods(allUpdatedPeriods);
+  let newAvgCycleLength = profile?.avgCycleLength || 28;
+
+  if (cycleLengths.length > 0) {
+    const avgResult = getEffectiveCycleLength(cycleLengths, profile?.avgCycleLength || 28);
+    newAvgCycleLength = avgResult.effectiveCycleLength;
+
+    // Update user profile with new avgCycleLength
+    const userRef = doc(db, 'users', userId);
+    await updateDoc(userRef, {
+      avgCycleLength: newAvgCycleLength,
+      updatedAt: serverTimestamp(),
+    });
+  }
+
+  return {
+    isNew: true,
+    periodId: newPeriodRef.id,
+    cycleLength: completedCycleLength,
+    newAvgCycleLength,
+  };
 }

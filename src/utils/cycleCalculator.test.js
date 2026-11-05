@@ -10,6 +10,7 @@ import {
   detectIrregularCycle,
   getCycleLengthsFromPeriods,
   getEffectiveCycleLength,
+  shouldSuggestNewPeriod,
 } from './cycleCalculator.js';
 import {
   parseLocalDate,
@@ -342,6 +343,40 @@ describe('cycleCalculator - Pure Cycle Logic', () => {
       expect(summary.isIrregular).toBe(true);
       expect(summary.irregularReason).toBe('high_variation');
       expect(summary.nextPeriodDate).toBe('2026-03-31'); // March 1 + 30 days
+    });
+  });
+
+  describe('9. New Period Detection (Task 4.3)', () => {
+    it('returns false if flow is none or spotting', () => {
+      expect(shouldSuggestNewPeriod('2026-04-01', 'none', '2026-03-01').shouldSuggest).toBe(false);
+      expect(shouldSuggestNewPeriod('2026-04-01', 'spotting', '2026-03-01').shouldSuggest).toBe(false);
+    });
+
+    it('returns true if no previous period exists and bleeding is logged', () => {
+      const result = shouldSuggestNewPeriod('2026-04-01', 'medium', null);
+      expect(result.shouldSuggest).toBe(true);
+      expect(result.reason).toBe('First recorded period');
+    });
+
+    it('returns false if logged date matches the recorded period start date', () => {
+      const result = shouldSuggestNewPeriod('2026-03-01', 'heavy', '2026-03-01');
+      expect(result.shouldSuggest).toBe(false);
+      expect(result.reason).toBe('Matches current period start');
+    });
+
+    it('returns false for ongoing bleeding days within the period (e.g. days 2-5)', () => {
+      // March 1 was start, March 3 is day 3 (diff = 2 days)
+      const result = shouldSuggestNewPeriod('2026-03-03', 'heavy', '2026-03-01', 5);
+      expect(result.shouldSuggest).toBe(false);
+      expect(result.reason).toBe('Part of ongoing period or early cycle');
+    });
+
+    it('returns true when bleeding occurs after 14+ days (e.g. next cycle start at 28 days)', () => {
+      // March 1 was start, March 29 is 28 days later
+      const result = shouldSuggestNewPeriod('2026-03-29', 'medium', '2026-03-01', 5);
+      expect(result.shouldSuggest).toBe(true);
+      expect(result.daysSinceLastPeriod).toBe(28);
+      expect(result.reason).toBe('New cycle start detected');
     });
   });
 });

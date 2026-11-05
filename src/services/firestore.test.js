@@ -1,5 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { saveDailyLog, getDailyLog, getUserDailyLogs } from './firestore';
+import {
+  saveDailyLog,
+  getDailyLog,
+  getUserDailyLogs,
+  recordNewPeriodAndRecalculate,
+} from './firestore';
 import { getDefaultDailyLog } from '../data/symptoms';
 
 // Mock Firebase modular SDK
@@ -24,6 +29,9 @@ const mockOrderBy = vi.fn((field, dir) => ({ type: 'orderBy', field, dir }));
 const mockLimit = vi.fn((n) => ({ type: 'limit', value: n }));
 const mockServerTimestamp = vi.fn(() => 'MOCK_TIMESTAMP');
 
+const mockAddDoc = vi.fn();
+const mockUpdateDoc = vi.fn();
+
 vi.mock('firebase/firestore', () => ({
   doc: (...args) => mockDoc(...args),
   setDoc: (...args) => mockSetDoc(...args),
@@ -34,8 +42,8 @@ vi.mock('firebase/firestore', () => ({
   orderBy: (...args) => mockOrderBy(...args),
   limit: (...args) => mockLimit(...args),
   serverTimestamp: () => mockServerTimestamp(),
-  addDoc: vi.fn(),
-  updateDoc: vi.fn(),
+  addDoc: (...args) => mockAddDoc(...args),
+  updateDoc: (...args) => mockUpdateDoc(...args),
 }));
 
 describe('Daily Log Firestore Service & Data Handling (Task 4.2)', () => {
@@ -174,4 +182,79 @@ describe('Daily Log Firestore Service & Data Handling (Task 4.2)', () => {
       ]);
     });
   });
+
+  describe('recordNewPeriodAndRecalculate (Task 4.3)', () => {
+    it('returns isNew: false if a period with the same start date already exists', async () => {
+      // getUserPeriods: returns period on 2026-11-01
+      mockGetDocs.mockResolvedValueOnce({
+        docs: [
+          {
+            id: 'p1',
+            data: () => ({ startDate: '2026-11-01', cycleLength: 28 }),
+          },
+        ],
+      });
+      // getUserProfile: returns user profile
+      mockGetDoc.mockResolvedValueOnce({
+        exists: () => true,
+        id: userId,
+        data: () => ({ avgCycleLength: 28 }),
+      });
+
+      const result = await recordNewPeriodAndRecalculate(userId, '2026-11-01');
+
+      expect(result.isNew).toBe(false);
+      expect(result.periodId).toBe('p1');
+      expect(mockAddDoc).not.toHaveBeenCalled();
+    });
+
+    it('creates new period, calculates cycle length of previous period, and updates profile average', async () => {
+      // getUserPeriods: previous period on 2026-10-01
+      mockGetDocs.mockResolvedValueOnce({
+        docs: [
+          {
+            id: 'p-prev',
+            data: () => ({ startDate: '2026-10-01', cycleLength: null }),
+          },
+        ],
+      });
+      // getUserProfile
+      mockGetDoc.mockResolvedValueOnce({
+        exists: () => true,
+        id: userId,
+        data: () => ({ avgCycleLength: 28 }),
+      });
+      // mock addDoc returning new doc reference
+      mockAddDoc.mockResolvedValueOnce({ id: 'p-new' });
+
+      // New period starts on 2026-10-29 (28 days after 2026-10-01)
+      const result = await recordNewPeriodAndRecalculate(userId, '2026-10-29');
+
+      expect(result.isNew).toBe(true);
+      expect(result.periodId).toBe('p-new');
+      expect(result.cycleLength).toBe(28);
+
+      // Verify updateDoc called for previous period with cycleLength: 28
+      expect(mockUpdateDoc).toHaveBeenCalledWith(
+        expect.objectContaining({ path: `users/${userId}/periods/p-prev` }),
+        expect.objectContaining({ cycleLength: 28 })
+      );
+
+      // Verify new period created
+      expect(mockAddDoc).toHaveBeenCalledWith(
+        expect.objectContaining({ path: `users/${userId}/periods` }),
+        expect.objectContaining({
+          startDate: '2026-10-29',
+          cycleLength: null,
+        })
+      );
+
+      // Verify user profile updated with calculated avgCycleLength (28)
+      expect(mockUpdateDoc).toHaveBeenCalledWith(
+        expect.objectContaining({ path: `users/${userId}` }),
+        expect.objectContaining({ avgCycleLength: 28 })
+      );
+    });
+  });
 });
+
