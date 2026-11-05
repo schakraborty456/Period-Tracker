@@ -140,14 +140,24 @@ export default function Signup() {
           </form>
 
           {/* Switch link */}
-          <div className="mt-6 text-center pt-5 border-t border-pink-50 text-xs text-textMuted">
-            Already have an account?{' '}
-            <Link
-              to="/login"
-              className="text-primary font-semibold hover:underline"
-            >
-              Sign in
-            </Link>
+          <div className="mt-6 text-center pt-5 border-t border-pink-50 text-xs text-textMuted space-y-2">
+            <div>
+              Already have an account?{' '}
+              <Link
+                to="/login"
+                className="text-primary font-semibold hover:underline"
+              >
+                Sign in
+              </Link>
+            </div>
+            <div>
+              <Link
+                to="/privacy"
+                className="text-[11px] text-textMuted hover:text-primary transition-colors underline"
+              >
+                Privacy Policy & Health Data Protection
+              </Link>
+            </div>
           </div>
         </div>
       </div>

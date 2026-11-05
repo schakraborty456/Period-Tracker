@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { format, subDays } from 'date-fns';
 import { useAuth } from '../hooks/useAuth';
 import { saveOnboardingData } from '../services/firestore';
@@ -329,6 +329,13 @@ export default function Onboarding({ onComplete }) {
                   </p>
                   <p className="text-textMuted">
                     If you experience very heavy bleeding, severe pain, or missed periods, please consult a qualified healthcare professional.
+                  </p>
+                  <p className="text-[11px] text-textMuted/90 pt-1 border-t border-pink-200/60">
+                    Your health data is completely private. Read our{' '}
+                    <Link to="/privacy" target="_blank" className="text-primary font-semibold underline">
+                      Privacy Policy & Data Security Guarantees
+                    </Link>{' '}
+                    to learn how your entries are protected.
                   </p>
                 </div>
 

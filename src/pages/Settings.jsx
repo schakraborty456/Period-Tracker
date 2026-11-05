@@ -348,6 +348,16 @@ export default function Settings() {
                   </span>
                 </div>
               </label>
+
+              <div className="pt-1 text-center border-t border-pink-50">
+                <Link
+                  to="/privacy"
+                  className="text-xs text-primary font-semibold hover:underline inline-flex items-center gap-1"
+                >
+                  <span>🛡️</span>
+                  <span>Read Full Privacy Policy & Data Guarantees →</span>
+                </Link>
+              </div>
             </Card>
 
             {/* 3. ACCOUNT ACTIONS */}
@@ -475,3 +485,4 @@ export default function Settings() {
     </div>
   );
 }
+

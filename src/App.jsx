@@ -7,6 +7,7 @@ import Onboarding from './pages/Onboarding';
 import Tips from './pages/Tips';
 import Log from './pages/Log';
 import Settings from './pages/Settings';
+import Privacy from './pages/Privacy';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Button from './components/Button';
@@ -84,6 +85,7 @@ export default function App() {
           />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/privacy" element={<Privacy />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
