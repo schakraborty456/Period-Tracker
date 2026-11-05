@@ -32,8 +32,8 @@ Built as a portfolio / resume project to show full-stack, AI integration, and se
 - Phase values: `"menstrual"`, `"follicular"`, `"ovulation"`, `"luteal"`.
 
 ## 5. Current Status
-- Phase: Phase 2 (Onboarding and Cycle Logic) complete! Ready to start Phase 3 (Dashboard and Nutrition).
-- Next task: Task 3.1 in Tasks.md (Create data/nutritionTips.js: 4 phases x veg / non-veg / eggetarian, marked "needs review").
+- Phase: Phase 3 (Dashboard and Nutrition) in progress. Task 3.1 completed.
+- Next task: Task 3.2 in Tasks.md (Build Dashboard: phase card, cycle day, days until next period, phase ring).
 
 ## 6. Open Questions
 - Who will review the nutrition content (doctor / nutritionist)?
@@ -61,5 +61,6 @@ Built as a portfolio / resume project to show full-stack, AI integration, and se
 | 2026-11-05 | Completed Task 2.3: Built pure date helper utilities in dateHelpers.js and deterministic cycle calculation functions in cycleCalculator.js (next period, ovulation, fertile window, cycle day, phase identification, late handling). |
 | 2026-11-05 | Completed Task 2.4: Installed Vitest and configured npm test in package.json. Wrote comprehensive unit tests covering normal, short, long, late cycles, month/year boundaries, and leap year (all 19 tests pass). |
 | 2026-11-05 | Completed Task 2.5: Implemented detectIrregularCycle (<21 or >38 days, or >7 days variation), getCycleLengthsFromPeriods, and 3-cycle averaging (getEffectiveCycleLength). Integrated into Dashboard with respectful irregular notice and added 10 unit tests (29 passing). Phase 2 complete! |
+| 2026-11-05 | Completed Task 3.1: Created data/nutritionTips.js with 4 cycle phases x 3 diet options (veg, non-veg, eggetarian) featuring locally familiar foods (dal, shak, mach, gur, til, kola), marked "needs expert review", helper functions, and 8 automated unit tests (37 passing total). |
 
 (Add a new row after each completed task: date, what changed, any decision made.)
