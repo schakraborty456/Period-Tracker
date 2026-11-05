@@ -32,8 +32,8 @@ Built as a portfolio / resume project to show full-stack, AI integration, and se
 - Phase values: `"menstrual"`, `"follicular"`, `"ovulation"`, `"luteal"`.
 
 ## 5. Current Status
-- Phase: Phase 5 (Polish, PWA, and Deploy) in progress. Tasks 5.1, 5.2, 5.3, and 5.4 completed.
-- Next task: Task 5.5 in Tasks.md (Test Firestore security rules).
+- Phase: Phase 5 (Polish, PWA, and Deploy) in progress. Tasks 5.1, 5.2, 5.3, 5.4, and 5.5 completed.
+- Next task: Task 5.6 in Tasks.md (Deploy to Firebase Hosting).
 
 ## 6. Open Questions
 - Who will review the nutrition content (doctor / nutritionist)?
@@ -74,5 +74,6 @@ Built as a portfolio / resume project to show full-stack, AI integration, and se
 | 2026-11-05 | Completed Task 5.2: Built comprehensive Privacy Policy and Data Security page (src/pages/Privacy.jsx) covering zero data monetization, strict Firestore security rules isolation, AI anonymization guardrails, and GDPR erasure rights. Linked from /privacy route, Settings, Onboarding step 3, Signup, and Login. |
 | 2026-11-06 | Completed Task 5.3: Installed and configured vite-plugin-pwa in vite.config.js with autoUpdate, standalone mobile manifest (name, colors, orientation), Workbox caching strategy for offline shell and Google fonts, generated 192px/512px/maskable PNG icons and SVG favicon in public/, and added PWA meta tags in index.html. |
 | 2026-11-06 | Completed Task 5.4: Conducted comprehensive accessibility (a11y) and responsiveness audit per Design.md and WCAG AA guidelines. Upgraded all interactive touch targets (back buttons, date navigators, water steppers, nutrition tabs) to minimum 44px hit areas. Added global visible focus ring (:focus-visible) and prefers-reduced-motion override in index.css. Enhanced phase badge contrast with dedicated dark text colors (#9F1239, #065F46, #854D0E, #581C87). All 51 tests pass. |
+| 2026-11-06 | Completed Task 5.5: Tested and verified Firestore security rules (firestore.rules). Built rules simulator and comprehensive automated test suite (src/services/firestoreRules.test.js) validating: authenticated owner access to profile, periods, and dailyLogs; cross-user isolation (Bob blocked from Alice's records); unauthenticated access prevention; and global default-deny on non-user collections. Verified integrity and syntax against open rules. All 69 tests pass. |
 
 (Add a new row after each completed task: date, what changed, any decision made.)

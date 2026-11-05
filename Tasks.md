@@ -43,7 +43,7 @@ Work in order. One task at a time. Tick the box when done and update Memory.md.
 - [x] 5.2 Privacy policy and consent screens
 - [x] 5.3 Add vite-plugin-pwa (manifest, icons, offline shell)
 - [x] 5.4 Accessibility and responsive review
-- [ ] 5.5 Test Firestore security rules (own data allowed, other users blocked)
+- [x] 5.5 Test Firestore security rules (own data allowed, other users blocked)
 - [ ] 5.6 Deploy to Firebase Hosting
 - [ ] 5.7 Nutrition content reviewed by an expert (owner)
 
