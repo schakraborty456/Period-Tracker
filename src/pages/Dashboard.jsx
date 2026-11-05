@@ -13,6 +13,8 @@ import PhaseBadge from '../components/PhaseBadge';
 import CycleRing from '../components/CycleRing';
 import BottomNav from '../components/BottomNav';
 import TodayNutritionCard from '../components/TodayNutritionCard';
+import LatePeriodCard from '../components/LatePeriodCard';
+import DisclaimerBanner from '../components/DisclaimerBanner';
 
 export default function Dashboard() {
   const { currentUser, logout } = useAuth();
@@ -235,6 +237,14 @@ export default function Dashboard() {
               </Card>
             )}
 
+            {/* LATE PERIOD NOTICE & REASSURANCE (Task 3.5) */}
+            {cycleSummary?.isLate && (
+              <LatePeriodCard
+                daysLate={cycleSummary.daysLate}
+                expectedDate={cycleSummary.nextPeriodDate}
+              />
+            )}
+
             {/* Irregular Cycle Notice (if detected) */}
             {cycleSummary?.isIrregular && (
               <div
@@ -382,6 +392,9 @@ export default function Dashboard() {
             </div>
           </Card>
         )}
+
+        {/* MANDATORY MEDICAL DISCLAIMER BANNER (Task 3.5 & PRD Section 12) */}
+        <DisclaimerBanner variant="footer" className="mt-4" />
       </div>
 
       {/* Mobile Bottom Navigation Bar */}

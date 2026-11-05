@@ -30,7 +30,7 @@ Work in order. One task at a time. Tick the box when done and update Memory.md.
 - [x] 3.2 Build Dashboard: phase card, cycle day, days until next period, phase ring
 - [x] 3.3 Show today's nutrition and self-care tips filtered by diet
 - [x] 3.4 Build Tips page with phase tabs
-- [ ] 3.5 Add late-period state and disclaimer banner
+- [x] 3.5 Add late-period state and disclaimer banner
 
 ## Phase 4: Daily Log (V1)
 - [ ] 4.1 Build Daily Log form (flow, mood, symptoms, water, notes)

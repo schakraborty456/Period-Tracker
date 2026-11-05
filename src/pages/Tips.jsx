@@ -7,6 +7,7 @@ import { getNutritionTips, NUTRITION_METADATA } from '../data/nutritionTips';
 import Card from '../components/Card';
 import PhaseBadge from '../components/PhaseBadge';
 import BottomNav from '../components/BottomNav';
+import DisclaimerBanner from '../components/DisclaimerBanner';
 
 const PHASES = [
   {
@@ -390,6 +391,9 @@ export default function Tips() {
             <span>← Back to your Cycle Dashboard</span>
           </Link>
         </div>
+
+        {/* Medical Disclaimer Banner */}
+        <DisclaimerBanner variant="footer" className="mt-2" />
       </div>
 
       {/* Mobile Bottom Navigation */}
@@ -397,3 +401,4 @@ export default function Tips() {
     </div>
   );
 }
+
