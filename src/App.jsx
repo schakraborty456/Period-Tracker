@@ -5,6 +5,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Dashboard from './pages/Dashboard';
 import Onboarding from './pages/Onboarding';
 import Tips from './pages/Tips';
+import Log from './pages/Log';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Button from './components/Button';
@@ -60,11 +61,7 @@ export default function App() {
             path="/log"
             element={
               <ProtectedRoute>
-                <FeaturePlaceholder
-                  title="Daily Symptom & Flow Log"
-                  taskInfo="Phase 4 (Task 4.1)"
-                  icon="📝"
-                />
+                <Log />
               </ProtectedRoute>
             }
           />

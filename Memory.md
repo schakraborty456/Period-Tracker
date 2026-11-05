@@ -32,8 +32,8 @@ Built as a portfolio / resume project to show full-stack, AI integration, and se
 - Phase values: `"menstrual"`, `"follicular"`, `"ovulation"`, `"luteal"`.
 
 ## 5. Current Status
-- Phase: Phase 3 (Dashboard and Nutrition) completed! Phase 4 (Daily Log) next.
-- Next task: Task 4.1 in Tasks.md (Build Daily Log form: flow, mood, symptoms, water, notes).
+- Phase: Phase 4 (Daily Log) in progress. Task 4.1 completed.
+- Next task: Task 4.2 in Tasks.md (Save and load logs by date).
 
 ## 6. Open Questions
 - Who will review the nutrition content (doctor / nutritionist)?
@@ -66,5 +66,6 @@ Built as a portfolio / resume project to show full-stack, AI integration, and se
 | 2026-11-05 | Completed Task 3.3: Built TodayNutritionCard component with interactive diet toggles (Non-Veg, Veg, Eggetarian), Eat vs Avoid tabs, self-care suggestions, and content review status badge. Integrated into Dashboard under cycle status. |
 | 2026-11-05 | Completed Task 3.4: Built full Tips page (src/pages/Tips.jsx) with interactive 4-phase tabs, live user current-phase highlight, diet preference filter, Eat vs Avoid food cards with Indian/Bengali items, movement guidance, and disclaimer. Connected to /tips route in App.jsx. |
 | 2026-11-05 | Completed Task 3.5: Built reusable DisclaimerBanner component (medical & review disclaimer per PRD Sec 12) and LatePeriodCard component (reassuring guidance, reasons for natural cycle fluctuations, prompt to log period start date). Added to Dashboard and Tips pages. Phase 3 complete! |
+| 2026-11-05 | Completed Task 4.1: Built comprehensive Daily Log form (src/pages/Log.jsx) with flow selector cards (none, spotting, light, medium, heavy), mood emoji chips, 12 symptom tags, interactive water tracker with glass indicators, personal notes, and day-by-day date navigator. Connected to /log route in App.jsx. |
 
 (Add a new row after each completed task: date, what changed, any decision made.)

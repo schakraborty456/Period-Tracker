@@ -33,7 +33,7 @@ Work in order. One task at a time. Tick the box when done and update Memory.md.
 - [x] 3.5 Add late-period state and disclaimer banner
 
 ## Phase 4: Daily Log (V1)
-- [ ] 4.1 Build Daily Log form (flow, mood, symptoms, water, notes)
+- [x] 4.1 Build Daily Log form (flow, mood, symptoms, water, notes)
 - [ ] 4.2 Save and load logs by date
 - [ ] 4.3 Detect a new period start and create a period record, update cycle averages
 - [ ] 4.4 Show recent logs on the Dashboard

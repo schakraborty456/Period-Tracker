@@ -107,3 +107,36 @@ export async function saveOnboardingData(userId, data) {
 
   return profilePayload;
 }
+
+/**
+ * Saves or updates a daily log record in `users/{userId}/dailyLogs/{yyyy-mm-dd}`.
+ */
+export async function saveDailyLog(userId, date, logData) {
+  const logRef = doc(db, 'users', userId, 'dailyLogs', date);
+  const payload = {
+    date,
+    flow: logData.flow || 'none',
+    mood: logData.mood || '',
+    symptoms: Array.isArray(logData.symptoms) ? logData.symptoms : [],
+    waterGlasses: Math.max(0, Number(logData.waterGlasses) || 0),
+    notes: (logData.notes || '').slice(0, 500),
+    updatedAt: serverTimestamp(),
+  };
+
+  await setDoc(logRef, payload, { merge: true });
+  return payload;
+}
+
+/**
+ * Fetches a single daily log for a user by date.
+ */
+export async function getDailyLog(userId, date) {
+  const logRef = doc(db, 'users', userId, 'dailyLogs', date);
+  const docSnap = await getDoc(logRef);
+
+  if (!docSnap.exists()) {
+    return null;
+  }
+
+  return { id: docSnap.id, ...docSnap.data() };
+}
