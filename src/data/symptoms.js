@@ -87,3 +87,15 @@ export function getDefaultDailyLog(date) {
     notes: '',
   };
 }
+
+export function getFlowDetails(flowId) {
+  return FLOW_OPTIONS.find((f) => f.id === flowId) || FLOW_OPTIONS[0];
+}
+
+export function getMoodDetails(moodId) {
+  return MOOD_OPTIONS.find((m) => m.id === moodId) || null;
+}
+
+export function getSymptomDetails(symptomId) {
+  return SYMPTOM_OPTIONS.find((s) => s.id === symptomId) || null;
+}

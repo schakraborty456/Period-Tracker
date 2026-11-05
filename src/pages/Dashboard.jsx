@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-import { getUserProfile, getUserPeriods } from '../services/firestore';
+import { getUserProfile, getUserPeriods, getUserDailyLogs } from '../services/firestore';
 import {
   calculateCycleSummary,
   getCycleLengthsFromPeriods,
@@ -15,11 +15,13 @@ import BottomNav from '../components/BottomNav';
 import TodayNutritionCard from '../components/TodayNutritionCard';
 import LatePeriodCard from '../components/LatePeriodCard';
 import DisclaimerBanner from '../components/DisclaimerBanner';
+import RecentLogsCard from '../components/RecentLogsCard';
 
 export default function Dashboard() {
   const { currentUser, logout } = useAuth();
   const [profile, setProfile] = useState(null);
   const [periods, setPeriods] = useState([]);
+  const [recentLogs, setRecentLogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loggingOut, setLoggingOut] = useState(false);
 
@@ -28,12 +30,14 @@ export default function Dashboard() {
       if (!currentUser) return;
       try {
         setLoading(true);
-        const [userProf, userPeriods] = await Promise.all([
+        const [userProf, userPeriods, userLogs] = await Promise.all([
           getUserProfile(currentUser.uid),
           getUserPeriods(currentUser.uid),
+          getUserDailyLogs(currentUser.uid, 5),
         ]);
         setProfile(userProf);
         setPeriods(userPeriods);
+        setRecentLogs(userLogs || []);
       } catch (err) {
         console.error('Error loading user data from Firestore:', err);
       } finally {
@@ -269,6 +273,9 @@ export default function Dashboard() {
               phase={cycleSummary?.currentPhase || 'menstrual'}
               dietPreference={profile.dietPreference || 'non-veg'}
             />
+
+            {/* RECENT DAILY LOGS & SYMPTOMS (Task 4.4) */}
+            <RecentLogsCard logs={recentLogs} loading={loading} />
 
             {/* 4 PHASES BREAKDOWN STRIP */}
             <Card className="space-y-3">
