@@ -152,7 +152,7 @@ export default function Settings() {
           <div className="flex items-center gap-3">
             <Link
               to="/"
-              className="w-9 h-9 rounded-xl bg-white border border-pink-100 flex items-center justify-center text-textMuted hover:text-textMain hover:border-primary/40 transition-colors shadow-xs"
+              className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl bg-white border border-pink-100 flex items-center justify-center text-textMuted hover:text-textMain hover:border-primary/40 transition-colors shadow-xs"
               aria-label="Back to Dashboard"
             >
               ←

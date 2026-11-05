@@ -312,6 +312,7 @@ export function getPhaseDetails(phase) {
     menstrual: {
       name: 'Menstrual Phase',
       color: '#E85D75',
+      textColor: '#9F1239',
       badgeBg: '#FDE7F0',
       icon: '🩸',
       description: 'Your body is resetting. Prioritize rest, hydration, and iron-rich foods.',
@@ -319,6 +320,7 @@ export function getPhaseDetails(phase) {
     follicular: {
       name: 'Follicular Phase',
       color: '#6CC299',
+      textColor: '#065F46',
       badgeBg: '#E8F7F0',
       icon: '🌱',
       description: 'Estrogen and energy levels rise. Great time for fresh produce, light exercise, and new projects.',
@@ -326,6 +328,7 @@ export function getPhaseDetails(phase) {
     ovulation: {
       name: 'Ovulation Phase',
       color: '#F7C948',
+      textColor: '#854D0E',
       badgeBg: '#FEF8E7',
       icon: '✨',
       description: 'Peak energy and confidence. Support your body with antioxidant-rich foods and plenty of water.',
@@ -333,6 +336,7 @@ export function getPhaseDetails(phase) {
     luteal: {
       name: 'Luteal Phase',
       color: '#9B8AE0',
+      textColor: '#581C87',
       badgeBg: '#F2F0FB',
       icon: '🌙',
       description: 'Progesterone peaks. Focus on grounding foods, magnesium, and restorative self-care.',

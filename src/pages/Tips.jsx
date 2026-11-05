@@ -121,7 +121,7 @@ export default function Tips() {
           <div className="flex items-center gap-3">
             <Link
               to="/"
-              className="w-9 h-9 rounded-xl bg-white border border-pink-100 flex items-center justify-center text-textMuted hover:text-textMain hover:border-primary/40 transition-colors shadow-xs"
+              className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl bg-white border border-pink-100 flex items-center justify-center text-textMuted hover:text-textMain hover:border-primary/40 transition-colors shadow-xs"
               aria-label="Back to Dashboard"
             >
               ←
@@ -273,7 +273,7 @@ export default function Tips() {
           <button
             type="button"
             onClick={() => setActiveTab('eat')}
-            className={`flex-1 py-2 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-1.5 ${
+            className={`flex-1 min-h-[44px] py-2 px-3 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-1.5 ${
               activeTab === 'eat'
                 ? 'bg-emerald-50 text-emerald-800 shadow-xs border border-emerald-200'
                 : 'text-textMuted hover:text-textMain'
@@ -286,7 +286,7 @@ export default function Tips() {
           <button
             type="button"
             onClick={() => setActiveTab('avoid')}
-            className={`flex-1 py-2 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-1.5 ${
+            className={`flex-1 min-h-[44px] py-2 px-3 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-1.5 ${
               activeTab === 'avoid'
                 ? 'bg-amber-50 text-amber-900 shadow-xs border border-amber-200'
                 : 'text-textMuted hover:text-textMain'

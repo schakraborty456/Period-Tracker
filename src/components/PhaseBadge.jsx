@@ -22,8 +22,8 @@ export default function PhaseBadge({
       } ${className}`}
       style={{
         backgroundColor: details.badgeBg,
-        color: details.color,
-        border: `1px solid ${details.color}25`,
+        color: details.textColor || details.color,
+        border: `1px solid ${details.color}35`,
       }}
       role="status"
       aria-label={`Current phase: ${details.name}`}

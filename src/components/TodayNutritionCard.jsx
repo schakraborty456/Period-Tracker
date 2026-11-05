@@ -80,7 +80,7 @@ export default function TodayNutritionCard({
         <button
           type="button"
           onClick={() => setActiveTab('eat')}
-          className={`flex-1 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1.5 ${
+          className={`flex-1 min-h-[44px] py-1.5 px-3 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1.5 ${
             activeTab === 'eat'
               ? 'bg-emerald-50 text-emerald-800 shadow-xs border border-emerald-200'
               : 'text-textMuted hover:text-textMain'
@@ -93,7 +93,7 @@ export default function TodayNutritionCard({
         <button
           type="button"
           onClick={() => setActiveTab('avoid')}
-          className={`flex-1 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1.5 ${
+          className={`flex-1 min-h-[44px] py-1.5 px-3 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1.5 ${
             activeTab === 'avoid'
               ? 'bg-amber-50 text-amber-900 shadow-xs border border-amber-200'
               : 'text-textMuted hover:text-textMain'

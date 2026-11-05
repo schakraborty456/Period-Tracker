@@ -226,7 +226,7 @@ export default function Log() {
           <div className="flex items-center gap-3">
             <Link
               to="/"
-              className="w-9 h-9 rounded-xl bg-white border border-pink-100 flex items-center justify-center text-textMuted hover:text-textMain hover:border-primary/40 transition-colors shadow-xs"
+              className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl bg-white border border-pink-100 flex items-center justify-center text-textMuted hover:text-textMain hover:border-primary/40 transition-colors shadow-xs"
               aria-label="Back to Dashboard"
             >
               ←
@@ -250,7 +250,7 @@ export default function Log() {
           <button
             type="button"
             onClick={handlePrevDay}
-            className="w-9 h-9 rounded-xl border border-pink-100 bg-background flex items-center justify-center text-textMain hover:bg-pink-50 transition-colors"
+            className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl border border-pink-100 bg-background flex items-center justify-center text-textMain hover:bg-pink-50 transition-colors"
             title="Previous day"
             aria-label="Previous day"
           >
@@ -276,7 +276,7 @@ export default function Log() {
             type="button"
             onClick={handleNextDay}
             disabled={isToday}
-            className={`w-9 h-9 rounded-xl border border-pink-100 flex items-center justify-center transition-colors ${
+            className={`w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl border border-pink-100 flex items-center justify-center transition-colors ${
               isToday
                 ? 'opacity-30 cursor-not-allowed bg-background text-textMuted'
                 : 'bg-background text-textMain hover:bg-pink-50'
@@ -531,7 +531,7 @@ export default function Log() {
                   type="button"
                   onClick={decrementWater}
                   disabled={waterGlasses <= 0}
-                  className="w-9 h-9 rounded-xl bg-white border border-pink-100 flex items-center justify-center font-bold text-base text-textMain hover:bg-pink-50 transition-colors disabled:opacity-30 disabled:cursor-not-allowed shadow-xs"
+                  className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl bg-white border border-pink-100 flex items-center justify-center font-bold text-base text-textMain hover:bg-pink-50 transition-colors disabled:opacity-30 disabled:cursor-not-allowed shadow-xs"
                   aria-label="Decrease water"
                 >
                   −
@@ -546,7 +546,7 @@ export default function Log() {
                         setWaterGlasses(idx + 1);
                         setSaveSuccess(false);
                       }}
-                      className={`text-xl transition-transform hover:scale-110 ${
+                      className={`min-h-[44px] min-w-[36px] flex items-center justify-center text-xl transition-transform hover:scale-110 ${
                         idx < waterGlasses ? 'opacity-100' : 'opacity-20 grayscale'
                       }`}
                       title={`Glass ${idx + 1}`}
@@ -566,7 +566,7 @@ export default function Log() {
                   type="button"
                   onClick={incrementWater}
                   disabled={waterGlasses >= 16}
-                  className="w-9 h-9 rounded-xl bg-white border border-pink-100 flex items-center justify-center font-bold text-base text-textMain hover:bg-pink-50 transition-colors disabled:opacity-30 disabled:cursor-not-allowed shadow-xs"
+                  className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl bg-white border border-pink-100 flex items-center justify-center font-bold text-base text-textMain hover:bg-pink-50 transition-colors disabled:opacity-30 disabled:cursor-not-allowed shadow-xs"
                   aria-label="Increase water"
                 >
                   +
