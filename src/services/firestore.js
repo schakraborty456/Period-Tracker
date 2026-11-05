@@ -8,6 +8,7 @@ import {
   getDocs,
   query,
   orderBy,
+  limit,
   serverTimestamp,
 } from 'firebase/firestore';
 import { db } from '../firebase';
@@ -139,4 +140,22 @@ export async function getDailyLog(userId, date) {
   }
 
   return { id: docSnap.id, ...docSnap.data() };
+}
+
+/**
+ * Fetches recent daily logs for a user ordered by date descending.
+ *
+ * @param {string} userId
+ * @param {number} [limitCount=30]
+ * @returns {Promise<Array>}
+ */
+export async function getUserDailyLogs(userId, limitCount = 30) {
+  const logsRef = collection(db, 'users', userId, 'dailyLogs');
+  const q = query(logsRef, orderBy('date', 'desc'), limit(limitCount));
+  const querySnap = await getDocs(q);
+
+  return querySnap.docs.map((docSnap) => ({
+    id: docSnap.id,
+    ...docSnap.data(),
+  }));
 }

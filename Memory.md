@@ -32,8 +32,8 @@ Built as a portfolio / resume project to show full-stack, AI integration, and se
 - Phase values: `"menstrual"`, `"follicular"`, `"ovulation"`, `"luteal"`.
 
 ## 5. Current Status
-- Phase: Phase 4 (Daily Log) in progress. Task 4.1 completed.
-- Next task: Task 4.2 in Tasks.md (Save and load logs by date).
+- Phase: Phase 4 (Daily Log) in progress. Tasks 4.1 and 4.2 completed.
+- Next task: Task 4.3 in Tasks.md (Detect a new period start and create a period record, update cycle averages).
 
 ## 6. Open Questions
 - Who will review the nutrition content (doctor / nutritionist)?
@@ -67,5 +67,6 @@ Built as a portfolio / resume project to show full-stack, AI integration, and se
 | 2026-11-05 | Completed Task 3.4: Built full Tips page (src/pages/Tips.jsx) with interactive 4-phase tabs, live user current-phase highlight, diet preference filter, Eat vs Avoid food cards with Indian/Bengali items, movement guidance, and disclaimer. Connected to /tips route in App.jsx. |
 | 2026-11-05 | Completed Task 3.5: Built reusable DisclaimerBanner component (medical & review disclaimer per PRD Sec 12) and LatePeriodCard component (reassuring guidance, reasons for natural cycle fluctuations, prompt to log period start date). Added to Dashboard and Tips pages. Phase 3 complete! |
 | 2026-11-05 | Completed Task 4.1: Built comprehensive Daily Log form (src/pages/Log.jsx) with flow selector cards (none, spotting, light, medium, heavy), mood emoji chips, 12 symptom tags, interactive water tracker with glass indicators, personal notes, and day-by-day date navigator. Connected to /log route in App.jsx. |
+| 2026-11-05 | Completed Task 4.2: Implemented Firestore saveDailyLog, getDailyLog, and getUserDailyLogs query functions with input sanitization and merge support. Verified multi-date load/save logic in Log page and added automated integration test suite in firestore.test.js (43 passing tests total). |
 
 (Add a new row after each completed task: date, what changed, any decision made.)
