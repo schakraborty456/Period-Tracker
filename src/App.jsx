@@ -6,6 +6,7 @@ import Dashboard from './pages/Dashboard';
 import Onboarding from './pages/Onboarding';
 import Tips from './pages/Tips';
 import Log from './pages/Log';
+import Insights from './pages/Insights';
 import Settings from './pages/Settings';
 import Privacy from './pages/Privacy';
 import Login from './pages/Login';
@@ -72,6 +73,14 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <Tips />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/insights"
+            element={
+              <ProtectedRoute>
+                <Insights />
               </ProtectedRoute>
             }
           />

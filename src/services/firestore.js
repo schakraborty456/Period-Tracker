@@ -29,11 +29,32 @@ export async function saveUserProfile(userId, profileData) {
     avgPeriodLength: Number(profileData.avgPeriodLength || profileData.periodLength || 5),
     language: profileData.language || 'en',
     aiConsent: Boolean(profileData.aiConsent),
+    ...(profileData.riskConsent !== undefined ? { riskConsent: Boolean(profileData.riskConsent) } : {}),
     updatedAt: serverTimestamp(),
   };
 
   await setDoc(userRef, data, { merge: true });
   return data;
+}
+
+/**
+ * Updates risk screening consent status in `users/{userId}`.
+ *
+ * @param {string} userId
+ * @param {boolean} riskConsent
+ * @returns {Promise<boolean>}
+ */
+export async function updateRiskConsent(userId, riskConsent) {
+  const userRef = doc(db, 'users', userId);
+  await setDoc(
+    userRef,
+    {
+      riskConsent: Boolean(riskConsent),
+      updatedAt: serverTimestamp(),
+    },
+    { merge: true }
+  );
+  return Boolean(riskConsent);
 }
 
 /**

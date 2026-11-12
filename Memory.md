@@ -37,8 +37,8 @@ Built as a portfolio / resume project to show full-stack, AI integration, and se
 - Risk screening wording convention: Always *"Possible signs are showing in your pattern. This is not a diagnosis. Please see a doctor (gynecologist)."* Never declare a medical diagnosis.
 
 ## 5. Current Status
-- Phase: Phase 5 (Tasks 5.1–5.5 completed) & Phase 6 (Tasks 6.2a–6.2b completed).
-- Next task: Task 6.2c in Tasks.md (Build Insights page with upfront user consent, medical disclaimer, risk flag cards).
+- Phase: Phase 5 (Tasks 5.1–5.5 completed) & Phase 6 (Tasks 6.2a–6.2c completed).
+- Next task: Task 6.2d in Tasks.md (Create data/workouts.js and build Workouts page).
 
 ## 6. Open Questions
 - Who will review the nutrition content (doctor / nutritionist)?
@@ -83,5 +83,6 @@ Built as a portfolio / resume project to show full-stack, AI integration, and se
 | 2026-11-12 | Planned "Risk Screening + Home Workouts" feature for Version 2: Updated PRD.md, Rules.md, Architecture.md, Tasks.md, and Memory.md. Feature uses pure deterministic rules (no AI detection), minimum data threshold (>= 3 cycles or 2 months of logs), explicit consent and medical disclaimer, lifestyle-only guidance, and doctor referral prompts; structured tasks 6.2a–6.2f added before AI assistant. |
 | 2026-11-12 | Completed Task 6.2a: Expanded Daily Log form (src/pages/Log.jsx) and Firestore service (src/services/firestore.js) with 0–10 pain intensity slider/stepper, 5 new symptom tags (acne, excess hair growth, hair loss, weight change, dark skin patches), and optional sleep duration and body weight inputs. Ensured full backwards compatibility for legacy logs missing new fields, preserved 44px hit areas, and added unit tests in firestore.test.js and symptoms.test.js (74 tests passing). |
 | 2026-11-12 | Completed Task 6.2b: Created pure rule-based risk screening engine (src/utils/riskScreening.js) with named constants, minimum data gate (3 completed cycles or 60 log days), non-diagnostic phrasing ("Possible signs are showing in your pattern. This is not a diagnosis. Please see a doctor (gynecologist)."), and rule-based detectors for PCOS, Anemia, Severe Pain/Endometriosis, Thyroid irregularity, and 90-day/7-day red flags. Added 24 Vitest unit tests in riskScreening.test.js (98 tests passing). |
+| 2026-11-12 | Completed Task 6.2c: Created data/riskFlags.js with lifestyle-only recommendations (marked "needs expert review") and doctor discussion points. Built mobile-first Insights page (src/pages/Insights.jsx) featuring upfront user consent gate, mandatory non-diagnostic disclaimer ("Possible signs are showing in your pattern. This is not a diagnosis. Please see a doctor (gynecologist)."), minimum data progress tracker (cycles & days), flag detail cards, collapsible self-care guidance, consent revocation modal, added /insights route in App.jsx, bottom navigation link in BottomNav.jsx, and settings integration. (107 tests passing). |
 
 (Add a new row after each completed task: date, what changed, any decision made.)

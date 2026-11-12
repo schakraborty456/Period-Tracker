@@ -5,6 +5,8 @@ import {
   getUserDailyLogs,
   recordNewPeriodAndRecalculate,
   deleteUserAllData,
+  saveUserProfile,
+  updateRiskConsent,
 } from './firestore';
 import { getDefaultDailyLog } from '../data/symptoms';
 
@@ -325,6 +327,66 @@ describe('Daily Log Firestore Service & Data Handling (Task 4.2)', () => {
       expect(mockDoc).toHaveBeenCalledWith({ __mockDb: true }, 'users', userId);
       expect(mockDeleteDoc).toHaveBeenCalledWith(
         expect.objectContaining({ path: `users/${userId}` })
+      );
+    });
+  });
+
+  describe('User Profile & Risk Screening Consent (Task 6.2c)', () => {
+    it('saves user profile including riskConsent flag when provided', async () => {
+      mockSetDoc.mockResolvedValueOnce(undefined);
+
+      const profileInput = {
+        name: 'Aditi',
+        age: 26,
+        dietPreference: 'veg',
+        avgCycleLength: 30,
+        avgPeriodLength: 5,
+        language: 'en',
+        aiConsent: true,
+        riskConsent: true,
+      };
+
+      const result = await saveUserProfile(userId, profileInput);
+
+      expect(mockDoc).toHaveBeenCalledWith({ __mockDb: true }, 'users', userId);
+      expect(mockSetDoc).toHaveBeenCalledWith(
+        expect.objectContaining({ path: `users/${userId}` }),
+        expect.objectContaining({
+          name: 'Aditi',
+          age: 26,
+          riskConsent: true,
+        }),
+        { merge: true }
+      );
+      expect(result.riskConsent).toBe(true);
+    });
+
+    it('updates risk screening consent in Firestore using updateRiskConsent', async () => {
+      mockSetDoc.mockResolvedValueOnce(undefined);
+
+      const consentGranted = await updateRiskConsent(userId, true);
+      expect(consentGranted).toBe(true);
+      expect(mockDoc).toHaveBeenCalledWith({ __mockDb: true }, 'users', userId);
+      expect(mockSetDoc).toHaveBeenCalledWith(
+        expect.objectContaining({ path: `users/${userId}` }),
+        expect.objectContaining({
+          riskConsent: true,
+          updatedAt: 'MOCK_TIMESTAMP',
+        }),
+        { merge: true }
+      );
+
+      // Testing revocation
+      mockSetDoc.mockResolvedValueOnce(undefined);
+      const consentRevoked = await updateRiskConsent(userId, false);
+      expect(consentRevoked).toBe(false);
+      expect(mockSetDoc).toHaveBeenLastCalledWith(
+        expect.objectContaining({ path: `users/${userId}` }),
+        expect.objectContaining({
+          riskConsent: false,
+          updatedAt: 'MOCK_TIMESTAMP',
+        }),
+        { merge: true }
       );
     });
   });

@@ -20,6 +20,7 @@ export default function Settings() {
   const [periodLength, setPeriodLength] = useState(5);
   const [language, setLanguage] = useState('en');
   const [aiConsent, setAiConsent] = useState(false);
+  const [riskConsent, setRiskConsent] = useState(false);
 
   // Status & Modal States
   const [loading, setLoading] = useState(true);
@@ -45,6 +46,7 @@ export default function Settings() {
           setPeriodLength(profile.avgPeriodLength || 5);
           setLanguage(profile.language || 'en');
           setAiConsent(Boolean(profile.aiConsent));
+          setRiskConsent(Boolean(profile.riskConsent));
         }
       } catch (err) {
         console.error('Error loading settings profile:', err);
@@ -93,6 +95,7 @@ export default function Settings() {
         avgPeriodLength: numPeriod,
         language,
         aiConsent,
+        riskConsent,
       });
 
       setSaveSuccess(true);
@@ -345,6 +348,24 @@ export default function Settings() {
                   </span>
                   <span className="text-[11px] text-textMuted block leading-relaxed">
                     Allows anonymous cycle phase and diet context for tailored assistant answers. Your name, email, and personal identifiers are strictly excluded.
+                  </span>
+                </div>
+              </label>
+
+              {/* Risk Screening Consent Checkbox (Task 6.2c) */}
+              <label className="flex items-start gap-2.5 cursor-pointer pt-2 border-t border-pink-50">
+                <input
+                  type="checkbox"
+                  checked={riskConsent}
+                  onChange={(e) => setRiskConsent(e.target.checked)}
+                  className="mt-0.5 w-4 h-4 rounded text-primary focus:ring-primary accent-primary cursor-pointer"
+                />
+                <div className="text-xs space-y-0.5">
+                  <span className="font-semibold text-textMain block">
+                    Cycle Health &amp; Risk Screening Insights (Version 2)
+                  </span>
+                  <span className="text-[11px] text-textMuted block leading-relaxed">
+                    Enables rule-based screening for possible patterns of PCOS, anemia, severe pelvic pain, and cycle irregularities. Non-diagnostic informational guidance.
                   </span>
                 </div>
               </label>

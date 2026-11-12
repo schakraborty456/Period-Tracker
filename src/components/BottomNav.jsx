@@ -5,6 +5,7 @@ export default function BottomNav() {
   const navItems = [
     { label: 'Home', path: '/', icon: '🌸' },
     { label: 'Log', path: '/log', icon: '📝' },
+    { label: 'Insights', path: '/insights', icon: '🔍' },
     { label: 'Tips', path: '/tips', icon: '🥗' },
     { label: 'Settings', path: '/settings', icon: '⚙️' },
   ];

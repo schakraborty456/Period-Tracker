@@ -277,6 +277,35 @@ export default function Dashboard() {
             {/* RECENT DAILY LOGS & SYMPTOMS (Task 4.4) */}
             <RecentLogsCard logs={recentLogs} loading={loading} />
 
+            {/* HEALTH INSIGHTS & RISK SCREENING CARD (Task 6.2c) */}
+            <Card className="space-y-3 bg-gradient-to-r from-pink-50/60 to-purple-50/40 border border-pink-100">
+              <div className="flex items-start justify-between">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-10 h-10 rounded-xl bg-primary-soft text-primary flex items-center justify-center text-xl">
+                    🔍
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-primary bg-white px-2 py-0.5 rounded-full border border-pink-200">
+                      Health Screening
+                    </span>
+                    <h3 className="text-sm font-bold font-heading text-textMain mt-0.5">
+                      Cycle Insights & Risk Patterns
+                    </h3>
+                  </div>
+                </div>
+              </div>
+              <p className="text-xs text-textMuted leading-relaxed">
+                Review pattern screening for PCOS, anemia, pain intensity, and cycle irregularity to discuss with your doctor.
+              </p>
+              <div className="pt-1">
+                <Link to="/insights" className="block">
+                  <Button variant="secondary" fullWidth className="text-xs min-h-[44px]">
+                    Open Health Insights →
+                  </Button>
+                </Link>
+              </div>
+            </Card>
+
             {/* 4 PHASES BREAKDOWN STRIP */}
             <Card className="space-y-3">
               <div className="flex items-center justify-between">
