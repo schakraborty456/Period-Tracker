@@ -44,6 +44,19 @@ Read this file, PRD.md, Architecture.md, Design.md, Memory.md, and Tasks.md befo
 ## 5.1 Red-Flag Symptoms (always recommend seeing a doctor)
 Very heavy bleeding (soaking a pad every hour), severe or unbearable pain, fainting or dizziness with bleeding, period missed for 3 or more months (not pregnant), bleeding lasting more than 7 days, pregnancy or suspected pregnancy, fever with pelvic pain.
 
+## 5.2 Risk Screening Rules
+- **Rule-based only**: Risk detection logic lives strictly in `utils/riskScreening.js` as pure functions, fully verified by Vitest unit tests. **Never use AI to detect, calculate, or infer risk flags.** (The V2 AI assistant may only explain an already-detected flag in simple, empathetic words).
+- **Mandatory phrasing**: Every risk notice must strictly use: *"Possible signs are showing in your pattern. This is not a diagnosis. Please see a doctor (gynecologist)."* Never state or imply a medical diagnosis (e.g., never say *"You have PCOS"* or *"You are suffering from anemia"*).
+- **Minimum Data Gate**: Never evaluate or display risk flags until the user has recorded at least 3 completed cycles OR at least 60 days (2 months) of symptom logs. Before reaching this threshold, the UI must display: *"Keep logging, we need more data"*.
+- **Explicit Consent & Disclaimer**: Present an upfront consent screen and medical disclaimer explaining that risk screening is an informational pattern check, not clinical diagnosis, before risk flags can be viewed for the first time.
+- **Lifestyle-Only Guidance**: Actionable remedies must strictly be limited to food, sleep, stress management, hydration, and gentle home workouts (cat-cow, child's pose, butterfly stretch, walking, surya namaskar, light strength). **Never recommend medicines, OTC drugs, supplement dosages, or make curative claims** (no "this will cure X"). All guidance must carry the *"needs expert review"* badge.
+- **Flag Definition Criteria (starting point)**:
+  - **PCOS possible signs**: Cycle lengths frequently exceeding 35 days or highly irregular, coupled with logged acne, excess hair growth, hair loss, or weight gain.
+  - **Anemia possible signs**: Heavy flow logged together with persistent tiredness or dizziness.
+  - **Endometriosis / severe pain**: High pain scores (7 to 10 on a 10-point scale) logged repeatedly across multiple cycles.
+  - **Thyroid possible signs**: Changing/fluctuating cycle lengths combined with tiredness and weight changes.
+  - **See a doctor soon (Red Flags)**: No period for 3 or more months (not pregnant), or bleeding lasting more than 7 days.
+
 ## 6. AI Assistant Rules
 System prompt must include:
 - You are a friendly period and nutrition information assistant, not a doctor.

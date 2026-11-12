@@ -21,7 +21,8 @@ A web app (installable as a PWA) where each user logs her period data and gets *
 - Keep user data private and secure.
 
 ## 5. Non-Goals
-- Not a medical diagnosis tool.
+- Not a medical diagnosis tool (screening for risk flags only; never diagnoses conditions like PCOS, anemia, endometriosis, or thyroid issues).
+- No medical prescriptions, medicine advice, or supplement dosage recommendations.
 - Not a contraception or fertility planning tool (no "safe days" claims).
 - No social features or public sharing in V1.
 
@@ -29,9 +30,12 @@ A web app (installable as a PWA) where each user logs her period data and gets *
 - As a user, I can sign up and log in so my data is saved privately.
 - As a user, I enter my last period date, cycle length, and period length so the app can predict my next period.
 - As a user, I see which phase I am in today and what to eat.
-- As a user, I log daily symptoms, mood, flow, and water intake.
+- As a user, I log daily symptoms, mood, flow, water intake, and pain score (0–10).
 - As a user, I can view past cycles on a calendar and graph.
-- As a user, I can ask the AI assistant questions and get answers based on my phase and symptoms.
+- As a user with sufficient data (at least 3 cycles or 2 months of logs), I can view risk screening insights to identify possible signs of PCOS, anemia, endometriosis, or thyroid issues so I can consult a gynecologist.
+- As a user, I can access home workout routines tailored to my phase and symptoms (e.g., cat-cow and child's pose for cramps; walking, surya namaskar, and strength training for PCOS) to manage discomfort naturally.
+- As a user, I can export a structured Doctor Report summarizing my cycle history, symptoms, and pain scores to bring to my doctor appointment.
+- As a user, I can ask the AI assistant questions and get answers based on my phase, symptoms, and active risk screening context.
 - As a user, I can delete my account and all my data.
 
 ## 7. Features by Version
@@ -46,12 +50,14 @@ A web app (installable as a PWA) where each user logs her period data and gets *
 7. Disclaimer, privacy policy, delete-my-data
 
 ### Version 2
-1. AI assistant chat (Gemini, personalized with user data)
-2. History calendar and cycle graph
-3. Reminder notifications
-4. Bangla + English
-5. Exercise / yoga tips, water tracker improvements
-6. Irregular cycle alert
+1. Risk screening & pattern insights (rule-based detection of possible signs of PCOS, anemia, endometriosis, thyroid issues; minimum 3 cycles / 2 months of logs required; consent & medical disclaimer gate; strictly no diagnosis)
+2. Phase & symptom home workouts (cramps relief: cat-cow, child's pose, butterfly stretch; PCOS-supportive: walking, surya namaskar, strength training; 10–20 min, Easy/Medium)
+3. Doctor Report export (structured summary of cycle history, symptoms, and pain scores for gynecologist visits)
+4. AI assistant chat (Gemini, personalized with user data and risk screening context)
+5. History calendar and cycle graph
+6. Reminder notifications (period, water, doctor appointment)
+7. Bangla + English
+8. Irregular cycle alert in the UI
 
 ### Version 3
 1. AI pattern insights (for example, "your PMS usually starts 3 days before your period")
@@ -64,8 +70,12 @@ A web app (installable as a PWA) where each user logs her period data and gets *
 - FR1: Only the signed-in user can read or write her own data.
 - FR2: Cycle prediction must be deterministic (formula), never AI-generated.
 - FR3: Nutrition content comes from a reviewed static content file, filtered by phase and diet preference.
-- FR4: AI assistant must receive only the minimum required context (phase, diet, recent symptoms), never name or email.
+- FR4: AI assistant must receive only the minimum required context (phase, diet, recent symptoms, active risk flags), never name or email.
 - FR5: AI answers must include a disclaimer and must redirect to a doctor for red-flag symptoms.
+- FR6: Risk screening must be purely deterministic (rule-based pure functions) using cycle history and symptom logs; never AI-generated. AI is only permitted to explain a detected flag in simple words.
+- FR7: Minimum data rule: Risk flags are only computed and displayed once the user has at least 3 completed cycles or 60 days (2 months) of logs. Before this threshold, the UI must display "Keep logging, we need more data".
+- FR8: Mandatory risk screening wording: Always state "Possible signs are showing in your pattern. This is not a diagnosis. Please see a doctor (gynecologist)." Never declare or diagnose any condition.
+- FR9: Lifestyle-only guidance: Remedies are strictly limited to food, sleep, stress management, hydration, and light home workouts. No medicines, supplement dosages, or curative claims ("needs expert review").
 
 ## 9. Non-Functional Requirements
 - Mobile-first, fast load (under 3 seconds on 4G).

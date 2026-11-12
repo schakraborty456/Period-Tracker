@@ -23,6 +23,8 @@ Built as a portfolio / resume project to show full-stack, AI integration, and se
 | App type | PWA (installable website) | Works on all devices, one codebase |
 | Build order | V1 without AI first, AI added in V2 | Working app first, then AI on top of real data |
 | Languages | English first, Bangla in V2 | Reduce V1 scope |
+| Risk screening | Rule-based formula only, no AI | Pure pattern detection for PCOS, anemia, endometriosis, thyroid signs; never diagnoses; requires >= 3 cycles or 2 months of logs; lifestyle guidance only; placed before AI assistant in V2 |
+| Home workouts | Static reviewed library by phase & symptom | Gentle movements (cramps: cat-cow, child's pose; PCOS: walking, surya namaskar; 10–20 min, Easy/Medium); non-medicinal relief |
 
 ## 4. Conventions
 - Language: JavaScript (not TypeScript).
@@ -30,6 +32,9 @@ Built as a portfolio / resume project to show full-stack, AI integration, and se
 - Firestore paths: `users/{uid}`, `users/{uid}/periods/{id}`, `users/{uid}/dailyLogs/{date}`.
 - Diet values: `"veg"`, `"non-veg"`, `"eggetarian"`.
 - Phase values: `"menstrual"`, `"follicular"`, `"ovulation"`, `"luteal"`.
+- Pain score range: `0` (no pain) to `10` (unbearable pain).
+- Extra symptom tag keys: `"acne"`, `"excess_hair"`, `"hair_loss"`, `"weight_change"`, `"dark_patches"`.
+- Risk screening wording convention: Always *"Possible signs are showing in your pattern. This is not a diagnosis. Please see a doctor (gynecologist)."* Never declare a medical diagnosis.
 
 ## 5. Current Status
 - Phase: Phase 5 (Polish, PWA, and Deploy) in progress. Tasks 5.1, 5.2, 5.3, 5.4, and 5.5 completed.
@@ -75,5 +80,6 @@ Built as a portfolio / resume project to show full-stack, AI integration, and se
 | 2026-11-06 | Completed Task 5.3: Installed and configured vite-plugin-pwa in vite.config.js with autoUpdate, standalone mobile manifest (name, colors, orientation), Workbox caching strategy for offline shell and Google fonts, generated 192px/512px/maskable PNG icons and SVG favicon in public/, and added PWA meta tags in index.html. |
 | 2026-11-06 | Completed Task 5.4: Conducted comprehensive accessibility (a11y) and responsiveness audit per Design.md and WCAG AA guidelines. Upgraded all interactive touch targets (back buttons, date navigators, water steppers, nutrition tabs) to minimum 44px hit areas. Added global visible focus ring (:focus-visible) and prefers-reduced-motion override in index.css. Enhanced phase badge contrast with dedicated dark text colors (#9F1239, #065F46, #854D0E, #581C87). All 51 tests pass. |
 | 2026-11-06 | Completed Task 5.5: Tested and verified Firestore security rules (firestore.rules). Built rules simulator and comprehensive automated test suite (src/services/firestoreRules.test.js) validating: authenticated owner access to profile, periods, and dailyLogs; cross-user isolation (Bob blocked from Alice's records); unauthenticated access prevention; and global default-deny on non-user collections. Verified integrity and syntax against open rules. All 69 tests pass. |
+| 2026-11-12 | Planned "Risk Screening + Home Workouts" feature for Version 2: Updated PRD.md, Rules.md, Architecture.md, Tasks.md, and Memory.md. Feature uses pure deterministic rules (no AI detection), minimum data threshold (>= 3 cycles or 2 months of logs), explicit consent and medical disclaimer, lifestyle-only guidance, and doctor referral prompts; structured tasks 6.2a–6.2f added before AI assistant. |
 
 (Add a new row after each completed task: date, what changed, any decision made.)
