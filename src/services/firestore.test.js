@@ -64,6 +64,9 @@ describe('Daily Log Firestore Service & Data Handling (Task 4.2)', () => {
       flow: 'none',
       mood: '',
       symptoms: [],
+      painScore: null,
+      sleepHours: null,
+      weight: null,
       waterGlasses: 4,
       notes: '',
     });
@@ -77,6 +80,9 @@ describe('Daily Log Firestore Service & Data Handling (Task 4.2)', () => {
         flow: 'medium',
         mood: 'happy',
         symptoms: ['cramps', 'bloating'],
+        painScore: 5,
+        sleepHours: 7.5,
+        weight: 54.2,
         waterGlasses: 6,
         notes: 'Felt energetic after morning walk.',
       };
@@ -95,6 +101,9 @@ describe('Daily Log Firestore Service & Data Handling (Task 4.2)', () => {
         flow: 'medium',
         mood: 'happy',
         symptoms: ['cramps', 'bloating'],
+        painScore: 5,
+        sleepHours: 7.5,
+        weight: 54.2,
         waterGlasses: 6,
         notes: 'Felt energetic after morning walk.',
         updatedAt: 'MOCK_TIMESTAMP',
@@ -111,6 +120,9 @@ describe('Daily Log Firestore Service & Data Handling (Task 4.2)', () => {
         flow: null,
         mood: null,
         symptoms: null,
+        painScore: 15, // should clamp to 10
+        sleepHours: 30, // should clamp to 24
+        weight: -10, // should clamp to 0
         waterGlasses: -5,
         notes: longNote,
       };
@@ -120,9 +132,32 @@ describe('Daily Log Firestore Service & Data Handling (Task 4.2)', () => {
       expect(result.flow).toBe('none');
       expect(result.mood).toBe('');
       expect(result.symptoms).toEqual([]);
+      expect(result.painScore).toBe(10);
+      expect(result.sleepHours).toBe(24);
+      expect(result.weight).toBe(0);
       expect(result.waterGlasses).toBe(0);
       expect(result.notes.length).toBe(500);
       expect(result.updatedAt).toBe('MOCK_TIMESTAMP');
+    });
+
+    it('remains backwards compatible with legacy logs missing new fields (Task 6.2a)', async () => {
+      mockSetDoc.mockResolvedValueOnce(undefined);
+
+      // Legacy log from V1 with no painScore, sleepHours, or weight
+      const legacyLogInput = {
+        flow: 'light',
+        mood: 'calm',
+        symptoms: ['headache'],
+        waterGlasses: 5,
+        notes: 'Legacy log without new fields',
+      };
+
+      const result = await saveDailyLog(userId, testDate, legacyLogInput);
+
+      expect(result.painScore).toBeNull();
+      expect(result.sleepHours).toBeNull();
+      expect(result.weight).toBeNull();
+      expect(result.flow).toBe('light');
     });
   });
 

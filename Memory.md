@@ -37,8 +37,8 @@ Built as a portfolio / resume project to show full-stack, AI integration, and se
 - Risk screening wording convention: Always *"Possible signs are showing in your pattern. This is not a diagnosis. Please see a doctor (gynecologist)."* Never declare a medical diagnosis.
 
 ## 5. Current Status
-- Phase: Phase 5 (Polish, PWA, and Deploy) in progress. Tasks 5.1, 5.2, 5.3, 5.4, and 5.5 completed.
-- Next task: Task 5.6 in Tasks.md (Deploy to Firebase Hosting).
+- Phase: Phase 5 (Tasks 5.1–5.5 completed) & Phase 6 (Task 6.2a completed).
+- Next task: Task 6.2b in Tasks.md (Build utils/riskScreening.js with unit tests).
 
 ## 6. Open Questions
 - Who will review the nutrition content (doctor / nutritionist)?
@@ -81,5 +81,6 @@ Built as a portfolio / resume project to show full-stack, AI integration, and se
 | 2026-11-06 | Completed Task 5.4: Conducted comprehensive accessibility (a11y) and responsiveness audit per Design.md and WCAG AA guidelines. Upgraded all interactive touch targets (back buttons, date navigators, water steppers, nutrition tabs) to minimum 44px hit areas. Added global visible focus ring (:focus-visible) and prefers-reduced-motion override in index.css. Enhanced phase badge contrast with dedicated dark text colors (#9F1239, #065F46, #854D0E, #581C87). All 51 tests pass. |
 | 2026-11-06 | Completed Task 5.5: Tested and verified Firestore security rules (firestore.rules). Built rules simulator and comprehensive automated test suite (src/services/firestoreRules.test.js) validating: authenticated owner access to profile, periods, and dailyLogs; cross-user isolation (Bob blocked from Alice's records); unauthenticated access prevention; and global default-deny on non-user collections. Verified integrity and syntax against open rules. All 69 tests pass. |
 | 2026-11-12 | Planned "Risk Screening + Home Workouts" feature for Version 2: Updated PRD.md, Rules.md, Architecture.md, Tasks.md, and Memory.md. Feature uses pure deterministic rules (no AI detection), minimum data threshold (>= 3 cycles or 2 months of logs), explicit consent and medical disclaimer, lifestyle-only guidance, and doctor referral prompts; structured tasks 6.2a–6.2f added before AI assistant. |
+| 2026-11-12 | Completed Task 6.2a: Expanded Daily Log form (src/pages/Log.jsx) and Firestore service (src/services/firestore.js) with 0–10 pain intensity slider/stepper, 5 new symptom tags (acne, excess hair growth, hair loss, weight change, dark skin patches), and optional sleep duration and body weight inputs. Ensured full backwards compatibility for legacy logs missing new fields, preserved 44px hit areas, and added unit tests in firestore.test.js and symptoms.test.js (74 tests passing). |
 
 (Add a new row after each completed task: date, what changed, any decision made.)

@@ -122,6 +122,18 @@ export async function saveDailyLog(userId, date, logData) {
     flow: logData.flow || 'none',
     mood: logData.mood || '',
     symptoms: Array.isArray(logData.symptoms) ? logData.symptoms : [],
+    painScore:
+      logData.painScore !== undefined && logData.painScore !== null && logData.painScore !== ''
+        ? Math.min(10, Math.max(0, Number(logData.painScore)))
+        : null,
+    sleepHours:
+      logData.sleepHours !== undefined && logData.sleepHours !== null && logData.sleepHours !== ''
+        ? Math.min(24, Math.max(0, Number(logData.sleepHours)))
+        : null,
+    weight:
+      logData.weight !== undefined && logData.weight !== null && logData.weight !== ''
+        ? Math.max(0, Number(logData.weight))
+        : null,
     waterGlasses: Math.max(0, Number(logData.waterGlasses) || 0),
     notes: (logData.notes || '').slice(0, 500),
     updatedAt: serverTimestamp(),

@@ -35,6 +35,9 @@ export default function Log() {
   const [flow, setFlow] = useState('none');
   const [mood, setMood] = useState('');
   const [symptoms, setSymptoms] = useState([]);
+  const [painScore, setPainScore] = useState(null);
+  const [sleepHours, setSleepHours] = useState('');
+  const [weight, setWeight] = useState('');
   const [waterGlasses, setWaterGlasses] = useState(4);
   const [notes, setNotes] = useState('');
 
@@ -75,6 +78,19 @@ export default function Log() {
           setFlow(currentFlow);
           setMood(existingLog.mood || '');
           setSymptoms(Array.isArray(existingLog.symptoms) ? existingLog.symptoms : []);
+          setPainScore(
+            typeof existingLog.painScore === 'number' ? existingLog.painScore : null
+          );
+          setSleepHours(
+            existingLog.sleepHours !== undefined && existingLog.sleepHours !== null
+              ? String(existingLog.sleepHours)
+              : ''
+          );
+          setWeight(
+            existingLog.weight !== undefined && existingLog.weight !== null
+              ? String(existingLog.weight)
+              : ''
+          );
           setWaterGlasses(
             typeof existingLog.waterGlasses === 'number' ? existingLog.waterGlasses : 4
           );
@@ -86,6 +102,9 @@ export default function Log() {
           setFlow(defaults.flow);
           setMood(defaults.mood);
           setSymptoms(defaults.symptoms);
+          setPainScore(defaults.painScore ?? null);
+          setSleepHours('');
+          setWeight('');
           setWaterGlasses(defaults.waterGlasses);
           setNotes(defaults.notes);
         }
@@ -182,6 +201,9 @@ export default function Log() {
         flow,
         mood,
         symptoms,
+        painScore,
+        sleepHours: sleepHours !== '' ? Number(sleepHours) : null,
+        weight: weight !== '' ? Number(weight) : null,
         waterGlasses,
         notes,
       });
@@ -508,7 +530,140 @@ export default function Log() {
               </div>
             </Card>
 
-            {/* 4. WATER INTAKE COUNTER */}
+            {/* 4. PAIN & CRAMP INTENSITY SCALE (0 to 10) (Task 6.2a) */}
+            <Card className="space-y-3.5">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-xs font-bold uppercase tracking-wider text-textMain flex items-center gap-1.5">
+                    <span>⚡</span>
+                    <span>Pain & Cramp Intensity (0–10)</span>
+                  </h2>
+                  <p className="text-[11px] text-textMuted mt-0.5">
+                    Rate your pelvic pain, cramps, or ache today
+                  </p>
+                </div>
+                {painScore !== null ? (
+                  <span
+                    className={`text-xs font-bold px-2.5 py-1 rounded-full border shadow-xs ${
+                      painScore === 0
+                        ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                        : painScore <= 3
+                        ? 'bg-blue-50 text-blue-800 border-blue-200'
+                        : painScore <= 6
+                        ? 'bg-amber-50 text-amber-900 border-amber-200'
+                        : 'bg-rose-50 text-rose-800 border-rose-200 font-extrabold'
+                    }`}
+                  >
+                    {painScore} / 10 •{' '}
+                    {painScore === 0
+                      ? 'No Pain'
+                      : painScore <= 3
+                      ? 'Mild'
+                      : painScore <= 6
+                      ? 'Moderate'
+                      : 'Severe'}
+                  </span>
+                ) : (
+                  <span className="text-[10px] text-textMuted italic bg-background px-2 py-0.5 rounded-md border border-pink-100">
+                    Not recorded
+                  </span>
+                )}
+              </div>
+
+              {/* Range Slider + Stepper Controls */}
+              <div className="space-y-3 pt-1">
+                <div className="flex items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPainScore((prev) => Math.max(0, (prev ?? 1) - 1));
+                      setSaveSuccess(false);
+                    }}
+                    className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl bg-white border border-pink-100 flex items-center justify-center font-bold text-base text-textMain hover:bg-pink-50 transition-colors shadow-xs"
+                    aria-label="Decrease pain score"
+                  >
+                    −
+                  </button>
+
+                  <div className="flex-1 px-1">
+                    <input
+                      type="range"
+                      min="0"
+                      max="10"
+                      step="1"
+                      value={painScore ?? 0}
+                      onChange={(e) => {
+                        setPainScore(Number(e.target.value));
+                        setSaveSuccess(false);
+                      }}
+                      className="w-full h-2.5 bg-pink-100 rounded-lg appearance-none cursor-pointer accent-primary focus:outline-none"
+                      aria-label="Pain score slider from 0 to 10"
+                    />
+                    <div className="flex justify-between text-[10px] text-textMuted px-0.5 mt-1 font-medium">
+                      <span>0 (None)</span>
+                      <span>3 (Mild)</span>
+                      <span>6 (Mod)</span>
+                      <span>10 (Severe)</span>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPainScore((prev) => Math.min(10, (prev ?? -1) + 1));
+                      setSaveSuccess(false);
+                    }}
+                    className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl bg-white border border-pink-100 flex items-center justify-center font-bold text-base text-textMain hover:bg-pink-50 transition-colors shadow-xs"
+                    aria-label="Increase pain score"
+                  >
+                    +
+                  </button>
+                </div>
+
+                {/* Quick Score Chips (0 to 10) with 44px hit areas on mobile */}
+                <div className="grid grid-cols-6 sm:grid-cols-11 gap-1.5 pt-1">
+                  {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((score) => {
+                    const isSelected = painScore === score;
+                    return (
+                      <button
+                        key={score}
+                        type="button"
+                        onClick={() => {
+                          setPainScore(isSelected ? null : score);
+                          setSaveSuccess(false);
+                        }}
+                        className={`min-h-[44px] rounded-xl text-xs font-bold transition-all flex items-center justify-center border ${
+                          isSelected
+                            ? score >= 7
+                              ? 'bg-rose-600 text-white border-rose-700 shadow-xs'
+                              : 'bg-primary text-white border-primary shadow-xs'
+                            : 'bg-white border-pink-100 text-textMuted hover:border-pink-300 hover:text-textMain'
+                        }`}
+                        title={`Pain Score ${score}`}
+                        aria-label={`Select pain score ${score}`}
+                      >
+                        {score}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Severe Pain Friendly Advice Notice */}
+                {painScore !== null && painScore >= 7 && (
+                  <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-900 space-y-1">
+                    <p className="font-bold flex items-center gap-1.5 text-rose-950 font-heading">
+                      <span>🩺</span>
+                      <span>High Pain Level ({painScore}/10)</span>
+                    </p>
+                    <p className="text-[11px] text-rose-800 leading-relaxed">
+                      Severe cramps that interfere with daily activities or don't respond to rest should be evaluated by a healthcare professional.
+                    </p>
+                  </div>
+                )}
+              </div>
+            </Card>
+
+            {/* 5. WATER INTAKE COUNTER */}
             <Card className="space-y-3">
               <div className="flex items-center justify-between">
                 <div>
@@ -574,7 +729,87 @@ export default function Log() {
               </div>
             </Card>
 
-            {/* 5. NOTES TEXTAREA */}
+            {/* 6. WELLNESS & BODY METRICS (OPTIONAL) (Task 6.2a) */}
+            <Card className="space-y-3.5">
+              <div>
+                <div className="flex items-center justify-between">
+                  <h2 className="text-xs font-bold uppercase tracking-wider text-textMain flex items-center gap-1.5">
+                    <span>🌙</span>
+                    <span>Rest & Body Metrics (Optional)</span>
+                  </h2>
+                  <span className="text-[10px] font-semibold text-textMuted bg-background px-2 py-0.5 rounded-full border border-pink-100">
+                    Optional
+                  </span>
+                </div>
+                <p className="text-[11px] text-textMuted mt-0.5">
+                  Track your resting hours and weight trends if you wish
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                {/* Sleep Hours Input */}
+                <div className="space-y-1">
+                  <label
+                    htmlFor="sleepHours"
+                    className="text-xs font-semibold text-textMain flex items-center justify-between"
+                  >
+                    <span>Sleep Duration</span>
+                    <span className="text-[10px] text-textMuted font-normal">Optional</span>
+                  </label>
+                  <div className="relative">
+                    <input
+                      id="sleepHours"
+                      type="number"
+                      min="0"
+                      max="24"
+                      step="0.5"
+                      value={sleepHours}
+                      onChange={(e) => {
+                        setSleepHours(e.target.value);
+                        setSaveSuccess(false);
+                      }}
+                      placeholder="e.g. 7.5"
+                      className="w-full min-h-[44px] px-3.5 py-2.5 rounded-xl border border-pink-100 bg-white text-textMain placeholder-textMuted/60 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                    />
+                    <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs text-textMuted pointer-events-none">
+                      hours
+                    </span>
+                  </div>
+                </div>
+
+                {/* Weight Input */}
+                <div className="space-y-1">
+                  <label
+                    htmlFor="bodyWeight"
+                    className="text-xs font-semibold text-textMain flex items-center justify-between"
+                  >
+                    <span>Body Weight</span>
+                    <span className="text-[10px] text-textMuted font-normal">Optional</span>
+                  </label>
+                  <div className="relative">
+                    <input
+                      id="bodyWeight"
+                      type="number"
+                      min="20"
+                      max="250"
+                      step="0.1"
+                      value={weight}
+                      onChange={(e) => {
+                        setWeight(e.target.value);
+                        setSaveSuccess(false);
+                      }}
+                      placeholder="e.g. 54.0"
+                      className="w-full min-h-[44px] px-3.5 py-2.5 rounded-xl border border-pink-100 bg-white text-textMain placeholder-textMuted/60 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                    />
+                    <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs text-textMuted pointer-events-none">
+                      kg
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </Card>
+
+            {/* 7. NOTES TEXTAREA */}
             <Card className="space-y-2">
               <div className="flex items-center justify-between">
                 <h2 className="text-xs font-bold uppercase tracking-wider text-textMain flex items-center gap-1.5">
