@@ -458,3 +458,4 @@ export function getWorkoutsBySymptom(symptomTag) {
   if (!symptomTag) return WORKOUT_ROUTINES;
   return WORKOUT_ROUTINES.filter((w) => w.symptomTag === symptomTag);
 }
+

@@ -105,3 +105,4 @@ describe('Home Workouts Data & Routines (Task 6.2d)', () => {
     expect(cramps[0].id).toBe('cramps-relief');
   });
 });
+

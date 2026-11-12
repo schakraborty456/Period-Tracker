@@ -37,8 +37,8 @@ Built as a portfolio / resume project to show full-stack, AI integration, and se
 - Risk screening wording convention: Always *"Possible signs are showing in your pattern. This is not a diagnosis. Please see a doctor (gynecologist)."* Never declare a medical diagnosis.
 
 ## 5. Current Status
-- Phase: Phase 5 (Tasks 5.1–5.5 completed) & Phase 6 (Tasks 6.2a–6.2d completed).
-- Next task: Task 6.2e in Tasks.md (Build Doctor Report export summarizing cycle history, symptom frequency, and pain scores for gynecologist consultations).
+- Phase: Phase 5 (Tasks 5.1–5.5 completed) & Phase 6 (Tasks 6.2a–6.2e completed).
+- Next task: Task 6.2f in Tasks.md (Add doctor visit reminders and red-flag escalation prompts).
 
 ## 6. Open Questions
 - Who will review the nutrition content (doctor / nutritionist)?
@@ -85,5 +85,6 @@ Built as a portfolio / resume project to show full-stack, AI integration, and se
 | 2026-11-12 | Completed Task 6.2b: Created pure rule-based risk screening engine (src/utils/riskScreening.js) with named constants, minimum data gate (3 completed cycles or 60 log days), non-diagnostic phrasing ("Possible signs are showing in your pattern. This is not a diagnosis. Please see a doctor (gynecologist)."), and rule-based detectors for PCOS, Anemia, Severe Pain/Endometriosis, Thyroid irregularity, and 90-day/7-day red flags. Added 24 Vitest unit tests in riskScreening.test.js (98 tests passing). |
 | 2026-11-12 | Completed Task 6.2c: Created data/riskFlags.js with lifestyle-only recommendations (marked "needs expert review") and doctor discussion points. Built mobile-first Insights page (src/pages/Insights.jsx) featuring upfront user consent gate, mandatory non-diagnostic disclaimer ("Possible signs are showing in your pattern. This is not a diagnosis. Please see a doctor (gynecologist)."), minimum data progress tracker (cycles & days), flag detail cards, collapsible self-care guidance, consent revocation modal, added /insights route in App.jsx, bottom navigation link in BottomNav.jsx, and settings integration. (107 tests passing). |
 | 2026-11-12 | Completed Task 6.2d: Created data/workouts.js with 7 phase- and symptom-tailored home routines (cramps relief, PCOS rhythm, follicular mobility, ovulation sculpt, luteal grounding, bloat relief, back soother; 10–20 min, Easy/Medium, marked "needs expert review"). Built Workouts page (src/pages/Workouts.jsx) with current-phase recommendation, phase & symptom filtering, interactive step-by-step routine viewer/player, safety notice, URL query param support (?symptom=, ?phase=), registered /workouts route in App.jsx, and linked from Insights, Tips, and Dashboard. Added 10 unit tests in workouts.test.js (117 tests passing). |
+| 2026-11-12 | Completed Task 6.2e: Built clinical Doctor Report export page (src/pages/DoctorReport.jsx) and computation engine (src/utils/doctorReportHelpers.js) aggregating patient baseline, recent cycle history table, pain intensity & dysmenorrhea metrics (0–10 scale), flow volume breakdown & bleeding streaks, symptom frequency rankings, risk screening flags, tailored gynecologist discussion checklist, and lined physician notes box. Added print & PDF export styling (@media print), connected routes (/report, /doctor-report) in App.jsx, added entry buttons on Insights and Dashboard, and added unit tests in doctorReportHelpers.test.js (121 tests passing). |
 
 (Add a new row after each completed task: date, what changed, any decision made.)

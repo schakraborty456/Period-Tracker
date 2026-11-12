@@ -261,11 +261,18 @@ export default function Insights() {
             Rule-based health screening & pattern alerts
           </p>
         </div>
-        <Link to="/log">
-          <Button variant="secondary" className="text-xs px-3 py-1.5 min-h-[44px]">
-            + Log Day
-          </Button>
-        </Link>
+        <div className="flex items-center gap-1.5">
+          <Link to="/report">
+            <Button variant="secondary" className="text-xs px-2.5 py-1.5 min-h-[44px]">
+              📋 Doctor Report
+            </Button>
+          </Link>
+          <Link to="/log">
+            <Button variant="secondary" className="text-xs px-2.5 py-1.5 min-h-[44px]">
+              + Log Day
+            </Button>
+          </Link>
+        </div>
       </header>
 
       {/* Mandatory Non-Diagnostic Callout (Rules.md Sec 5.2) */}
@@ -444,11 +451,18 @@ export default function Insights() {
                     </div>
 
                     {/* Non-Diagnostic Doctor Referral Callout */}
-                    <div className="text-xs bg-pink-50/70 rounded-xl p-2.5 border border-pink-200/60 text-primary-dark font-medium flex items-center gap-2">
-                      <span className="text-base shrink-0">👩‍⚕️</span>
-                      <span>
-                        Please schedule a visit with a gynecologist to review these findings together.
-                      </span>
+                    <div className="text-xs bg-pink-50/70 rounded-xl p-2.5 border border-pink-200/60 text-primary-dark font-medium flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-base shrink-0">👩‍⚕️</span>
+                        <span>
+                          Please schedule a visit with a gynecologist to review these findings together.
+                        </span>
+                      </div>
+                      <Link to="/report" className="shrink-0">
+                        <span className="text-xs text-primary font-bold underline whitespace-nowrap">
+                          View Report →
+                        </span>
+                      </Link>
                     </div>
 
                     {/* Collapsible Action Section: Lifestyle Tips & Doctor Talking Points */}

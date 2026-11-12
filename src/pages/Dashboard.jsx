@@ -297,10 +297,19 @@ export default function Dashboard() {
               <p className="text-xs text-textMuted leading-relaxed">
                 Review pattern screening for PCOS, anemia, pain intensity, and cycle irregularity to discuss with your doctor.
               </p>
-              <div className="pt-1">
+              <div className="pt-1 grid grid-cols-2 gap-2">
                 <Link to="/insights" className="block">
                   <Button variant="secondary" fullWidth className="text-xs min-h-[44px]">
-                    Open Health Insights →
+                    Open Insights →
+                  </Button>
+                </Link>
+                <Link to="/report" className="block">
+                  <Button
+                    variant="ghost"
+                    fullWidth
+                    className="text-xs min-h-[44px] border border-pink-200 bg-white hover:bg-pink-50 text-primary font-semibold"
+                  >
+                    📋 Doctor Report
                   </Button>
                 </Link>
               </div>

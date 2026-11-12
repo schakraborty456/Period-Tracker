@@ -8,6 +8,7 @@ import Tips from './pages/Tips';
 import Log from './pages/Log';
 import Insights from './pages/Insights';
 import Workouts from './pages/Workouts';
+import DoctorReport from './pages/DoctorReport';
 import Settings from './pages/Settings';
 import Privacy from './pages/Privacy';
 import Login from './pages/Login';
@@ -90,6 +91,22 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <Workouts />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/report"
+            element={
+              <ProtectedRoute>
+                <DoctorReport />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/doctor-report"
+            element={
+              <ProtectedRoute>
+                <DoctorReport />
               </ProtectedRoute>
             }
           />
