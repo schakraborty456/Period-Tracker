@@ -53,7 +53,7 @@ Work in order. One task at a time. Tick the box when done and update Memory.md.
 - [x] 6.2a Expand Daily Log & Firestore with new symptom tags (acne, excess hair growth, hair loss, weight change, dark skin patches), painScore (0–10), and optional sleep/weight
 - [x] 6.2b Build utils/riskScreening.js (rule-based flag engine for PCOS, anemia, endometriosis, thyroid, red flags) with comprehensive Vitest unit tests and minimum data gate (>= 3 cycles or 2 months)
 - [x] 6.2c Build Insights page (pages/Insights.jsx) with upfront user consent, medical disclaimer, risk flag cards, and lifestyle-only recommendations (marked "needs expert review")
-- [ ] 6.2d Create data/workouts.js and build Workouts page (pages/Workouts.jsx) with phase- and symptom-tailored home routines (cramps relief, PCOS, 10–20 min, Easy/Medium)
+- [x] 6.2d Create data/workouts.js and build Workouts page (pages/Workouts.jsx) with phase- and symptom-tailored home routines (cramps relief, PCOS, 10–20 min, Easy/Medium)
 - [ ] 6.2e Build Doctor Report export (pages/DoctorReport.jsx) summarizing cycle history, symptom frequency, and pain scores for gynecologist consultations
 - [ ] 6.2f Add doctor visit reminders and red-flag escalation prompts (no period for 3 months, bleeding > 7 days)
 - [ ] 6.3 Set up AI backend (Cloud Function or Firebase AI Logic), key stored server side

@@ -379,6 +379,17 @@ export default function Tips() {
             <p className="text-xs text-textMain leading-relaxed font-normal">
               {tips.selfCare}
             </p>
+            <div className="pt-1">
+              <Link to={`/workouts?phase=${activePhase}`} className="block">
+                <button
+                  type="button"
+                  className="w-full text-xs font-semibold py-2 px-3 rounded-xl bg-white border border-pink-200 text-primary hover:bg-pink-50 transition-colors flex items-center justify-center gap-1.5 min-h-[44px]"
+                >
+                  <span>🧘‍♀️</span>
+                  <span>Try Guided {currentPhaseConfig.name} Home Workouts (10–20 min) →</span>
+                </button>
+              </Link>
+            </div>
           </Card>
         )}
 

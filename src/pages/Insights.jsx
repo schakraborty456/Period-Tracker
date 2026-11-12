@@ -504,6 +504,28 @@ export default function Insights() {
                                 </div>
                               ))}
                             </div>
+
+                            {/* Link to tailored Workouts */}
+                            <div className="pt-1">
+                              <Link
+                                to={
+                                  flag.id === 'pcos_possible'
+                                    ? '/workouts?symptom=pcos'
+                                    : flag.id === 'severe_pain_possible'
+                                    ? '/workouts?symptom=cramps'
+                                    : '/workouts'
+                                }
+                                className="block"
+                              >
+                                <Button
+                                  variant="secondary"
+                                  fullWidth
+                                  className="text-xs py-2 min-h-[44px]"
+                                >
+                                  🧘‍♀️ Open Tailored Home Workouts (10–20 min) →
+                                </Button>
+                              </Link>
+                            </div>
                           </div>
 
                           {/* Doctor Discussion Points */}

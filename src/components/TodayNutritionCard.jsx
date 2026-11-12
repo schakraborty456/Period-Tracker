@@ -152,6 +152,15 @@ export default function TodayNutritionCard({
             <span>Self-Care & Movement Tip</span>
           </div>
           <p className="text-textMuted leading-relaxed">{tips.selfCare}</p>
+          <div className="pt-1">
+            <Link
+              to={`/workouts?phase=${phase}`}
+              className="text-primary font-semibold hover:underline inline-flex items-center gap-1 text-[11px]"
+            >
+              <span>🧘‍♀️</span>
+              <span>Try guided 10–20 min {tips.phaseName} workouts →</span>
+            </Link>
+          </div>
         </div>
       )}
 

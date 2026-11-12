@@ -106,3 +106,4 @@ describe('Risk Flags Data & Lifestyle Guidance (Task 6.2c)', () => {
     expect(all.map((f) => f.id)).toEqual(expectedFlagIds);
   });
 });
+

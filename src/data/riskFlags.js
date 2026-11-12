@@ -260,3 +260,4 @@ export function getRiskFlagDetails(flagId) {
 export function getAllRiskFlags() {
   return Object.values(RISK_FLAGS);
 }
+
