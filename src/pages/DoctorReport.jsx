@@ -8,6 +8,7 @@ import Button from '../components/Button';
 import Card from '../components/Card';
 import BottomNav from '../components/BottomNav';
 import DisclaimerBanner from '../components/DisclaimerBanner';
+import DoctorVisitModal from '../components/DoctorVisitModal';
 
 export default function DoctorReport() {
   const { currentUser } = useAuth();
@@ -15,6 +16,7 @@ export default function DoctorReport() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [reportData, setReportData] = useState(null);
+  const [isVisitModalOpen, setIsVisitModalOpen] = useState(false);
 
   useEffect(() => {
     async function loadData() {
@@ -111,6 +113,14 @@ export default function DoctorReport() {
           </Button>
         </Link>
         <div className="flex items-center gap-2">
+          <Button
+            variant="secondary"
+            onClick={() => setIsVisitModalOpen(true)}
+            className="text-xs min-h-[44px] flex items-center gap-1.5"
+          >
+            <span>📅</span>
+            <span>Set Visit Reminder</span>
+          </Button>
           <Button
             variant="primary"
             onClick={handlePrint}
@@ -551,6 +561,13 @@ export default function DoctorReport() {
           <DisclaimerBanner variant="footer" className="mt-2" />
         </div>
       </div>
+
+      {/* Doctor Visit Reminder Modal (Task 6.2f) */}
+      <DoctorVisitModal
+        isOpen={isVisitModalOpen}
+        onClose={() => setIsVisitModalOpen(false)}
+        prefilledReason="Gynecologist Consultation with Doctor Report"
+      />
 
       {/* Screen-Only Mobile Navigation */}
       <div className="print:hidden">

@@ -7,6 +7,11 @@ import {
   deleteUserAllData,
   saveUserProfile,
   updateRiskConsent,
+  saveDoctorVisit,
+  getUserDoctorVisits,
+  getUpcomingDoctorVisit,
+  updateDoctorVisitStatus,
+  deleteDoctorVisit,
 } from './firestore';
 import { getDefaultDailyLog } from '../data/symptoms';
 
@@ -297,10 +302,11 @@ describe('Daily Log Firestore Service & Data Handling (Task 4.2)', () => {
     });
   });
 
-  describe('deleteUserAllData (Task 5.1)', () => {
-    it('wipes all subcollections (periods, dailyLogs) and user profile document', async () => {
+  describe('deleteUserAllData (Task 5.1 & GDPR)', () => {
+    it('wipes all subcollections (periods, dailyLogs, doctorVisits) and user profile document', async () => {
       const mockPeriodRef = { path: `users/${userId}/periods/p1` };
       const mockLogRef = { path: `users/${userId}/dailyLogs/2026-11-05` };
+      const mockVisitRef = { path: `users/${userId}/doctorVisits/v1` };
 
       // 1. Periods query returns 1 doc
       mockGetDocs.mockResolvedValueOnce({
@@ -310,7 +316,11 @@ describe('Daily Log Firestore Service & Data Handling (Task 4.2)', () => {
       mockGetDocs.mockResolvedValueOnce({
         docs: [{ ref: mockLogRef }],
       });
-      // 3. deleteDoc resolves
+      // 3. DoctorVisits query returns 1 doc
+      mockGetDocs.mockResolvedValueOnce({
+        docs: [{ ref: mockVisitRef }],
+      });
+      // 4. deleteDoc resolves
       mockDeleteDoc.mockResolvedValue(undefined);
 
       const success = await deleteUserAllData(userId);
@@ -322,6 +332,9 @@ describe('Daily Log Firestore Service & Data Handling (Task 4.2)', () => {
 
       // Verify each daily log doc deleted
       expect(mockDeleteDoc).toHaveBeenCalledWith(mockLogRef);
+
+      // Verify each doctor visit doc deleted
+      expect(mockDeleteDoc).toHaveBeenCalledWith(mockVisitRef);
 
       // Verify user document deleted
       expect(mockDoc).toHaveBeenCalledWith({ __mockDb: true }, 'users', userId);
@@ -387,6 +400,130 @@ describe('Daily Log Firestore Service & Data Handling (Task 4.2)', () => {
           updatedAt: 'MOCK_TIMESTAMP',
         }),
         { merge: true }
+      );
+    });
+  });
+
+  describe('Doctor Visit Reminders (Task 6.2f)', () => {
+    it('creates a new doctor visit reminder using addDoc', async () => {
+      mockAddDoc.mockResolvedValueOnce({ id: 'visit-new-1' });
+
+      const visitData = {
+        date: '2026-11-20',
+        time: '10:30 AM',
+        doctorName: 'Dr. Sen',
+        clinic: 'Care Gynecological Center',
+        reason: 'Consultation for heavy flow and prolonged bleeding',
+        notes: 'Bring printed Doctor Report',
+        checklist: ['Print report', 'List questions'],
+      };
+
+      const result = await saveDoctorVisit(userId, visitData);
+
+      expect(mockCollection).toHaveBeenCalledWith({ __mockDb: true }, 'users', userId, 'doctorVisits');
+      expect(mockAddDoc).toHaveBeenCalledWith(
+        expect.objectContaining({ path: `users/${userId}/doctorVisits` }),
+        expect.objectContaining({
+          date: '2026-11-20',
+          time: '10:30 AM',
+          doctorName: 'Dr. Sen',
+          status: 'scheduled',
+          createdAt: 'MOCK_TIMESTAMP',
+        })
+      );
+      expect(result.id).toBe('visit-new-1');
+      expect(result.date).toBe('2026-11-20');
+    });
+
+    it('updates an existing doctor visit reminder with setDoc merge when visitId is provided', async () => {
+      mockSetDoc.mockResolvedValueOnce(undefined);
+
+      const updateData = {
+        date: '2026-11-25',
+        time: '11:00 AM',
+        doctorName: 'Dr. Sen',
+        status: 'scheduled',
+      };
+
+      const result = await saveDoctorVisit(userId, updateData, 'existing-v1');
+
+      expect(mockDoc).toHaveBeenCalledWith(
+        { __mockDb: true },
+        'users',
+        userId,
+        'doctorVisits',
+        'existing-v1'
+      );
+      expect(mockSetDoc).toHaveBeenCalledWith(
+        expect.objectContaining({ path: `users/${userId}/doctorVisits/existing-v1` }),
+        expect.objectContaining({
+          date: '2026-11-25',
+          time: '11:00 AM',
+        }),
+        { merge: true }
+      );
+      expect(result.id).toBe('existing-v1');
+    });
+
+    it('retrieves upcoming doctor visits on or after reference date via getUpcomingDoctorVisit', async () => {
+      const mockDocs = [
+        {
+          id: 'v1',
+          data: () => ({
+            date: '2026-11-20',
+            status: 'scheduled',
+            doctorName: 'Dr. Sen',
+          }),
+        },
+        {
+          id: 'v2',
+          data: () => ({
+            date: '2026-11-10', // past date
+            status: 'scheduled',
+            doctorName: 'Dr. Das',
+          }),
+        },
+        {
+          id: 'v3',
+          data: () => ({
+            date: '2026-11-25',
+            status: 'completed', // completed, not scheduled
+            doctorName: 'Dr. Sen',
+          }),
+        },
+      ];
+
+      mockGetDocs.mockResolvedValueOnce({ docs: mockDocs });
+
+      const upcoming = await getUpcomingDoctorVisit(userId, '2026-11-16');
+      expect(upcoming).toBeDefined();
+      expect(upcoming.id).toBe('v1');
+      expect(upcoming.date).toBe('2026-11-20');
+    });
+
+    it('updates doctor visit status to completed via updateDoctorVisitStatus', async () => {
+      mockUpdateDoc.mockResolvedValueOnce(undefined);
+
+      const success = await updateDoctorVisitStatus(userId, 'v1', 'completed');
+      expect(success).toBe(true);
+      expect(mockDoc).toHaveBeenCalledWith({ __mockDb: true }, 'users', userId, 'doctorVisits', 'v1');
+      expect(mockUpdateDoc).toHaveBeenCalledWith(
+        expect.objectContaining({ path: `users/${userId}/doctorVisits/v1` }),
+        expect.objectContaining({
+          status: 'completed',
+          updatedAt: 'MOCK_TIMESTAMP',
+        })
+      );
+    });
+
+    it('deletes doctor visit document via deleteDoctorVisit', async () => {
+      mockDeleteDoc.mockResolvedValueOnce(undefined);
+
+      const success = await deleteDoctorVisit(userId, 'v1');
+      expect(success).toBe(true);
+      expect(mockDoc).toHaveBeenCalledWith({ __mockDb: true }, 'users', userId, 'doctorVisits', 'v1');
+      expect(mockDeleteDoc).toHaveBeenCalledWith(
+        expect.objectContaining({ path: `users/${userId}/doctorVisits/v1` })
       );
     });
   });

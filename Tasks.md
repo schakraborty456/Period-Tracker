@@ -55,7 +55,7 @@ Work in order. One task at a time. Tick the box when done and update Memory.md.
 - [x] 6.2c Build Insights page (pages/Insights.jsx) with upfront user consent, medical disclaimer, risk flag cards, and lifestyle-only recommendations (marked "needs expert review")
 - [x] 6.2d Create data/workouts.js and build Workouts page (pages/Workouts.jsx) with phase- and symptom-tailored home routines (cramps relief, PCOS, 10–20 min, Easy/Medium)
 - [x] 6.2e Build Doctor Report export (pages/DoctorReport.jsx) summarizing cycle history, symptom frequency, and pain scores for gynecologist consultations
-- [ ] 6.2f Add doctor visit reminders and red-flag escalation prompts (no period for 3 months, bleeding > 7 days)
+- [x] 6.2f Add doctor visit reminders and red-flag escalation prompts (no period for 3 months, bleeding > 7 days)
 - [ ] 6.3 Set up AI backend (Cloud Function or Firebase AI Logic), key stored server side
 - [ ] 6.4 System prompt, red-flag detection, rate limiting, consent check
 - [ ] 6.5 Assistant chat page with suggested questions and disclaimer

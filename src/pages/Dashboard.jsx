@@ -1,12 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-import { getUserProfile, getUserPeriods, getUserDailyLogs } from '../services/firestore';
+import {
+  getUserProfile,
+  getUserPeriods,
+  getUserDailyLogs,
+  getUpcomingDoctorVisit,
+  updateDoctorVisitStatus,
+} from '../services/firestore';
 import {
   calculateCycleSummary,
   getCycleLengthsFromPeriods,
   getPhaseDetails,
 } from '../utils/cycleCalculator';
+import { detectRedFlagEscalation } from '../utils/redFlagDetection';
+import { formatLocalDate } from '../utils/dateHelpers';
 import Button from '../components/Button';
 import Card from '../components/Card';
 import PhaseBadge from '../components/PhaseBadge';
@@ -16,12 +24,20 @@ import TodayNutritionCard from '../components/TodayNutritionCard';
 import LatePeriodCard from '../components/LatePeriodCard';
 import DisclaimerBanner from '../components/DisclaimerBanner';
 import RecentLogsCard from '../components/RecentLogsCard';
+import RedFlagEscalationCard from '../components/RedFlagEscalationCard';
+import UpcomingDoctorVisitCard from '../components/UpcomingDoctorVisitCard';
+import DoctorVisitModal from '../components/DoctorVisitModal';
 
 export default function Dashboard() {
   const { currentUser, logout } = useAuth();
   const [profile, setProfile] = useState(null);
   const [periods, setPeriods] = useState([]);
   const [recentLogs, setRecentLogs] = useState([]);
+  const [allLogs, setAllLogs] = useState([]);
+  const [upcomingVisit, setUpcomingVisit] = useState(null);
+  const [isVisitModalOpen, setIsVisitModalOpen] = useState(false);
+  const [editingVisit, setEditingVisit] = useState(null);
+  const [prefilledReason, setPrefilledReason] = useState('');
   const [loading, setLoading] = useState(true);
   const [loggingOut, setLoggingOut] = useState(false);
 
@@ -30,14 +46,17 @@ export default function Dashboard() {
       if (!currentUser) return;
       try {
         setLoading(true);
-        const [userProf, userPeriods, userLogs] = await Promise.all([
+        const [userProf, userPeriods, userLogs, userVisit] = await Promise.all([
           getUserProfile(currentUser.uid),
           getUserPeriods(currentUser.uid),
-          getUserDailyLogs(currentUser.uid, 5),
+          getUserDailyLogs(currentUser.uid, 60),
+          getUpcomingDoctorVisit(currentUser.uid),
         ]);
         setProfile(userProf);
-        setPeriods(userPeriods);
-        setRecentLogs(userLogs || []);
+        setPeriods(userPeriods || []);
+        setAllLogs(userLogs || []);
+        setRecentLogs((userLogs || []).slice(0, 5));
+        setUpcomingVisit(userVisit || null);
       } catch (err) {
         console.error('Error loading user data from Firestore:', err);
       } finally {
@@ -47,6 +66,32 @@ export default function Dashboard() {
 
     loadUserData();
   }, [currentUser]);
+
+  function handleOpenScheduleModal(redFlagOrVisit = null) {
+    if (redFlagOrVisit && redFlagOrVisit.status) {
+      // Editing existing visit
+      setEditingVisit(redFlagOrVisit);
+      setPrefilledReason('');
+    } else if (redFlagOrVisit && redFlagOrVisit.title) {
+      // Triggered from red flag
+      setEditingVisit(null);
+      setPrefilledReason(`Consultation: ${redFlagOrVisit.title}`);
+    } else {
+      setEditingVisit(null);
+      setPrefilledReason('Gynecological Routine Check-up');
+    }
+    setIsVisitModalOpen(true);
+  }
+
+  async function handleCompleteDoctorVisit(visit) {
+    if (!currentUser || !visit?.id) return;
+    try {
+      await updateDoctorVisitStatus(currentUser.uid, visit.id, 'completed');
+      setUpcomingVisit(null);
+    } catch (err) {
+      console.error('Failed to complete doctor visit:', err);
+    }
+  }
 
   async function handleLogout() {
     try {
@@ -77,6 +122,14 @@ export default function Dashboard() {
           profile.avgPeriodLength
         )
       : null;
+
+  // Red-flag clinical escalation detection (Task 6.2f: no period 90d, bleeding >7d, severe pain)
+  const todayStr = formatLocalDate(new Date());
+  const redFlagEscalation = detectRedFlagEscalation({
+    periods,
+    dailyLogs: allLogs,
+    today: todayStr,
+  });
 
   // Phase breakdown calculations for current cycle
   const totalDays = cycleSummary?.effectiveCycleLength || profile?.avgCycleLength || 28;
@@ -239,6 +292,23 @@ export default function Dashboard() {
                   </div>
                 )}
               </Card>
+            )}
+
+            {/* UPCOMING DOCTOR VISIT CARD (Task 6.2f) */}
+            {upcomingVisit && (
+              <UpcomingDoctorVisitCard
+                visit={upcomingVisit}
+                onEdit={handleOpenScheduleModal}
+                onComplete={handleCompleteDoctorVisit}
+              />
+            )}
+
+            {/* RED-FLAG CLINICAL ESCALATION PROMPT (Task 6.2f) */}
+            {redFlagEscalation.hasRedFlag && (
+              <RedFlagEscalationCard
+                redFlag={redFlagEscalation.primaryEscalation}
+                onScheduleReminder={handleOpenScheduleModal}
+              />
             )}
 
             {/* LATE PERIOD NOTICE & REASSURANCE (Task 3.5) */}
@@ -441,6 +511,17 @@ export default function Dashboard() {
         {/* MANDATORY MEDICAL DISCLAIMER BANNER (Task 3.5 & PRD Section 12) */}
         <DisclaimerBanner variant="footer" className="mt-4" />
       </div>
+
+      {/* Doctor Visit Reminder Modal (Task 6.2f) */}
+      <DoctorVisitModal
+        isOpen={isVisitModalOpen}
+        onClose={() => setIsVisitModalOpen(false)}
+        initialData={editingVisit}
+        prefilledReason={prefilledReason}
+        onSaved={(saved) => {
+          setUpcomingVisit(saved);
+        }}
+      />
 
       {/* Mobile Bottom Navigation Bar */}
       <BottomNav />

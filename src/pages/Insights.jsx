@@ -20,6 +20,7 @@ import Button from '../components/Button';
 import Card from '../components/Card';
 import BottomNav from '../components/BottomNav';
 import DisclaimerBanner from '../components/DisclaimerBanner';
+import DoctorVisitModal from '../components/DoctorVisitModal';
 
 export default function Insights() {
   const { currentUser } = useAuth();
@@ -33,6 +34,8 @@ export default function Insights() {
   const [consentUpdating, setConsentUpdating] = useState(false);
   const [expandedFlagId, setExpandedFlagId] = useState(null);
   const [showRevokeModal, setShowRevokeModal] = useState(false);
+  const [isVisitModalOpen, setIsVisitModalOpen] = useState(false);
+  const [prefilledReason, setPrefilledReason] = useState('');
 
   useEffect(() => {
     loadData();
@@ -450,19 +453,32 @@ export default function Insights() {
                       </ul>
                     </div>
 
-                    {/* Non-Diagnostic Doctor Referral Callout */}
-                    <div className="text-xs bg-pink-50/70 rounded-xl p-2.5 border border-pink-200/60 text-primary-dark font-medium flex items-center justify-between gap-2">
+                    {/* Non-Diagnostic Doctor Referral Callout (Task 6.2f) */}
+                    <div className="text-xs bg-pink-50/70 rounded-xl p-2.5 border border-pink-200/60 text-primary-dark font-medium flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                       <div className="flex items-center gap-2">
                         <span className="text-base shrink-0">👩‍⚕️</span>
                         <span>
                           Please schedule a visit with a gynecologist to review these findings together.
                         </span>
                       </div>
-                      <Link to="/report" className="shrink-0">
-                        <span className="text-xs text-primary font-bold underline whitespace-nowrap">
-                          View Report →
-                        </span>
-                      </Link>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setPrefilledReason(`Consultation: ${flag.label || 'Screening Flag'}`);
+                            setIsVisitModalOpen(true);
+                          }}
+                          className="text-xs text-primary font-bold hover:underline whitespace-nowrap"
+                        >
+                          📅 Set Reminder
+                        </button>
+                        <span>•</span>
+                        <Link to="/report" className="shrink-0">
+                          <span className="text-xs text-primary font-bold underline whitespace-nowrap">
+                            View Report →
+                          </span>
+                        </Link>
+                      </div>
                     </div>
 
                     {/* Collapsible Action Section: Lifestyle Tips & Doctor Talking Points */}
@@ -615,6 +631,13 @@ export default function Insights() {
 
       {/* Bottom Medical Disclaimer */}
       <DisclaimerBanner variant="footer" className="mt-4" />
+
+      {/* Doctor Visit Reminder Modal (Task 6.2f) */}
+      <DoctorVisitModal
+        isOpen={isVisitModalOpen}
+        onClose={() => setIsVisitModalOpen(false)}
+        prefilledReason={prefilledReason}
+      />
 
       {/* Bottom Navigation */}
       <BottomNav />

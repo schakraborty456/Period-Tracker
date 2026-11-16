@@ -26,6 +26,7 @@ import {
 import Button from '../components/Button';
 import Card from '../components/Card';
 import BottomNav from '../components/BottomNav';
+import DoctorVisitModal from '../components/DoctorVisitModal';
 
 export default function Log() {
   const { currentUser } = useAuth();
@@ -40,6 +41,9 @@ export default function Log() {
   const [weight, setWeight] = useState('');
   const [waterGlasses, setWaterGlasses] = useState(4);
   const [notes, setNotes] = useState('');
+
+  const [isVisitModalOpen, setIsVisitModalOpen] = useState(false);
+  const [prefilledReason, setPrefilledReason] = useState('');
 
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -648,16 +652,45 @@ export default function Log() {
                   })}
                 </div>
 
-                {/* Severe Pain Friendly Advice Notice */}
+                {/* Severe Pain Friendly Advice Notice & Escalation (Task 6.2f) */}
                 {painScore !== null && painScore >= 7 && (
-                  <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-900 space-y-1">
-                    <p className="font-bold flex items-center gap-1.5 text-rose-950 font-heading">
-                      <span>🩺</span>
-                      <span>High Pain Level ({painScore}/10)</span>
+                  <div
+                    className={`p-3 rounded-xl border text-xs space-y-1.5 ${
+                      painScore >= 9
+                        ? 'bg-red-50/90 border-red-300 text-red-950'
+                        : 'bg-rose-50 border-rose-200 text-rose-900'
+                    }`}
+                  >
+                    <p className="font-bold flex items-center gap-1.5 font-heading">
+                      <span>{painScore >= 9 ? '🚨' : '🩺'}</span>
+                      <span>
+                        {painScore >= 9 ? 'Acute Severe Pain Rating' : 'High Pain Level'} ({painScore}/10)
+                      </span>
                     </p>
-                    <p className="text-[11px] text-rose-800 leading-relaxed">
-                      Severe cramps that interfere with daily activities or don't respond to rest should be evaluated by a healthcare professional.
+                    <p className="text-[11px] leading-relaxed">
+                      {painScore >= 9
+                        ? 'Severe or unbearable pelvic pain that restricts mobility or normal activities warrants prompt medical evaluation by a gynecologist.'
+                        : "Severe cramps that interfere with daily activities or don't respond to rest should be evaluated by a healthcare professional."}
                     </p>
+                    <div className="flex items-center gap-2 pt-1 border-t border-rose-200/60 text-[11px]">
+                      <Link
+                        to="/report"
+                        className="underline font-semibold text-primary hover:text-primary-dark"
+                      >
+                        📋 View Doctor Report
+                      </Link>
+                      <span>•</span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setPrefilledReason(`Consultation: Severe Pelvic Pain (${painScore}/10)`);
+                          setIsVisitModalOpen(true);
+                        }}
+                        className="underline font-semibold text-rose-900 hover:text-black"
+                      >
+                        🩺 Set Doctor Visit Reminder
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>
@@ -850,6 +883,13 @@ export default function Log() {
           </form>
         )}
       </div>
+
+      {/* Doctor Visit Reminder Modal (Task 6.2f) */}
+      <DoctorVisitModal
+        isOpen={isVisitModalOpen}
+        onClose={() => setIsVisitModalOpen(false)}
+        prefilledReason={prefilledReason}
+      />
 
       {/* Mobile Bottom Navigation Bar */}
       <BottomNav />

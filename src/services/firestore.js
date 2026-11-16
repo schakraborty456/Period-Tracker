@@ -13,7 +13,7 @@ import {
   serverTimestamp,
 } from 'firebase/firestore';
 import { db } from '../firebase';
-import { getDaysDifference } from '../utils/dateHelpers';
+import { getDaysDifference, formatLocalDate } from '../utils/dateHelpers';
 import { getCycleLengthsFromPeriods, getEffectiveCycleLength } from '../utils/cycleCalculator';
 
 /**
@@ -282,9 +282,107 @@ export async function recordNewPeriodAndRecalculate(userId, newStartDate) {
 }
 
 /**
- * Permanently deletes all user data from Cloud Firestore (Task 5.1).
- * Deletes all subcollection docs in `users/{userId}/periods` and `users/{userId}/dailyLogs`,
- * then deletes the user document in `users/{userId}`.
+ * Saves or updates a doctor visit reminder in `users/{userId}/doctorVisits` (Task 6.2f).
+ *
+ * @param {string} userId
+ * @param {object} visitData
+ * @param {string} [visitId]
+ * @returns {Promise<{ id: string, date: string, status: string, [key: string]: any }>}
+ */
+export async function saveDoctorVisit(userId, visitData, visitId = null) {
+  const payload = {
+    date: visitData.date, // 'YYYY-MM-DD'
+    time: visitData.time || '', // '10:30 AM'
+    doctorName: (visitData.doctorName || '').slice(0, 100),
+    clinic: (visitData.clinic || '').slice(0, 100),
+    reason: (visitData.reason || '').slice(0, 200),
+    notes: (visitData.notes || '').slice(0, 500),
+    status: visitData.status || 'scheduled', // 'scheduled' | 'completed' | 'cancelled'
+    checklist: Array.isArray(visitData.checklist) ? visitData.checklist : [],
+    updatedAt: serverTimestamp(),
+  };
+
+  if (visitId) {
+    const visitRef = doc(db, 'users', userId, 'doctorVisits', visitId);
+    await setDoc(visitRef, payload, { merge: true });
+    return { id: visitId, ...payload };
+  } else {
+    payload.createdAt = serverTimestamp();
+    const visitsRef = collection(db, 'users', userId, 'doctorVisits');
+    const docRef = await addDoc(visitsRef, payload);
+    return { id: docRef.id, ...payload };
+  }
+}
+
+/**
+ * Fetches all doctor visit records for a user ordered by date descending.
+ *
+ * @param {string} userId
+ * @returns {Promise<Array>}
+ */
+export async function getUserDoctorVisits(userId) {
+  const visitsRef = collection(db, 'users', userId, 'doctorVisits');
+  const q = query(visitsRef, orderBy('date', 'desc'));
+  const querySnap = await getDocs(q);
+
+  return querySnap.docs.map((docSnap) => ({
+    id: docSnap.id,
+    ...docSnap.data(),
+  }));
+}
+
+/**
+ * Fetches the next scheduled upcoming doctor visit on or after today (Task 6.2f).
+ *
+ * @param {string} userId
+ * @param {string} [todayStr]
+ * @returns {Promise<object|null>}
+ */
+export async function getUpcomingDoctorVisit(userId, todayStr = null) {
+  const allVisits = await getUserDoctorVisits(userId);
+  const refDate = todayStr || formatLocalDate(new Date());
+
+  const upcoming = allVisits
+    .filter((v) => v.status === 'scheduled' && v.date && v.date >= refDate)
+    .sort((a, b) => (a.date > b.date ? 1 : -1)); // chronologically earliest first
+
+  return upcoming[0] || null;
+}
+
+/**
+ * Updates status of a doctor visit reminder (e.g. 'completed', 'cancelled').
+ *
+ * @param {string} userId
+ * @param {string} visitId
+ * @param {string} status - 'scheduled' | 'completed' | 'cancelled'
+ * @returns {Promise<boolean>}
+ */
+export async function updateDoctorVisitStatus(userId, visitId, status) {
+  const visitRef = doc(db, 'users', userId, 'doctorVisits', visitId);
+  await updateDoc(visitRef, {
+    status,
+    updatedAt: serverTimestamp(),
+  });
+  return true;
+}
+
+/**
+ * Deletes a doctor visit document.
+ *
+ * @param {string} userId
+ * @param {string} visitId
+ * @returns {Promise<boolean>}
+ */
+export async function deleteDoctorVisit(userId, visitId) {
+  const visitRef = doc(db, 'users', userId, 'doctorVisits', visitId);
+  await deleteDoc(visitRef);
+  return true;
+}
+
+/**
+ * Permanently deletes all user data from Cloud Firestore (Task 5.1 & GDPR).
+ * Deletes all subcollection docs in `users/{userId}/periods`, `users/{userId}/dailyLogs`,
+ * and `users/{userId}/doctorVisits`, then deletes the user document in `users/{userId}`.
  *
  * @param {string} userId
  * @returns {Promise<boolean>}
@@ -302,7 +400,13 @@ export async function deleteUserAllData(userId) {
   const logDeletions = logsSnap.docs.map((d) => deleteDoc(d.ref));
   await Promise.all(logDeletions);
 
-  // 3. Delete user profile doc
+  // 3. Delete all doctor visit records (Task 6.2f)
+  const visitsRef = collection(db, 'users', userId, 'doctorVisits');
+  const visitsSnap = await getDocs(visitsRef);
+  const visitDeletions = visitsSnap.docs.map((d) => deleteDoc(d.ref));
+  await Promise.all(visitDeletions);
+
+  // 4. Delete user profile doc
   const userRef = doc(db, 'users', userId);
   await deleteDoc(userRef);
 
