@@ -380,7 +380,7 @@ export default function Tips() {
               {tips.selfCare}
             </p>
             <div className="pt-1">
-              <Link to={`/workouts?phase=${activePhase}`} className="block">
+              <Link to={`/workouts?phase=${selectedPhase}`} className="block">
                 <button
                   type="button"
                   className="w-full text-xs font-semibold py-2 px-3 rounded-xl bg-white border border-pink-200 text-primary hover:bg-pink-50 transition-colors flex items-center justify-center gap-1.5 min-h-[44px]"
