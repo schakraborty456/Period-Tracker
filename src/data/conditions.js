@@ -18,11 +18,11 @@ export const CONDITIONS_DISCLAIMER =
   'This educational guide provides general information only and is not a medical diagnosis, cure, or treatment. If you experience severe pain, heavy bleeding, or missed cycles, please consult a qualified gynecologist or healthcare professional.';
 
 export const CONDITION_CATEGORIES = [
-  { key: 'all', label: 'All Conditions' },
+  { key: 'all', label: 'All' },
   { key: 'pain-discomfort', label: 'Pain & Discomfort' },
-  { key: 'hormonal-systemic', label: 'Hormonal & Systemic' },
+  { key: 'hormonal-systemic', label: 'Hormonal' },
   { key: 'flow-blood', label: 'Flow & Blood' },
-  { key: 'cycle-irregularity', label: 'Cycle Irregularity' },
+  { key: 'cycle-irregularity', label: 'Cycle Changes' },
 ];
 
 export const CONDITIONS = [
@@ -532,10 +532,11 @@ export function searchConditions(query) {
     const shortNameMatch = c.shortName.toLowerCase().includes(q);
     const summaryMatch = c.summary.toLowerCase().includes(q);
     const symptomMatch = c.symptoms.some((s) => s.toLowerCase().includes(q));
+    const redFlagMatch = c.whenToSeeDoctor?.some((rf) => rf.toLowerCase().includes(q));
     const mythMatch = c.mythsVsFacts.some(
       (m) => m.myth.toLowerCase().includes(q) || m.fact.toLowerCase().includes(q)
     );
-    return titleMatch || shortNameMatch || summaryMatch || symptomMatch || mythMatch;
+    return titleMatch || shortNameMatch || summaryMatch || symptomMatch || redFlagMatch || mythMatch;
   });
 }
 
@@ -557,6 +558,35 @@ export function getConditionForRiskFlag(riskFlagId) {
 export function getConditionsForRiskFlag(riskFlagId) {
   if (!riskFlagId) return [];
   return CONDITIONS.filter((c) => c.relatedRiskFlagId === riskFlagId);
+}
+
+/**
+ * Helper: Combined filter by category and search query.
+ * @param {object} params
+ * @param {string} [params.category='all']
+ * @param {string} [params.query='']
+ * @returns {Array}
+ */
+export function filterConditions({ category = 'all', query = '' } = {}) {
+  let list = CONDITIONS;
+  if (category && category !== 'all') {
+    list = list.filter((c) => c.category === category);
+  }
+  if (query && typeof query === 'string' && query.trim()) {
+    const q = query.trim().toLowerCase();
+    list = list.filter((c) => {
+      const titleMatch = c.title.toLowerCase().includes(q);
+      const shortNameMatch = c.shortName.toLowerCase().includes(q);
+      const summaryMatch = c.summary.toLowerCase().includes(q);
+      const symptomMatch = c.symptoms.some((s) => s.toLowerCase().includes(q));
+      const redFlagMatch = c.whenToSeeDoctor?.some((rf) => rf.toLowerCase().includes(q));
+      const mythMatch = c.mythsVsFacts.some(
+        (m) => m.myth.toLowerCase().includes(q) || m.fact.toLowerCase().includes(q)
+      );
+      return titleMatch || shortNameMatch || summaryMatch || symptomMatch || redFlagMatch || mythMatch;
+    });
+  }
+  return list;
 }
 
 /**

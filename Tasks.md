@@ -59,7 +59,7 @@ Work in order. One task at a time. Tick the box when done and update Memory.md.
 - [x] 6.2g Define Conditions Library schema and write initial 3 conditions in `src/data/conditions.js` (PCOS/PCOD, PMS, Period Cramps/Dysmenorrhea) with helper functions and automated banned-words & schema Vitest test suite (created early in `src/data/conditions.test.js`)
 - [x] 6.2h Add remaining 5 conditions to `src/data/conditions.js` (Heavy periods, Anemia, Endometriosis, Thyroid problems & cycle changes, Irregular or missed periods)
 - [x] 6.2i Extend automated banned-words & data schema Vitest test suite (`src/data/conditions.test.js`) to cover all 8 conditions, whole-word matching verification, and risk flag linkages
-- [ ] 6.2j Build Conditions Library list page (`pages/Conditions.jsx`) with live search, category filter chips, condition preview cards, medical disclaimer, and register `/conditions` route in App.jsx
+- [x] 6.2j Build Conditions Library list page (`pages/Conditions.jsx`) with live search, category filter chips, condition preview cards, medical disclaimer, and register `/conditions` route in App.jsx
 - [ ] 6.2k Build Condition Detail page (`pages/ConditionDetail.jsx`) at `/conditions/:id` with expandable sections (symptoms, doctor red flags, comfort care, clinical tests, myths vs facts, related workouts link, matching risk flag banner), 44px tap targets, and expert review badge
 - [ ] 6.2l Integrate Conditions Library entry points across app: link matching Insights risk flag cards to `/conditions/:id`, add library discovery cards on Dashboard, Tips page, and related condition links in Workouts
 - [ ] 6.3 Set up AI backend (Cloud Function or Firebase AI Logic), key stored server side

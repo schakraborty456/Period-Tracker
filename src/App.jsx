@@ -9,6 +9,8 @@ import Log from './pages/Log';
 import Insights from './pages/Insights';
 import Workouts from './pages/Workouts';
 import DoctorReport from './pages/DoctorReport';
+import Conditions from './pages/Conditions';
+import ConditionDetail from './pages/ConditionDetail';
 import Settings from './pages/Settings';
 import Privacy from './pages/Privacy';
 import Login from './pages/Login';
@@ -107,6 +109,22 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <DoctorReport />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/conditions"
+            element={
+              <ProtectedRoute>
+                <Conditions />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/conditions/:id"
+            element={
+              <ProtectedRoute>
+                <ConditionDetail />
               </ProtectedRoute>
             }
           />

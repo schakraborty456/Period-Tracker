@@ -393,6 +393,33 @@ export default function Tips() {
           </Card>
         )}
 
+        {/* Educational Conditions Library Card */}
+        <Card className="p-4 bg-gradient-to-r from-rose-50/70 via-pink-50/50 to-purple-50/40 border-pink-100 space-y-2">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-wider">
+              <span>📚</span>
+              <span>Conditions Library</span>
+            </div>
+            <span className="text-[10px] bg-white border border-pink-200 text-textMuted px-2 py-0.5 rounded-full font-medium">
+              8 Guides
+            </span>
+          </div>
+          <p className="text-xs text-textMuted leading-relaxed font-normal">
+            Understand common conditions like PCOS, cramps, PMS, and anemia, with non-medicinal comfort tips and when to see a doctor.
+          </p>
+          <div className="pt-1">
+            <Link to="/conditions" className="block">
+              <button
+                type="button"
+                className="w-full text-xs font-semibold py-2 px-3 rounded-xl bg-white border border-pink-200 text-primary hover:bg-pink-50 transition-colors flex items-center justify-center gap-1.5 min-h-[44px]"
+              >
+                <span>🔍</span>
+                <span>Explore Conditions Library →</span>
+              </button>
+            </Link>
+          </div>
+        </Card>
+
         {/* Quick link back to Dashboard */}
         <div className="text-center pt-2">
           <Link

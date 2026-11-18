@@ -7,6 +7,7 @@ import {
   getConditionById,
   getConditionsByCategory,
   searchConditions,
+  filterConditions,
   getConditionForRiskFlag,
   getConditionsForRiskFlag,
   getAllConditions,
@@ -373,6 +374,75 @@ describe('Conditions Library Complete 8 Conditions & Schema (Tasks 6.2g, 6.2h, 6
     it('getAllConditions returns all 8 conditions', () => {
       expect(getAllConditions()).toBe(CONDITIONS);
       expect(getAllConditions().length).toBe(8);
+    });
+
+    describe('filterConditions (combined category & search query logic)', () => {
+      it('returns all conditions when no filter or empty params are provided', () => {
+        expect(filterConditions().length).toBe(8);
+        expect(filterConditions({ category: 'all', query: '' }).length).toBe(8);
+      });
+
+      it('filters correctly by category only', () => {
+        const painConditions = filterConditions({ category: 'pain-discomfort' });
+        expect(painConditions.length).toBe(3);
+        expect(painConditions.map((c) => c.id).sort()).toEqual(
+          ['dysmenorrhea', 'endometriosis', 'pms'].sort()
+        );
+
+        const flowConditions = filterConditions({ category: 'flow-blood' });
+        expect(flowConditions.length).toBe(2);
+        expect(flowConditions.map((c) => c.id).sort()).toEqual(
+          ['anemia', 'heavy-periods'].sort()
+        );
+      });
+
+      it('filters correctly by search query only across title, summary, symptoms, and myths', () => {
+        const queryResults = filterConditions({ query: 'palpitations' });
+        expect(queryResults.length).toBe(1);
+        expect(queryResults[0].id).toBe('anemia');
+
+        const pcosResults = filterConditions({ query: 'pcod' });
+        expect(pcosResults.length).toBe(1);
+        expect(pcosResults[0].id).toBe('pcos');
+      });
+
+      it('combines category filter and search query correctly', () => {
+        // In 'flow-blood', searching 'coin' or 'clots' should match only heavy-periods
+        const combined = filterConditions({
+          category: 'flow-blood',
+          query: 'clots',
+        });
+        expect(combined.length).toBe(1);
+        expect(combined[0].id).toBe('heavy-periods');
+
+        // In 'pain-discomfort', searching 'luteal' should match only pms
+        const pmsCombined = filterConditions({
+          category: 'pain-discomfort',
+          query: 'luteal',
+        });
+        expect(pmsCombined.length).toBe(1);
+        expect(pmsCombined[0].id).toBe('pms');
+      });
+
+      it('returns empty array when category and search query do not overlap', () => {
+        // 'thyroid' is in 'hormonal-systemic', not in 'pain-discomfort'
+        const mismatch = filterConditions({
+          category: 'pain-discomfort',
+          query: 'thyroid',
+        });
+        expect(mismatch).toEqual([]);
+      });
+
+      it('returns empty array when query does not match any condition', () => {
+        const noMatch = filterConditions({ query: 'nonexistentquery999xyz' });
+        expect(noMatch).toEqual([]);
+      });
+
+      it('handles whitespace and mixed casing smoothly', () => {
+        const trimmed = filterConditions({ query: '   EndoMetriosis   ' });
+        expect(trimmed.length).toBe(1);
+        expect(trimmed[0].id).toBe('endometriosis');
+      });
     });
   });
 });
