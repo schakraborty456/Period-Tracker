@@ -46,7 +46,6 @@ Built as a portfolio / resume project to show full-stack, AI integration, and se
 
 ## 6. Open Questions
 - Who will review the nutrition content (doctor / nutritionist)?
-- Which sign-in methods to support beyond email/password (Google)?
 - Final app name and logo.
 - Notification method for reminders (Firebase Cloud Messaging vs email).
 
@@ -95,5 +94,6 @@ Built as a portfolio / resume project to show full-stack, AI integration, and se
 | 2026-11-18 | Completed Task 6.2g: Created src/data/conditions.js with initial 3 conditions (PCOS/PCOD, PMS, Period Cramps/Dysmenorrhea) using exact Architecture.md §5.2 schema, plain language, Bengali/Indian foods (dal, shak, mach, egg, til, kola), strictly non-diagnostic comfort phrasing ("may help ease discomfort"), red-flag doctor triggers, clinical tests overview, myths vs facts, and real workout/risk flag linkages. Created comprehensive Vitest test suite in src/data/conditions.test.js with automated banned-words scanner reporting exact condition and field (12 new tests; 151 total passing). |
 | 2026-11-18 | Completed Tasks 6.2h & 6.2i: Added the remaining 5 conditions to src/data/conditions.js (Heavy periods, Anemia, Endometriosis, Thyroid changes, Irregular or missed periods). Implemented strict content guardrails: non-medicinal comfort care ("may help ease discomfort"), local Indian/Bengali foods (dal, shak, gur, til, egg, fish, meat), clinical blood test requirement for anemia, zero fertility outcome claims for endometriosis, hourly pad soaking & fainting red flags, and pregnancy consideration for missed periods. Expanded src/data/conditions.test.js to all 8 conditions with whole-word banned-words verification ensuring zero false positives on "health" / "healthy" (154 tests passing total). |
 | 2026-11-18 | Completed Task 6.2j: Built mobile-first Conditions Library list page (src/pages/Conditions.jsx) with real-time search, category filter chips (All, Pain & Discomfort, Hormonal, Flow & Blood, Cycle Changes), condition preview cards with review status and category badges, empty search state, and medical disclaimer banner. Added /conditions route and placeholder /conditions/:id route in App.jsx. Added discovery card entry point on Tips page (src/pages/Tips.jsx). Added filterConditions helper and unit tests (161 tests passing). |
+| 2026-11-18 | Added Google Sign-In integration: Implemented loginWithGoogle (GoogleAuthProvider + signInWithPopup) in AuthContext.jsx. Added accessible "Continue with Google" action buttons to Login.jsx and Signup.jsx with comprehensive error handling (popup closed, blocked, unauthorized domain, operation not allowed). |
 
 (Add a new row after each completed task: date, what changed, any decision made.)
