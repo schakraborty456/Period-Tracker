@@ -41,8 +41,8 @@ Built as a portfolio / resume project to show full-stack, AI integration, and se
 - Condition comfort phrasing convention: Always *"may help ease discomfort"*, never *"cure"*, *"treat"*, or medicine names.
 
 ## 5. Current Status
-- Phase: Phase 5 (Tasks 5.1–5.5 completed) & Phase 6 (Tasks 6.2a–6.2g completed).
-- Next task: Task 6.2h in Tasks.md (Add remaining 5 conditions to src/data/conditions.js).
+- Phase: Phase 5 (Tasks 5.1–5.5 completed) & Phase 6 (Tasks 6.2a–6.2i completed).
+- Next task: Task 6.2j in Tasks.md (Build Conditions Library list page pages/Conditions.jsx).
 
 ## 6. Open Questions
 - Who will review the nutrition content (doctor / nutritionist)?
@@ -93,5 +93,6 @@ Built as a portfolio / resume project to show full-stack, AI integration, and se
 | 2026-11-16 | Completed Task 6.2f: Implemented rule-based red-flag escalation engine (src/utils/redFlagDetection.js) detecting 90-day amenorrhea, >7-day bleeding streaks, and acute severe pain (9–10/10). Added Doctor Visit Reminders with Firestore persistence, Google Calendar sync, and preparation checklists. Built RedFlagEscalationCard, UpcomingDoctorVisitCard, and DoctorVisitModal integrated across Dashboard, Log, Insights, and Doctor Report. Added 18 new unit tests (139 tests passing). |
 | 2026-11-18 | Planned "Conditions Library" feature for Version 2: Updated PRD.md, Rules.md, Architecture.md, Tasks.md, and Memory.md. Feature provides 8 static, reviewed condition guides (PCOS, PMS, cramps, heavy periods, anemia, endometriosis, thyroid, irregular periods) with symptom overviews, doctor red flags, non-medicinal comfort care ("may help ease discomfort"), clinical tests overview, myths vs facts, automated banned-words test, and links from Insights risk flags & Workouts; structured tasks 6.2g–6.2l added before AI assistant. |
 | 2026-11-18 | Completed Task 6.2g: Created src/data/conditions.js with initial 3 conditions (PCOS/PCOD, PMS, Period Cramps/Dysmenorrhea) using exact Architecture.md §5.2 schema, plain language, Bengali/Indian foods (dal, shak, mach, egg, til, kola), strictly non-diagnostic comfort phrasing ("may help ease discomfort"), red-flag doctor triggers, clinical tests overview, myths vs facts, and real workout/risk flag linkages. Created comprehensive Vitest test suite in src/data/conditions.test.js with automated banned-words scanner reporting exact condition and field (12 new tests; 151 total passing). |
+| 2026-11-18 | Completed Tasks 6.2h & 6.2i: Added the remaining 5 conditions to src/data/conditions.js (Heavy periods, Anemia, Endometriosis, Thyroid changes, Irregular or missed periods). Implemented strict content guardrails: non-medicinal comfort care ("may help ease discomfort"), local Indian/Bengali foods (dal, shak, gur, til, egg, fish, meat), clinical blood test requirement for anemia, zero fertility outcome claims for endometriosis, hourly pad soaking & fainting red flags, and pregnancy consideration for missed periods. Expanded src/data/conditions.test.js to all 8 conditions with whole-word banned-words verification ensuring zero false positives on "health" / "healthy" (154 tests passing total). |
 
 (Add a new row after each completed task: date, what changed, any decision made.)

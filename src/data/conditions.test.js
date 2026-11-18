@@ -8,12 +8,13 @@ import {
   getConditionsByCategory,
   searchConditions,
   getConditionForRiskFlag,
+  getConditionsForRiskFlag,
   getAllConditions,
 } from './conditions';
 import { WORKOUT_ROUTINES } from './workouts';
 import { RISK_FLAGS } from './riskFlags';
 
-// Banned words list per Rules.md §5.3 and Task 6.2g instructions
+// Banned words list per Rules.md §5.3, Task 6.2g, and Task 6.2h instructions
 const BANNED_PATTERNS = [
   { word: 'cure', regex: /\bcures?\b/i },
   { word: 'treat', regex: /\btreats?\b/i },
@@ -29,6 +30,7 @@ const BANNED_PATTERNS = [
   { word: 'pills', regex: /\bpills?\b/i },
   { word: 'supplement', regex: /\bsupplements?\b/i },
   { word: 'herbal', regex: /\bherbal\b/i },
+  { word: 'iron tablets', regex: /\biron\s+tablets?\b/i },
 ];
 
 /**
@@ -90,16 +92,27 @@ function scanConditionForBannedWords(condition) {
   return violations;
 }
 
-describe('Conditions Library Data Structure & Initial 3 Conditions (Task 6.2g)', () => {
-  it('contains the first 3 planned conditions: pcos, pms, dysmenorrhea', () => {
-    expect(CONDITIONS.length).toBeGreaterThanOrEqual(3);
+describe('Conditions Library Complete 8 Conditions & Schema (Tasks 6.2g, 6.2h, 6.2i)', () => {
+  const EXPECTED_IDS = [
+    'pcos',
+    'pms',
+    'dysmenorrhea',
+    'heavy-periods',
+    'anemia',
+    'endometriosis',
+    'thyroid',
+    'irregular-periods',
+  ];
+
+  it('contains exactly the 8 planned conditions with expected IDs', () => {
+    expect(CONDITIONS.length).toBe(8);
     const ids = CONDITIONS.map((c) => c.id);
-    expect(ids).toContain('pcos');
-    expect(ids).toContain('pms');
-    expect(ids).toContain('dysmenorrhea');
+    EXPECTED_IDS.forEach((expectedId) => {
+      expect(ids).toContain(expectedId);
+    });
   });
 
-  it('guarantees unique condition IDs', () => {
+  it('guarantees unique condition IDs across all entries', () => {
     const ids = CONDITIONS.map((c) => c.id);
     const uniqueIds = new Set(ids);
     expect(uniqueIds.size).toBe(ids.length);
@@ -186,7 +199,7 @@ describe('Conditions Library Data Structure & Initial 3 Conditions (Task 6.2g)',
     });
   });
 
-  it('validates relatedRiskFlagId points to real existing flags in riskFlags.js or is null', () => {
+  it('validates relatedRiskFlagId matches the specific mappings requested in Task 6.2h', () => {
     const validRiskFlagIds = new Set(Object.keys(RISK_FLAGS));
 
     CONDITIONS.forEach((condition) => {
@@ -197,16 +210,64 @@ describe('Conditions Library Data Structure & Initial 3 Conditions (Task 6.2g)',
         ).toBe(true);
       }
     });
+
+    // Check specific flag pairings per Task 6.2h
+    expect(getConditionById('heavy-periods')?.relatedRiskFlagId).toBe('anemia_possible');
+    expect(getConditionById('anemia')?.relatedRiskFlagId).toBe('anemia_possible');
+    expect(getConditionById('endometriosis')?.relatedRiskFlagId).toBe('severe_pain_possible');
+    expect(getConditionById('thyroid')?.relatedRiskFlagId).toBe('thyroid_possible');
+    expect(getConditionById('irregular-periods')?.relatedRiskFlagId).toBe('see_doctor_soon');
   });
 
-  it('explicitly mentions PCOD in the PCOS entry title or summary', () => {
-    const pcos = getConditionById('pcos');
-    expect(pcos).toBeDefined();
-    const text = `${pcos.title} ${pcos.summary}`.toUpperCase();
-    expect(text.includes('PCOD')).toBe(true);
+  it('verifies specific content rules for anemia and heavy periods', () => {
+    const anemia = getConditionById('anemia');
+    const heavy = getConditionById('heavy-periods');
+
+    expect(anemia).toBeDefined();
+    expect(heavy).toBeDefined();
+
+    // Anemia food mentions Indian/Bengali sources
+    const anemiaFood = anemia.homeComfort.food.toLowerCase();
+    expect(anemiaFood).toContain('dal');
+    expect(anemiaFood).toContain('shak');
+    expect(anemiaFood).toContain('gur');
+    expect(anemiaFood).toContain('til');
+    expect(anemiaFood).toContain('egg');
+    expect(anemiaFood).toContain('mach');
+    expect(anemiaFood).toContain('meat');
+
+    // Anemia explicitly states blood test is the only way to know
+    const anemiaSummaryAndFacts = (anemia.summary + ' ' + JSON.stringify(anemia.mythsVsFacts)).toLowerCase();
+    expect(anemiaSummaryAndFacts).toContain('blood test');
+
+    // Both heavy-periods and anemia whenToSeeDoctor include soaking a pad every hour and dizziness/fainting
+    [heavy, anemia].forEach((cond) => {
+      const redFlags = cond.whenToSeeDoctor.join(' ').toLowerCase();
+      expect(redFlags).toContain('every hour');
+      const hasDizzinessOrFaint = redFlags.includes('dizziness') || redFlags.includes('faint');
+      expect(hasDizzinessOrFaint).toBe(true);
+    });
   });
 
-  it('passes strict banned-words check across all fields, reporting exact condition and field', () => {
+  it('verifies irregular-periods includes causes and pregnancy consideration', () => {
+    const irregular = getConditionById('irregular-periods');
+    expect(irregular).toBeDefined();
+    const text = (irregular.summary + ' ' + irregular.whenToSeeDoctor.join(' ')).toLowerCase();
+    expect(text).toContain('pregnancy');
+    expect(text).toContain('stress');
+  });
+
+  it('verifies endometriosis makes NO claims about fertility outcomes or causes', () => {
+    const endo = getConditionById('endometriosis');
+    expect(endo).toBeDefined();
+    const allText = JSON.stringify(endo).toLowerCase();
+    expect(allText).not.toContain('infertility');
+    expect(allText).not.toContain('infertile');
+    expect(allText).not.toContain('barren');
+    expect(allText).not.toContain('cure');
+  });
+
+  it('passes strict banned-words check across all 8 conditions, reporting exact condition and field', () => {
     const allViolations = [];
 
     CONDITIONS.forEach((condition) => {
@@ -227,43 +288,91 @@ describe('Conditions Library Data Structure & Initial 3 Conditions (Task 6.2g)',
     ).toBe(0);
   });
 
-  describe('Helper Functions', () => {
+  it('uses whole-word matching so that "health", "healthy", and "healthcare" are never falsely flagged', () => {
+    const mockCondition = {
+      id: 'test-condition',
+      title: 'Women Health Guide',
+      shortName: 'Health',
+      summary: 'Promoting healthy habits and consulting healthcare professionals for health concerns.',
+      symptoms: ['Changes in healthy cycle rhythm', 'General health observations'],
+      whenToSeeDoctor: ['Contact healthcare provider for severe signs'],
+      homeComfort: {
+        food: 'Healthy food choices may help ease discomfort',
+        sleep: 'Healthy rest routines may help ease discomfort',
+        stress: 'Healthy relaxation may help ease discomfort',
+        hydration: 'Healthy water intake may help ease discomfort',
+        heatAndMovement: 'Healthy stretching may help ease discomfort',
+      },
+      whatDoctorMayCheck: ['Complete health screening and treatment options discussion'],
+      mythsVsFacts: [
+        {
+          myth: 'Myth about health',
+          fact: 'Fact supporting healthy living and healthcare guidance',
+        },
+      ],
+    };
+
+    const violations = scanConditionForBannedWords(mockCondition);
+    expect(
+      violations,
+      `Banned words scanner should not flag whole words like "health" or "healthy": ${JSON.stringify(violations)}`
+    ).toEqual([]);
+  });
+
+  describe('Helper Functions across all 8 Conditions', () => {
     it('getConditionById returns the correct condition or undefined', () => {
-      expect(getConditionById('pcos')?.shortName).toBe('PCOS');
-      expect(getConditionById('PCOS')?.shortName).toBe('PCOS'); // Case-insensitive
+      expect(getConditionById('heavy-periods')?.shortName).toBe('Heavy Periods');
+      expect(getConditionById('AnEmIa')?.shortName).toBe('Anemia');
       expect(getConditionById('non-existent')).toBeUndefined();
       expect(getConditionById(null)).toBeUndefined();
     });
 
-    it('getConditionsByCategory filters correctly', () => {
+    it('getConditionsByCategory filters correctly across all 4 categories', () => {
       const all = getConditionsByCategory('all');
-      expect(all.length).toBe(CONDITIONS.length);
+      expect(all.length).toBe(8);
 
       const hormonal = getConditionsByCategory('hormonal-systemic');
-      expect(hormonal.every((c) => c.category === 'hormonal-systemic')).toBe(true);
-      expect(hormonal.some((c) => c.id === 'pcos')).toBe(true);
+      expect(hormonal.map((c) => c.id).sort()).toEqual(['pcos', 'thyroid'].sort());
 
       const pain = getConditionsByCategory('pain-discomfort');
-      expect(pain.some((c) => c.id === 'dysmenorrhea')).toBe(true);
-      expect(pain.some((c) => c.id === 'pms')).toBe(true);
+      expect(pain.map((c) => c.id).sort()).toEqual(['dysmenorrhea', 'endometriosis', 'pms'].sort());
+
+      const flow = getConditionsByCategory('flow-blood');
+      expect(flow.map((c) => c.id).sort()).toEqual(['anemia', 'heavy-periods'].sort());
+
+      const cycle = getConditionsByCategory('cycle-irregularity');
+      expect(cycle.map((c) => c.id)).toEqual(['irregular-periods']);
     });
 
-    it('searchConditions finds conditions by keyword across title, shortName, summary, and symptoms', () => {
-      expect(searchConditions('PCOD').some((c) => c.id === 'pcos')).toBe(true);
-      expect(searchConditions('cramps').some((c) => c.id === 'dysmenorrhea')).toBe(true);
-      expect(searchConditions('luteal').some((c) => c.id === 'pms')).toBe(true);
-      expect(searchConditions('nonexistentkeywordxyz')).toEqual([]);
-      expect(searchConditions('').length).toBe(CONDITIONS.length);
+    it('searchConditions finds conditions across all 8 entries', () => {
+      expect(searchConditions('thyroid').some((c) => c.id === 'thyroid')).toBe(true);
+      expect(searchConditions('iron').some((c) => c.id === 'anemia')).toBe(true);
+      expect(searchConditions('endometriosis').some((c) => c.id === 'endometriosis')).toBe(true);
+      expect(searchConditions('clots').some((c) => c.id === 'heavy-periods')).toBe(true);
+      expect(searchConditions('amenorrhea').some((c) => c.id === 'irregular-periods')).toBe(true);
+      expect(searchConditions('nonexistentxyz')).toEqual([]);
     });
 
-    it('getConditionForRiskFlag matches risk flag IDs', () => {
-      expect(getConditionForRiskFlag('pcos_possible')?.id).toBe('pcos');
-      expect(getConditionForRiskFlag('severe_pain_possible')?.id).toBe('dysmenorrhea');
-      expect(getConditionForRiskFlag('non_existent')).toBeUndefined();
+    it('getConditionForRiskFlag and getConditionsForRiskFlag return matching conditions', () => {
+      // First match
+      expect(getConditionForRiskFlag('see_doctor_soon')?.id).toBe('irregular-periods');
+      expect(getConditionForRiskFlag('thyroid_possible')?.id).toBe('thyroid');
+
+      // Multiple matches
+      const anemiaMatches = getConditionsForRiskFlag('anemia_possible');
+      expect(anemiaMatches.length).toBe(2);
+      expect(anemiaMatches.map((c) => c.id).sort()).toEqual(['anemia', 'heavy-periods'].sort());
+
+      const painMatches = getConditionsForRiskFlag('severe_pain_possible');
+      expect(painMatches.length).toBe(2);
+      expect(painMatches.map((c) => c.id).sort()).toEqual(['dysmenorrhea', 'endometriosis'].sort());
+
+      expect(getConditionsForRiskFlag('non_existent')).toEqual([]);
     });
 
-    it('getAllConditions returns all conditions', () => {
+    it('getAllConditions returns all 8 conditions', () => {
       expect(getAllConditions()).toBe(CONDITIONS);
+      expect(getAllConditions().length).toBe(8);
     });
   });
 });

@@ -4,8 +4,8 @@
  * Requirements & Content Rules (Rules.md §5.3):
  * - Educational only: strictly no diagnosis, no "you have X" wording.
  * - Home care is framed strictly as "may help ease discomfort", never as a cure or treatment.
- * - Zero medicine names (no ibuprofen, paracetamol, mefenamic, metformin, etc.).
- * - Zero supplement or herbal recommendations, zero dosages.
+ * - Zero medicine names (no ibuprofen, paracetamol, mefenamic, metformin, aspirin, etc.).
+ * - Zero supplement or herbal recommendations, zero dosages, zero iron tablets.
  * - Every condition includes: summary, symptoms, whenToSeeDoctor (red flags),
  *   homeComfort (food, sleep, stress, hydration, heatAndMovement), whatDoctorMayCheck,
  *   mythsVsFacts, relatedWorkoutIds, relatedRiskFlagId, and needsReview: true.
@@ -202,6 +202,297 @@ export const CONDITIONS = [
     relatedRiskFlagId: 'severe_pain_possible',
     needsReview: true,
   },
+
+  {
+    id: 'heavy-periods',
+    title: 'Heavy Periods (Menorrhagia)',
+    shortName: 'Heavy Periods',
+    category: 'flow-blood',
+    categoryLabel: 'Flow & Blood',
+    summary:
+      'Heavy menstrual bleeding (clinically called menorrhagia) refers to periods with unusually high blood loss or bleeding that lasts longer than 7 consecutive days. While individual flow varies, consistently heavy bleeding can deplete physical stamina and bodily iron stores over time.',
+    symptoms: [
+      'Needing to change a sanitary pad or tampon every 1 to 2 hours for consecutive hours',
+      'Passing blood clots larger than a coin (approx 2.5 cm across)',
+      'Needing double sanitary protection (such as two pads at once) to avoid leaks',
+      'Waking up during the night to change sanitary products',
+      'Persistent fatigue, weakness, or short breath during or after bleeding days',
+    ],
+    whenToSeeDoctor: [
+      'Soaking through one or more sanitary pads or tampons every hour for 2 or more consecutive hours',
+      'Bleeding that continues for more than 7 consecutive days',
+      'Experiencing dizziness, lightheadedness, or sudden fainting',
+      'Passing large blood clots frequently throughout your period',
+      'Bleeding between periods or after intimate contact',
+    ],
+    homeComfort: {
+      food:
+        'Eating iron-supportive meals featuring lentils (dal), green leafy vegetables (shak like palong or lal shak), jaggery (gur), sesame seeds (til), eggs, and fish (mach) alongside vitamin C foods like lemon or amla may help ease discomfort and nourish daily stamina.',
+      sleep:
+        'Allowing for extra rest and sleeping with elevated legs or a supportive side posture may help ease discomfort and physical fatigue on heavy flow days.',
+      stress:
+        'Taking quiet downtime and postponing demanding chores during peak bleeding hours may help ease discomfort caused by bodily strain.',
+      hydration:
+        'Drinking plenty of clean water, coconut water, or warm broths may help ease discomfort by maintaining adequate fluid volume.',
+      heatAndMovement:
+        'Resting with a warm compress on the lower pelvis and choosing slow, unhurried walking rather than intense workouts may help ease discomfort.',
+    },
+    whatDoctorMayCheck: [
+      'Complete blood count (CBC) and serum ferritin test to evaluate iron levels',
+      'Pelvic ultrasound to inspect the uterus for polyps, fibroids, or adenomyosis',
+      'Thyroid and reproductive hormone panels to investigate cycle regularity',
+      'Pap smear and cervical evaluation when clinically appropriate',
+      'Discussion of bleeding duration, pad counts, and cycle history',
+    ],
+    mythsVsFacts: [
+      {
+        myth: 'Myth: Bleeding through clothes and soaking a pad every hour is just a normal heavy flow.',
+        fact:
+          'Fact: Extremely heavy flow that disrupts daily life or soaks pads hourly is not typical and warrants clinical evaluation by a healthcare provider.',
+      },
+      {
+        myth: 'Myth: Heavy periods always indicate a dangerous or irreversible condition.',
+        fact:
+          'Fact: Many heavy periods are caused by common, manageable factors like hormone shifts, polyps, or fibroids that a doctor can assess and guide.',
+      },
+    ],
+    relatedWorkoutIds: ['cramps-relief', 'lower-back-soother'],
+    relatedRiskFlagId: 'anemia_possible',
+    needsReview: true,
+  },
+
+  {
+    id: 'anemia',
+    title: 'Anemia (Iron Deficiency & Menstrual Health)',
+    shortName: 'Anemia',
+    category: 'flow-blood',
+    categoryLabel: 'Flow & Blood',
+    summary:
+      'Anemia occurs when the body does not have enough healthy red blood cells or hemoglobin to carry oxygen to tissues. In people who menstruate, repeated blood loss from heavy periods is a frequent factor. A clinical blood test ordered by a doctor is the only definitive way to determine if anemia is present.',
+    symptoms: [
+      'Persistent tiredness, low stamina, or feeling drained even after full sleep',
+      'Unusual pale skin, pale inner eyelids, or pale nail beds',
+      'Dizziness, lightheadedness, or feeling faint when standing',
+      'Cold hands and feet, or increased sensitivity to chilly temperatures',
+      'Shortness of breath during mild activities like climbing stairs',
+      'Occasional mild headaches or difficulty concentrating',
+    ],
+    whenToSeeDoctor: [
+      'Soaking through one or more sanitary pads or tampons every hour',
+      'Experiencing sudden fainting, severe dizziness, or chest discomfort',
+      'Extreme exhaustion that makes it difficult to get out of bed or carry out daily work',
+      'Rapid or fluttering heartbeat (palpitations) during ordinary movement',
+      'Noticeably pale lips, tongue, or inner eyelids alongside fatigue',
+    ],
+    homeComfort: {
+      food:
+        'Consuming naturally iron-rich dietary sources like lentils (masoor and moong dal), dark green leafy vegetables (shak), sesame seeds (til), jaggery (gur), eggs, fish (mach), and meat for non-vegetarians paired with citrus fruits (lemon, amla) may help ease discomfort by supporting balanced daily nutrition.',
+      sleep:
+        'Prioritizing an unhurried 8 hours of sleep and taking short afternoon pauses when fatigued may help ease discomfort and restore physical stamina.',
+      stress:
+        'Pacing daily responsibilities and practicing slow, relaxed breathing may help ease discomfort by reducing physical strain on low-energy days.',
+      hydration:
+        'Drinking plenty of clean water throughout the day may help ease discomfort and maintain healthy blood volume.',
+      heatAndMovement:
+        'Wearing warm clothing and cozy layers along with gentle stretching or unhurried strolls may help ease discomfort from cold extremities and sluggishness.',
+    },
+    whatDoctorMayCheck: [
+      'Complete Blood Count (CBC) to measure hemoglobin levels and red blood cell count',
+      'Serum ferritin and iron profile to evaluate iron stores in the body',
+      'Underlying menstrual blood loss assessment and pelvic review',
+      'Dietary and medical history discussion to guide clinical recommendations',
+    ],
+    mythsVsFacts: [
+      {
+        myth: 'Myth: You can easily diagnose anemia just by looking at pale skin.',
+        fact:
+          'Fact: While paleness can be an observable sign, a standard blood test performed by a doctor is the only definitive way to confirm low iron levels.',
+      },
+      {
+        myth: 'Myth: Feeling tired all the time is just part of having a period.',
+        fact:
+          'Fact: Persistent fatigue that limits daily life is not typical and may be linked to low iron or other health factors that a doctor can examine.',
+      },
+    ],
+    relatedWorkoutIds: ['follicular-mobility', 'luteal-grounding'],
+    relatedRiskFlagId: 'anemia_possible',
+    needsReview: true,
+  },
+
+  {
+    id: 'endometriosis',
+    title: 'Endometriosis',
+    shortName: 'Endometriosis',
+    category: 'pain-discomfort',
+    categoryLabel: 'Pain & Discomfort',
+    summary:
+      'Endometriosis is a condition where tissue similar to the lining of the uterus grows outside the uterus, such as on the ovaries, fallopian tubes, or pelvic lining. This tissue behaves like uterine lining—thickening and breaking down with each menstrual cycle—which can cause pelvic inflammation and discomfort.',
+    symptoms: [
+      'Deep, chronic pelvic pain that may begin days before a period and last throughout bleeding',
+      'High menstrual pain scores (often rated 7 to 10) that do not respond to ordinary comfort care',
+      'Pain during or after intimate contact',
+      'Discomfort or pain during bowel movements or urination, particularly during periods',
+      'Lower back pain and fatigue that worsens cyclically with periods',
+      'Digestive symptoms such as bloating, nausea, or loose stools around menstruation',
+    ],
+    whenToSeeDoctor: [
+      'Pelvic pain that is severe, disabling, or keeps you from attending school or work',
+      'High pain scores (7 to 10) occurring consistently month after month',
+      'Painful urination or painful bowel movements during bleeding days',
+      'Pelvic pain that worsens progressively over successive cycles',
+      'Sudden, acute, or unmanageable pelvic pain accompanied by dizziness or fever',
+    ],
+    homeComfort: {
+      food:
+        'Choosing comforting foods like turmeric-spiced dal, colorful vegetables (shak, carrots), fresh fruits (kola), and nutritious whole foods while limiting heavy fried items may help ease discomfort in the pelvic area.',
+      sleep:
+        'Sleeping in a restorative side-lying position with a pillow supporting the abdomen and knees may help ease discomfort and relieve spinal tension.',
+      stress:
+        'Practicing gentle diaphragmatic breathing, body-scan relaxation, and restful quiet time may help ease discomfort by calming pelvic tension.',
+      hydration:
+        'Staying consistently hydrated with warm water and comforting broths throughout the day may help ease discomfort by supporting smooth digestion.',
+      heatAndMovement:
+        'Using a warm water bottle or heating pad on the lower abdomen and practicing gentle restorative yoga (such as child’s pose, butterfly stretch, and cat-cow) may help ease discomfort and soften pelvic floor tightness.',
+    },
+    whatDoctorMayCheck: [
+      'Comprehensive pelvic examination to check for pelvic tenderness or tissue nodules',
+      'Specialized pelvic ultrasound or MRI to assess pelvic organs and deep tissue deposits',
+      'In-depth discussion of pain patterns, cycle history, and symptom impact on everyday life',
+      'Consultation with an experienced gynecologist regarding diagnostic pathways',
+    ],
+    mythsVsFacts: [
+      {
+        myth: 'Myth: Having endometriosis is just normal period pain and is all in the head.',
+        fact:
+          'Fact: Endometriosis is a recognized physical condition involving real tissue outside the uterus, and its pain is genuine.',
+      },
+      {
+        myth: 'Myth: A routine standard ultrasound will always detect endometriosis.',
+        fact:
+          'Fact: Standard ultrasounds may show certain cysts but can miss smaller or superficial tissue deposits; specialist clinical evaluation is essential.',
+      },
+    ],
+    relatedWorkoutIds: ['cramps-relief', 'lower-back-soother'],
+    relatedRiskFlagId: 'severe_pain_possible',
+    needsReview: true,
+  },
+
+  {
+    id: 'thyroid',
+    title: 'Thyroid Problems & Cycle Changes',
+    shortName: 'Thyroid Changes',
+    category: 'hormonal-systemic',
+    categoryLabel: 'Hormonal & Systemic',
+    summary:
+      'The thyroid is a small gland at the base of the neck that produces hormones controlling metabolism and energy. Because thyroid hormones interact closely with reproductive hormones, variations in thyroid function can noticeably alter cycle timing, flow volume, and daily stamina.',
+    symptoms: [
+      'Menstrual cycles that suddenly become much longer, irregular, or missed',
+      'Menstrual flow that becomes unusually heavy (often with low thyroid activity) or unusually light (often with elevated thyroid activity)',
+      'Unexplained, persistent tiredness or lethargy despite sleeping well',
+      'Unexplained changes in body weight without changes in diet',
+      'Sensitivity to temperature (feeling unusually cold or unusually overheated)',
+      'Dry skin, brittle nails, or diffuse hair thinning',
+    ],
+    whenToSeeDoctor: [
+      'Menstrual periods that have stopped for 90 or more days (3 months) when not pregnant',
+      'Periods that have become highly erratic or unpredictably spaced over several cycles',
+      'Excessively heavy bleeding or bleeding lasting longer than 7 consecutive days',
+      'Persistent exhaustion, rapid heartbeat, or extreme sensitivity to cold or heat',
+      'A visible swelling or fullness at the base of the neck',
+    ],
+    homeComfort: {
+      food:
+        'Eating balanced meals with adequate protein (lentils/dal, eggs, fish/mach), fiber-rich vegetables (shak), and whole grains while avoiding erratic skipping of meals may help ease discomfort by supporting steady metabolic energy.',
+      sleep:
+        'Maintaining consistent sleep and wake hours in a calm, dark environment may help ease discomfort and help manage daytime fatigue.',
+      stress:
+        'Daily gentle walking, calming breathwork, and reducing demanding physical overexertion may help ease discomfort from metabolic strain.',
+      hydration:
+        'Drinking adequate water throughout the day and choosing warm fluids when feeling chilly may help ease discomfort and keep digestion regular.',
+      heatAndMovement:
+        'Dressing in comfortable warm layers when cold and engaging in light morning stretching or gentle walking may help ease discomfort and maintain circulation.',
+    },
+    whatDoctorMayCheck: [
+      'Thyroid blood panel (TSH, Free T3, and Free T4) to evaluate thyroid hormone function',
+      'Thyroid antibody tests (such as anti-TPO) to check for autoimmune thyroid patterns',
+      'Complete blood count and lipid profile',
+      'Physical examination of the neck and thyroid gland',
+      'Review of cycle logs, weight changes, and family thyroid history',
+    ],
+    mythsVsFacts: [
+      {
+        myth: 'Myth: Thyroid issues only cause neck swelling and have nothing to do with periods.',
+        fact:
+          'Fact: Thyroid hormones directly interact with the ovaries and pituitary gland, making cycle irregularity or flow changes a common sign.',
+      },
+      {
+        myth: 'Myth: You can balance thyroid hormones solely through diet or lifestyle at home.',
+        fact:
+          'Fact: While balanced nutrition supports general wellness, true thyroid imbalances require clinical evaluation and guidance by a medical doctor.',
+      },
+    ],
+    relatedWorkoutIds: ['pcos-rhythm', 'luteal-grounding'],
+    relatedRiskFlagId: 'thyroid_possible',
+    needsReview: true,
+  },
+
+  {
+    id: 'irregular-periods',
+    title: 'Irregular or Missed Periods',
+    shortName: 'Irregular Periods',
+    category: 'cycle-irregularity',
+    categoryLabel: 'Cycle Irregularity',
+    summary:
+      'An irregular period is one that falls outside the typical cycle range of 21 to 35 days, varies by more than 7 days from month to month, or is absent altogether (amenorrhea). A missed period can have many potential causes—such as significant stress, rapid weight or dietary shifts, thyroid changes, PCOS, intense athletic training, or pregnancy, which should always be considered if sexually active.',
+    symptoms: [
+      'Cycles that arrive unpredictably (for example, 22 days one month, then 42 days the next)',
+      'Cycles that consistently exceed 35 days or occur more frequently than every 21 days',
+      'Periods that stop completely for several months',
+      'Varying flow volume (very light spotting one month, heavy bleeding the next)',
+      'Unpredictable timing of ovulation signs and fertile windows',
+    ],
+    whenToSeeDoctor: [
+      'No period for 90 or more days (3 months) when not pregnant',
+      'Periods that suddenly stop after having been regular for years',
+      'Bleeding that lasts longer than 7 consecutive days or bleeding between periods',
+      'Severe abdominal or pelvic pain accompanied by a missed period',
+      'Any missed period when pregnancy is possible, to receive early medical guidance',
+    ],
+    homeComfort: {
+      food:
+        'Eating regular, nourishing meals with sufficient calories, healthy fats, complex carbs (rice, roti, dal), and greens (shak) while avoiding restrictive diets may help ease discomfort by providing reliable fuel for the body.',
+      sleep:
+        'Going to bed at consistent hours and securing 7 to 9 hours of restorative rest may help ease discomfort and support healthy hormone signalling.',
+      stress:
+        'Lowering daily mental overload through unhurried walks, breathing techniques, and making space for relaxation may help ease discomfort from stress-induced cycle delays.',
+      hydration:
+        'Drinking 8 to 10 glasses of water daily may help ease discomfort and maintain general hydration.',
+      heatAndMovement:
+        'Choosing moderate, enjoyable movements like walking, swimming, or restorative yoga rather than exhausting overtraining may help ease discomfort and nourish hormonal rhythm.',
+    },
+    whatDoctorMayCheck: [
+      'Pregnancy test (urine or serum hCG) as an initial evaluation if sexually active',
+      'Hormonal blood panel (prolactin, FSH, LH, estrogen, and androgens)',
+      'Thyroid blood panel (TSH, Free T4) to investigate metabolic factors',
+      'Pelvic ultrasound to visualize the uterus and ovaries',
+      'Detailed discussion of recent stress, weight fluctuations, and lifestyle changes',
+    ],
+    mythsVsFacts: [
+      {
+        myth: 'Myth: Every woman must have a period exactly every 28 days for it to be normal.',
+        fact:
+          'Fact: Natural cycle lengths typically range anywhere from 21 to 35 days; moderate variation of a few days between cycles is common.',
+      },
+      {
+        myth: 'Myth: If a period is missed, it always indicates an incurable medical problem.',
+        fact:
+          'Fact: Missed periods are frequently triggered by temporary factors like travel, acute emotional stress, illness, or diet changes, which a doctor can help evaluate.',
+      },
+    ],
+    relatedWorkoutIds: ['follicular-mobility', 'pcos-rhythm'],
+    relatedRiskFlagId: 'see_doctor_soon',
+    needsReview: true,
+  },
 ];
 
 /**
@@ -227,7 +518,7 @@ export function getConditionsByCategory(category) {
 }
 
 /**
- * Helper: Search conditions by keyword across title, shortName, summary, and symptoms.
+ * Helper: Search conditions by keyword across title, shortName, summary, symptoms, and myths.
  * @param {string} query
  * @returns {Array}
  */
@@ -249,13 +540,23 @@ export function searchConditions(query) {
 }
 
 /**
- * Helper: Find condition matching a risk screening flag ID.
+ * Helper: Find condition matching a risk screening flag ID (first match).
  * @param {string} riskFlagId
  * @returns {object|undefined}
  */
 export function getConditionForRiskFlag(riskFlagId) {
   if (!riskFlagId) return undefined;
   return CONDITIONS.find((c) => c.relatedRiskFlagId === riskFlagId);
+}
+
+/**
+ * Helper: Get all conditions matching a risk screening flag ID.
+ * @param {string} riskFlagId
+ * @returns {Array}
+ */
+export function getConditionsForRiskFlag(riskFlagId) {
+  if (!riskFlagId) return [];
+  return CONDITIONS.filter((c) => c.relatedRiskFlagId === riskFlagId);
 }
 
 /**
