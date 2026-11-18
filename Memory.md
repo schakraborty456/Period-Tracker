@@ -25,6 +25,7 @@ Built as a portfolio / resume project to show full-stack, AI integration, and se
 | Languages | English first, Bangla in V2 | Reduce V1 scope |
 | Risk screening | Rule-based formula only, no AI | Pure pattern detection for PCOS, anemia, endometriosis, thyroid signs; never diagnoses; requires >= 3 cycles or 2 months of logs; lifestyle guidance only; placed before AI assistant in V2 |
 | Home workouts | Static reviewed library by phase & symptom | Gentle movements (cramps: cat-cow, child's pose; PCOS: walking, surya namaskar; 10–20 min, Easy/Medium); non-medicinal relief |
+| Conditions Library | Static reviewed educational content (src/data/conditions.js) | Searchable 8-condition reference (PCOS, PMS, cramps, heavy bleeding, anemia, endometriosis, thyroid, irregular periods); educational only; strictly no diagnosis, no medicine/supplement doses, comfort care framed as "may help ease discomfort"; banned-words automated test; links from Insights flags & Workouts; placed before AI assistant in V2 to serve as verified citation source. |
 
 ## 4. Conventions
 - Language: JavaScript (not TypeScript).
@@ -35,10 +36,13 @@ Built as a portfolio / resume project to show full-stack, AI integration, and se
 - Pain score range: `0` (no pain) to `10` (unbearable pain).
 - Extra symptom tag keys: `"acne"`, `"excess_hair"`, `"hair_loss"`, `"weight_change"`, `"dark_patches"`.
 - Risk screening wording convention: Always *"Possible signs are showing in your pattern. This is not a diagnosis. Please see a doctor (gynecologist)."* Never declare a medical diagnosis.
+- Condition page routes: `/conditions` (searchable library) and `/conditions/:id` (condition detail).
+- Condition categories: `"cycle-irregularity"`, `"pain-discomfort"`, `"flow-blood"`, `"hormonal-systemic"`.
+- Condition comfort phrasing convention: Always *"may help ease discomfort"*, never *"cure"*, *"treat"*, or medicine names.
 
 ## 5. Current Status
 - Phase: Phase 5 (Tasks 5.1–5.5 completed) & Phase 6 (Tasks 6.2a–6.2f completed).
-- Next task: Task 6.3 in Tasks.md (Set up AI backend) or next requested feature.
+- Next task: Task 6.2g in Tasks.md (Define Conditions Library schema & initial 3 conditions).
 
 ## 6. Open Questions
 - Who will review the nutrition content (doctor / nutritionist)?
@@ -87,5 +91,6 @@ Built as a portfolio / resume project to show full-stack, AI integration, and se
 | 2026-11-12 | Completed Task 6.2d: Created data/workouts.js with 7 phase- and symptom-tailored home routines (cramps relief, PCOS rhythm, follicular mobility, ovulation sculpt, luteal grounding, bloat relief, back soother; 10–20 min, Easy/Medium, marked "needs expert review"). Built Workouts page (src/pages/Workouts.jsx) with current-phase recommendation, phase & symptom filtering, interactive step-by-step routine viewer/player, safety notice, URL query param support (?symptom=, ?phase=), registered /workouts route in App.jsx, and linked from Insights, Tips, and Dashboard. Added 10 unit tests in workouts.test.js (117 tests passing). |
 | 2026-11-12 | Completed Task 6.2e: Built clinical Doctor Report export page (src/pages/DoctorReport.jsx) and computation engine (src/utils/doctorReportHelpers.js) aggregating patient baseline, recent cycle history table, pain intensity & dysmenorrhea metrics (0–10 scale), flow volume breakdown & bleeding streaks, symptom frequency rankings, risk screening flags, tailored gynecologist discussion checklist, and lined physician notes box. Added print & PDF export styling (@media print), connected routes (/report, /doctor-report) in App.jsx, added entry buttons on Insights and Dashboard, and added unit tests in doctorReportHelpers.test.js (121 tests passing). |
 | 2026-11-16 | Completed Task 6.2f: Implemented rule-based red-flag escalation engine (src/utils/redFlagDetection.js) detecting 90-day amenorrhea, >7-day bleeding streaks, and acute severe pain (9–10/10). Added Doctor Visit Reminders with Firestore persistence, Google Calendar sync, and preparation checklists. Built RedFlagEscalationCard, UpcomingDoctorVisitCard, and DoctorVisitModal integrated across Dashboard, Log, Insights, and Doctor Report. Added 18 new unit tests (139 tests passing). |
+| 2026-11-18 | Planned "Conditions Library" feature for Version 2: Updated PRD.md, Rules.md, Architecture.md, Tasks.md, and Memory.md. Feature provides 8 static, reviewed condition guides (PCOS, PMS, cramps, heavy periods, anemia, endometriosis, thyroid, irregular periods) with symptom overviews, doctor red flags, non-medicinal comfort care ("may help ease discomfort"), clinical tests overview, myths vs facts, automated banned-words test, and links from Insights risk flags & Workouts; structured tasks 6.2g–6.2l added before AI assistant. |
 
 (Add a new row after each completed task: date, what changed, any decision made.)

@@ -29,18 +29,20 @@ The frontend never holds the Gemini API key. All AI calls go through the server 
 ```
 src/
   components/      reusable UI (Button, Card, PhaseBadge, LogForm, Calendar)
-  pages/           Login, Signup, Onboarding, Dashboard, Log, History, Tips, Assistant, Settings, Insights, Workouts, DoctorReport
+  pages/           Login, Signup, Onboarding, Dashboard, Log, History, Tips, Assistant, Settings, Insights, Workouts, DoctorReport, Conditions, ConditionDetail
   context/         AuthContext, UserDataContext
   hooks/           useAuth, useCycle, useDailyLog
   utils/
     cycleCalculator.js   pure functions, fully unit-tested
     dateHelpers.js
     riskScreening.js     rule-based risk detection, fully unit-tested (V2)
+    redFlagDetection.js  escalation & visit triggers, fully unit-tested (V2)
   data/
     nutritionTips.js     phase x diet content (reviewed)
     symptoms.js          symptom options (flow, mood, tags, pain scale)
     riskFlags.js         flag criteria & lifestyle guidance (reviewed) (V2)
     workouts.js          phase & symptom home workout library (V2)
+    conditions.js        educational conditions dataset & comfort care (reviewed) (V2)
   services/
     firestore.js         all DB reads/writes
     aiService.js         calls the AI backend
@@ -105,6 +107,88 @@ Defined in `utils/riskScreening.js` as pure, deterministic functions (no AI).
   - **Immediate Doctor Referral (Red Flags)**: No period recorded for 90+ days (3 months, not pregnant), or bleeding flow lasting > 7 consecutive days.
 - **Output Structure**:
   Returns structured risk flags consumed by `pages/Insights.jsx`, `pages/DoctorReport.jsx`, and forwarded to the AI assistant context. Never outputs a diagnosis.
+
+## 5.2 Conditions Library (Static Educational Content, Version 2)
+Defined in `src/data/conditions.js` as an array of static, expert-reviewable educational objects (no AI generation at runtime, zero Firestore dependency).
+
+### 8 Initial Conditions
+1. `pcos`: PCOS / PCOD (Polycystic Ovary Syndrome) — category: `hormonal-systemic`
+2. `pms`: PMS (Premenstrual Syndrome) — category: `pain-discomfort`
+3. `dysmenorrhea`: Period Cramps (Dysmenorrhea) — category: `pain-discomfort`
+4. `heavy-periods`: Heavy Periods (Menorrhagia) — category: `flow-blood`
+5. `anemia`: Anemia (Iron Deficiency & Menstrual Health) — category: `flow-blood`
+6. `endometriosis`: Endometriosis — category: `pain-discomfort`
+7. `thyroid`: Thyroid Problems & Cycle Changes — category: `hormonal-systemic`
+8. `irregular-periods`: Irregular or Missed Periods — category: `cycle-irregularity`
+
+### Data Shape (`src/data/conditions.js`)
+```javascript
+{
+  id: "pcos",                         // Unique URL slug (/conditions/:id)
+  title: "PCOS / PCOD (Polycystic Ovary Syndrome)",
+  shortName: "PCOS",
+  category: "hormonal-systemic",      // Filter category: 'cycle-irregularity' | 'pain-discomfort' | 'flow-blood' | 'hormonal-systemic'
+  categoryLabel: "Hormonal & Systemic",
+  summary: "A common hormonal condition where the ovaries may develop small follicles and cycles become irregular...",
+  symptoms: [
+    "Irregular or infrequent menstrual periods",
+    "Acne or oily skin",
+    "Excess hair growth on face or body (hirsutism)",
+    "Hair thinning on the scalp",
+    "Weight changes that feel difficult to manage"
+  ],
+  whenToSeeDoctor: [
+    "Periods are absent for 3 or more months (and not pregnant)",
+    "Bleeding is unusually heavy or lasts longer than 7 days",
+    "Severe pelvic pain occurs"
+  ],
+  homeComfort: {
+    food: "Focus on complex carbs (brown rice, oats, dal), fiber-rich greens, and protein with each meal to support balanced energy...",
+    sleep: "Aim for 7–8 hours of consistent sleep to help regulate cortisol and metabolic rhythm.",
+    stress: "Practice gentle deep breathing, slow walking, or restorative yoga to lower daily stress.",
+    hydration: "Drink 8–10 glasses of water daily to maintain metabolic balance and hydration.",
+    heatAndMovement: "Gentle daily walking and regular light strength training support insulin sensitivity and pelvic circulation."
+  },
+  whatDoctorMayCheck: [
+    "Pelvic ultrasound to view ovaries and uterine lining",
+    "Hormonal blood panel (testosterone, LH/FSH ratio, fasting insulin)",
+    "Thyroid and metabolic screening to rule out other factors"
+  ],
+  mythsVsFacts: [
+    {
+      myth: "PCOS means you can never get pregnant.",
+      fact: "Many women with PCOS conceive naturally or with standard medical guidance; it is a manageable condition, not an absolute barrier."
+    },
+    {
+      myth: "Only overweight women get PCOS.",
+      fact: "PCOS affects people of all body types, including lean individuals (often called 'lean PCOS')."
+    }
+  ],
+  relatedWorkoutIds: ["pcos-rhythm", "follicular-mobility"], // IDs from src/data/workouts.js
+  relatedRiskFlagId: "pcos_possible",                         // Matching flag from src/utils/riskScreening.js
+  needsReview: true                                           // Quality control flag
+}
+```
+
+### UI Pages & Architecture
+- **`pages/Conditions.jsx` (`/conditions`)**:
+  - Live search input matching condition titles, synonyms (PCOD), summaries, and symptoms.
+  - Category filter chips (`All`, `Cycle Irregularity`, `Pain & Discomfort`, `Flow & Blood`, `Hormonal & Systemic`).
+  - Condition preview cards with `shortName`, summary snippet, tag badges, and chevron link.
+  - Medical disclaimer banner and "Needs expert review" status pill.
+- **`pages/ConditionDetail.jsx` (`/conditions/:id`)**:
+  - Breadcrumbs navigation (`← Back to Conditions Library`).
+  - Hero header with condition badge, title, and plain-language summary.
+  - Expandable accordion sections for Common Symptoms, Home Comfort Measures, What a Doctor May Check, and Myths vs. Facts.
+  - Prominent red-flag alert card (`See a Doctor If...`) with warm, non-alarmist warning styling.
+  - Contextual CTA linking to related workouts in `/workouts` and doctor visit scheduling modal.
+  - Matching risk flag callout: if the user's active logs show signs of this condition, shows an informational reminder to consult a gynecologist.
+
+### Integrations
+- **Insights Integration**: When a risk flag card (e.g. `pcos_possible`) renders on `/insights`, it displays a button: *"Learn about PCOS in our Library →"* pointing to `/conditions/pcos`.
+- **Dashboard & Tips Integration**: Discovery pills/cards on the Dashboard and Tips pages invite users to browse the Conditions Library.
+- **Workouts Integration**: Routine viewer displays *"Related Condition: Period Cramps (Dysmenorrhea)"* linking directly to `/conditions/dysmenorrhea`.
+- **AI Assistant Integration (V2)**: The AI prompt context is seeded with condition summaries so the Gemini assistant can cite verified library pages (`/conditions/:id`) when responding to questions, maintaining consistency and avoiding misinformation.
 
 ## 6. AI Flow (Version 2)
 1. User sends a question in the Assistant page.

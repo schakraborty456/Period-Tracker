@@ -56,6 +56,12 @@ Work in order. One task at a time. Tick the box when done and update Memory.md.
 - [x] 6.2d Create data/workouts.js and build Workouts page (pages/Workouts.jsx) with phase- and symptom-tailored home routines (cramps relief, PCOS, 10–20 min, Easy/Medium)
 - [x] 6.2e Build Doctor Report export (pages/DoctorReport.jsx) summarizing cycle history, symptom frequency, and pain scores for gynecologist consultations
 - [x] 6.2f Add doctor visit reminders and red-flag escalation prompts (no period for 3 months, bleeding > 7 days)
+- [ ] 6.2g Define Conditions Library schema and write initial 3 conditions in `src/data/conditions.js` (PCOS/PCOD, PMS, Period Cramps/Dysmenorrhea) with helper functions
+- [ ] 6.2h Add remaining 5 conditions to `src/data/conditions.js` (Heavy periods, Anemia, Endometriosis, Thyroid problems & cycle changes, Irregular or missed periods)
+- [ ] 6.2i Write automated banned-words & data schema Vitest test suite (`src/data/conditions.test.js`) verifying zero medicine names, zero dosages, zero cure/treatment claims, and complete required sections
+- [ ] 6.2j Build Conditions Library list page (`pages/Conditions.jsx`) with live search, category filter chips, condition preview cards, medical disclaimer, and register `/conditions` route in App.jsx
+- [ ] 6.2k Build Condition Detail page (`pages/ConditionDetail.jsx`) at `/conditions/:id` with expandable sections (symptoms, doctor red flags, comfort care, clinical tests, myths vs facts, related workouts link, matching risk flag banner), 44px tap targets, and expert review badge
+- [ ] 6.2l Integrate Conditions Library entry points across app: link matching Insights risk flag cards to `/conditions/:id`, add library discovery cards on Dashboard, Tips page, and related condition links in Workouts
 - [ ] 6.3 Set up AI backend (Cloud Function or Firebase AI Logic), key stored server side
 - [ ] 6.4 System prompt, red-flag detection, rate limiting, consent check
 - [ ] 6.5 Assistant chat page with suggested questions and disclaimer

@@ -57,6 +57,26 @@ Very heavy bleeding (soaking a pad every hour), severe or unbearable pain, faint
   - **Thyroid possible signs**: Changing/fluctuating cycle lengths combined with tiredness and weight changes.
   - **See a doctor soon (Red Flags)**: No period for 3 or more months (not pregnant), or bleeding lasting more than 7 days.
 
+## 5.3 Conditions Library Rules
+- **Educational only, strictly no diagnosis**: The Conditions Library is purely an informational, educational guide to help users understand their bodies. Never say or imply "you have PCOS", "you are experiencing endometriosis", or similar diagnostic assertions.
+- **Home care phrasing**: Non-clinical comfort measures (food, sleep, stress management, hydration, warmth/heat, gentle movement) must strictly be described as *"may help ease discomfort"*, never as a cure, medical treatment, or permanent remedy.
+- **Zero medicine & banned-words policy**:
+  - Never recommend, mention, or list specific prescription or over-the-counter medicine names (e.g., ibuprofen, mefenamic acid, tranexamic acid, birth control pills, oral contraceptives, metformin, levothyroxine).
+  - Never recommend supplement or herbal dosages (e.g., specific milligram doses, herbal tea concoctions as medicine).
+  - Never use words asserting medical treatment or cures: banned words include *"cure"*, *"curative"*, *"treatment for"*, *"prescribe"*, *"medication"*, *"dosage"*.
+- **Automated banned-words test**: A Vitest test suite (`src/data/conditions.test.js`) must strictly scan the entire `conditions.js` dataset to assert that zero banned words, drug names, or dosage patterns exist and that all required data schema fields are present.
+- **Required sections for every condition**:
+  1. `summary`: Gentle, plain-language educational overview.
+  2. `symptoms`: Bulleted list of common observable signs.
+  3. `whenToSeeDoctor`: Non-negotiable red flags requiring gynecologist consultation (highlighted with soft danger/warning styling).
+  4. `homeComfort`: Non-medicinal comfort care broken down by nutrition, sleep, stress, hydration, and heat/light movement.
+  5. `whatDoctorMayCheck`: General, high-level clinical investigations (e.g., pelvic ultrasound, hormone blood test, thyroid panel, CBC) to demystify doctor visits.
+  6. `mythsVsFacts`: Common misconceptions clarified with empathetic, evidence-informed facts.
+  7. `links`: Explicit links to relevant guided home workouts (`relatedWorkoutIds`) and matching risk flag (`relatedRiskFlagId`).
+- **Expert review badge & disclaimer**: Every condition page and card must display the standard medical disclaimer and the *"Needs expert review"* badge until validated by a licensed physician.
+- **Static source of truth**: Stored exclusively as static data in `src/data/conditions.js`. No runtime AI generation and no Firestore reads/writes.
+- **AI assistant citation**: When answering user questions in Version 2, the AI assistant may cite and link to condition pages (`/conditions/:id`) as verified references, adhering strictly to these same non-diagnostic, non-medicinal constraints.
+
 ## 6. AI Assistant Rules
 System prompt must include:
 - You are a friendly period and nutrition information assistant, not a doctor.

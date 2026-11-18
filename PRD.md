@@ -23,6 +23,7 @@ A web app (installable as a PWA) where each user logs her period data and gets *
 ## 5. Non-Goals
 - Not a medical diagnosis tool (screening for risk flags only; never diagnoses conditions like PCOS, anemia, endometriosis, or thyroid issues).
 - No medical prescriptions, medicine advice, or supplement dosage recommendations.
+- Not a treatment guide: home comfort measures are framed strictly as "may help ease discomfort", never as a cure or treatment.
 - Not a contraception or fertility planning tool (no "safe days" claims).
 - No social features or public sharing in V1.
 
@@ -35,7 +36,11 @@ A web app (installable as a PWA) where each user logs her period data and gets *
 - As a user with sufficient data (at least 3 cycles or 2 months of logs), I can view risk screening insights to identify possible signs of PCOS, anemia, endometriosis, or thyroid issues so I can consult a gynecologist.
 - As a user, I can access home workout routines tailored to my phase and symptoms (e.g., cat-cow and child's pose for cramps; walking, surya namaskar, and strength training for PCOS) to manage discomfort naturally.
 - As a user, I can export a structured Doctor Report summarizing my cycle history, symptoms, and pain scores to bring to my doctor appointment.
-- As a user, I can ask the AI assistant questions and get answers based on my phase, symptoms, and active risk screening context.
+- As a user, I can explore a searchable educational Conditions Library covering 8 common menstrual and reproductive health topics (PCOS/PCOD, PMS, cramps, heavy periods, anemia, endometriosis, thyroid changes, irregular periods) to understand symptoms, home comfort care, clinical tests, and myths vs facts.
+- As a user, I can see clear "When to see a doctor" red flags and what general tests a gynecologist might perform (e.g. ultrasound or blood work) so I know when and how to seek professional care.
+- As a user reviewing risk flags on the Insights page, I can click through directly to the corresponding condition guide in the library for deeper context.
+- As a user reading a condition guide, I can jump directly to related guided home workouts to ease symptom discomfort safely.
+- As a user, I can ask the AI assistant questions and get answers based on my phase, symptoms, active risk screening context, and verified references to the Conditions Library.
 - As a user, I can delete my account and all my data.
 
 ## 7. Features by Version
@@ -53,11 +58,12 @@ A web app (installable as a PWA) where each user logs her period data and gets *
 1. Risk screening & pattern insights (rule-based detection of possible signs of PCOS, anemia, endometriosis, thyroid issues; minimum 3 cycles / 2 months of logs required; consent & medical disclaimer gate; strictly no diagnosis)
 2. Phase & symptom home workouts (cramps relief: cat-cow, child's pose, butterfly stretch; PCOS-supportive: walking, surya namaskar, strength training; 10–20 min, Easy/Medium)
 3. Doctor Report export (structured summary of cycle history, symptoms, and pain scores for gynecologist visits)
-4. AI assistant chat (Gemini, personalized with user data and risk screening context)
-5. History calendar and cycle graph
-6. Reminder notifications (period, water, doctor appointment)
-7. Bangla + English
-8. Irregular cycle alert in the UI
+4. Educational Conditions Library (searchable static guides for 8 common conditions: PCOS/PCOD, PMS, period cramps/dysmenorrhea, heavy periods, anemia, endometriosis, thyroid problems & cycle changes, irregular/missed periods; symptoms, doctor red flags, comfort care, clinical tests overview, myths vs facts, workout links; educational only, no diagnosis, no treatment claims, no medicines or supplement doses, marked "Needs expert review")
+5. AI assistant chat (Gemini, personalized with user data, risk screening context, and citations to Conditions Library)
+6. History calendar and cycle graph
+7. Reminder notifications (period, water, doctor appointment)
+8. Bangla + English
+9. Irregular cycle alert in the UI
 
 ### Version 3
 1. AI pattern insights (for example, "your PMS usually starts 3 days before your period")
@@ -76,6 +82,8 @@ A web app (installable as a PWA) where each user logs her period data and gets *
 - FR7: Minimum data rule: Risk flags are only computed and displayed once the user has at least 3 completed cycles or 60 days (2 months) of logs. Before this threshold, the UI must display "Keep logging, we need more data".
 - FR8: Mandatory risk screening wording: Always state "Possible signs are showing in your pattern. This is not a diagnosis. Please see a doctor (gynecologist)." Never declare or diagnose any condition.
 - FR9: Lifestyle-only guidance: Remedies are strictly limited to food, sleep, stress management, hydration, and light home workouts. No medicines, supplement dosages, or curative claims ("needs expert review").
+- FR10: Conditions Library must be purely static, reviewed educational content (`src/data/conditions.js`). No runtime AI generation and no Firestore reads/writes required.
+- FR11: Conditions content rules & banned words: Home care must be described strictly as "may help ease discomfort", never as a cure or treatment. Zero medicine names (e.g. ibuprofen, mefenamic acid, birth control pills, metformin), zero supplement dosages. Must include "When to see a doctor" red flags, general clinical checks, and myths vs facts.
 
 ## 9. Non-Functional Requirements
 - Mobile-first, fast load (under 3 seconds on 4G).
