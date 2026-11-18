@@ -29,10 +29,20 @@ export default function Workouts() {
   const [activeWorkout, setActiveWorkout] = useState(null);
   const [activeStepIndex, setActiveStepIndex] = useState(0);
 
-  // Initialize from URL search params if present (e.g., /workouts?symptom=cramps)
+  // Initialize from URL search params if present (e.g., /workouts?routine=cramps-relief or /workouts?symptom=cramps)
   useEffect(() => {
+    const routineParam = searchParams.get('routine') || searchParams.get('id');
     const symptomParam = searchParams.get('symptom');
     const phaseParam = searchParams.get('phase');
+
+    if (routineParam) {
+      const matched = WORKOUT_ROUTINES.find((w) => w.id === routineParam);
+      if (matched) {
+        setActiveWorkout(matched);
+        setActiveStepIndex(0);
+        return;
+      }
+    }
 
     if (symptomParam) {
       setActiveTab('symptom');
