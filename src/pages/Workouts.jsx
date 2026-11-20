@@ -8,6 +8,7 @@ import {
   WORKOUT_SAFETY_NOTICE,
   WORKOUT_REVIEW_STATUS,
 } from '../data/workouts';
+import { getConditionsForWorkout } from '../utils/conditionHelpers';
 import Button from '../components/Button';
 import Card from '../components/Card';
 import PhaseBadge from '../components/PhaseBadge';
@@ -422,6 +423,30 @@ export default function Workouts() {
                   View Routine →
                 </Button>
               </div>
+
+              {/* Related Condition Guides (Task 6.2l) */}
+              {(() => {
+                const relatedConditions = getConditionsForWorkout(workout.id);
+                if (!relatedConditions || relatedConditions.length === 0) return null;
+                return (
+                  <div className="pt-1 flex items-center gap-1.5 flex-wrap border-t border-pink-50">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-textMuted">
+                      Related Guide:
+                    </span>
+                    {relatedConditions.map((cond) => (
+                      <Link
+                        key={cond.id}
+                        to={`/conditions/${cond.id}`}
+                        className="inline-flex items-center gap-1 text-[11px] font-semibold text-primary hover:underline bg-pink-50/70 border border-pink-200/60 rounded-lg px-2.5 py-1 min-h-[44px] transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary"
+                      >
+                        <span>📖</span>
+                        <span>{cond.shortName || cond.title}</span>
+                        <span className="text-primary font-bold">→</span>
+                      </Link>
+                    ))}
+                  </div>
+                );
+              })()}
             </Card>
           ))
         )}
@@ -572,6 +597,31 @@ export default function Workouts() {
                   ))}
                 </div>
               </div>
+
+              {/* Related Condition Guides inside modal player (Task 6.2l) */}
+              {(() => {
+                const activeConditions = getConditionsForWorkout(activeWorkout.id);
+                if (!activeConditions || activeConditions.length === 0) return null;
+                return (
+                  <div className="bg-white rounded-xl p-3 border border-pink-100 shadow-xs space-y-1.5">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-textMuted block">
+                      Educational Condition Guide{activeConditions.length > 1 ? 's' : ''}:
+                    </span>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      {activeConditions.map((cond) => (
+                        <Link
+                          key={cond.id}
+                          to={`/conditions/${cond.id}`}
+                          className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline bg-pink-50/70 border border-pink-200/60 rounded-lg px-2.5 py-1.5 min-h-[44px] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary"
+                        >
+                          <span>📖</span>
+                          <span>Read about {cond.shortName || cond.title} →</span>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })()}
 
               {/* Safety notice */}
               <p className="text-[11px] text-textMuted italic text-center leading-normal pt-1">

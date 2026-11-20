@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Button from './Button';
 import Card from './Card';
+import { getConditionForEscalation } from '../utils/conditionHelpers';
 
 export default function RedFlagEscalationCard({
   redFlag,
@@ -11,6 +12,8 @@ export default function RedFlagEscalationCard({
   const [dismissed, setDismissed] = useState(false);
 
   if (!redFlag || dismissed) return null;
+
+  const matchedCondition = getConditionForEscalation(redFlag);
 
   return (
     <Card
@@ -84,6 +87,19 @@ export default function RedFlagEscalationCard({
           </Button>
         )}
       </div>
+
+      {/* Conditions Library Educational Link (Task 6.2l) */}
+      {matchedCondition && (
+        <div className="pt-0.5 text-center sm:text-right border-t border-red-100">
+          <Link
+            to={`/conditions/${matchedCondition.id}`}
+            className="inline-flex items-center gap-1.5 text-xs text-red-900 font-semibold hover:underline min-h-[44px] px-2 py-1 rounded-lg focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-red-400"
+          >
+            <span>📖</span>
+            <span>Read about {matchedCondition.shortName || matchedCondition.title} in Library →</span>
+          </Link>
+        </div>
+      )}
     </Card>
   );
 }

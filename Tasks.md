@@ -61,7 +61,7 @@ Work in order. One task at a time. Tick the box when done and update Memory.md.
 - [x] 6.2i Extend automated banned-words & data schema Vitest test suite (`src/data/conditions.test.js`) to cover all 8 conditions, whole-word matching verification, and risk flag linkages
 - [x] 6.2j Build Conditions Library list page (`pages/Conditions.jsx`) with live search, category filter chips, condition preview cards, medical disclaimer, and register `/conditions` route in App.jsx
 - [x] 6.2k Build Condition Detail page (`pages/ConditionDetail.jsx`) at `/conditions/:id` with expandable sections (symptoms, doctor red flags, comfort care, clinical tests, myths vs facts, related workouts link, matching risk flag banner), 44px tap targets, and expert review badge
-- [ ] 6.2l Integrate Conditions Library entry points across app: link matching Insights risk flag cards to `/conditions/:id`, add library discovery cards on Dashboard, Tips page, and related condition links in Workouts
+- [x] 6.2l Integrate Conditions Library entry points across app: link matching Insights risk flag cards to `/conditions/:id`, add library discovery cards on Dashboard, Tips page, and related condition links in Workouts
 - [ ] 6.3 Set up AI backend (Cloud Function or Firebase AI Logic), key stored server side
 - [ ] 6.4 System prompt, red-flag detection, rate limiting, consent check
 - [ ] 6.5 Assistant chat page with suggested questions and disclaimer

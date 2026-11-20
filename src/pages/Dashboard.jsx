@@ -508,6 +508,29 @@ export default function Dashboard() {
           </Card>
         )}
 
+        {/* Educational Conditions Library Entry Card (Task 6.2l) */}
+        <Card className="p-3.5 border border-pink-100 bg-surface flex items-center justify-between gap-3 shadow-xs">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-primary-soft text-primary flex items-center justify-center text-lg shrink-0">
+              📚
+            </div>
+            <div>
+              <h4 className="text-xs font-bold font-heading text-textMain">
+                Conditions Library
+              </h4>
+              <p className="text-[11px] text-textMuted leading-normal">
+                8 evidence-informed guides on PCOS, cramps, flow & hormones
+              </p>
+            </div>
+          </div>
+          <Link
+            to="/conditions"
+            className="min-h-[44px] px-3 py-2 rounded-xl text-xs font-bold text-primary hover:bg-pink-50 transition-colors flex items-center shrink-0 border border-pink-200/70 bg-white shadow-2xs focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary"
+          >
+            <span>Explore →</span>
+          </Link>
+        </Card>
+
         {/* MANDATORY MEDICAL DISCLAIMER BANNER (Task 3.5 & PRD Section 12) */}
         <DisclaimerBanner variant="footer" className="mt-4" />
       </div>

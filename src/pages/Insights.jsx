@@ -15,6 +15,7 @@ import {
   INSUFFICIENT_DATA_MESSAGE,
 } from '../utils/riskScreening';
 import { getRiskFlagDetails, REVIEW_STATUS_LABEL } from '../data/riskFlags';
+import { getConditionsForRiskFlag } from '../utils/conditionHelpers';
 import { formatLocalDate } from '../utils/dateHelpers';
 import Button from '../components/Button';
 import Card from '../components/Card';
@@ -480,6 +481,34 @@ export default function Insights() {
                         </Link>
                       </div>
                     </div>
+
+                    {/* Conditions Library Guide Links (Task 6.2l) */}
+                    {(() => {
+                      const relatedConditions = getConditionsForRiskFlag(flag.id);
+                      if (!relatedConditions || relatedConditions.length === 0) return null;
+                      return (
+                        <div className="pt-0.5 space-y-1.5">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-textMuted block">
+                            Educational Condition Guide{relatedConditions.length > 1 ? 's' : ''}:
+                          </span>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            {relatedConditions.map((cond) => (
+                              <Link
+                                key={cond.id}
+                                to={`/conditions/${cond.id}`}
+                                className="flex items-center justify-between px-3 py-2 rounded-xl bg-white border border-pink-200 text-xs text-primary font-semibold hover:bg-pink-50 transition-colors min-h-[44px] shadow-xs focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary"
+                              >
+                                <span className="flex items-center gap-1.5 truncate">
+                                  <span>📖</span>
+                                  <span className="truncate">Learn more: {cond.shortName || cond.title}</span>
+                                </span>
+                                <span className="text-primary font-bold ml-1.5 shrink-0">→</span>
+                              </Link>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    })()}
 
                     {/* Collapsible Action Section: Lifestyle Tips & Doctor Talking Points */}
                     <div className="pt-1">

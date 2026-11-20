@@ -1,4 +1,11 @@
-import { CONDITIONS, getConditionById } from '../data/conditions';
+import {
+  CONDITIONS,
+  getConditionById,
+  getConditionForRiskFlag,
+  getConditionsForRiskFlag,
+} from '../data/conditions';
+
+export { getConditionForRiskFlag, getConditionsForRiskFlag };
 
 /**
  * Get 1 or 2 related conditions from the same category (excluding current condition).
@@ -38,4 +45,48 @@ export function getRelatedConditions(conditionId, limit = 2) {
 export function isValidConditionId(conditionId) {
   if (!conditionId || typeof conditionId !== 'string') return false;
   return Boolean(getConditionById(conditionId));
+}
+
+/**
+ * Reverse lookup: Find all conditions that link to a specific workout ID in relatedWorkoutIds.
+ *
+ * @param {string} workoutId
+ * @returns {Array<object>}
+ */
+export function getConditionsForWorkout(workoutId) {
+  if (!workoutId || typeof workoutId !== 'string') return [];
+  const trimmed = workoutId.trim();
+  return CONDITIONS.filter(
+    (c) => Array.isArray(c.relatedWorkoutIds) && c.relatedWorkoutIds.includes(trimmed)
+  );
+}
+
+/**
+ * Match a red-flag escalation alert (from detectRedFlagEscalation) to the best matching condition.
+ *
+ * @param {object|string} redFlagOrId - Red flag object with id/type, or string identifier
+ * @returns {object|null}
+ */
+export function getConditionForEscalation(redFlagOrId) {
+  if (!redFlagOrId) return null;
+  const identifier =
+    typeof redFlagOrId === 'string'
+      ? redFlagOrId
+      : `${redFlagOrId.id || ''} ${redFlagOrId.type || ''}`;
+  const normalized = identifier.toLowerCase();
+
+  if (
+    normalized.includes('amenorrhea') ||
+    normalized.includes('no_period') ||
+    normalized.includes('missed')
+  ) {
+    return getConditionById('irregular-periods') || null;
+  }
+  if (normalized.includes('bleeding') || normalized.includes('heavy')) {
+    return getConditionById('heavy-periods') || null;
+  }
+  if (normalized.includes('pain') || normalized.includes('cramp')) {
+    return getConditionById('dysmenorrhea') || null;
+  }
+  return null;
 }
