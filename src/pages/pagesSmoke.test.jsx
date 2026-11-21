@@ -1,6 +1,6 @@
 import React from 'react';
 import { describe, it, expect, vi, beforeAll, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 
 // Import all pages from src/pages
@@ -18,7 +18,7 @@ import DoctorReport from './DoctorReport';
 import Settings from './Settings';
 import Privacy from './Privacy';
 
-import { CONDITIONS } from '../data/conditions';
+import { getAllConditions, CONDITIONS_DISCLAIMER } from '../data/conditions';
 
 // Mock window functions for jsdom environment
 beforeAll(() => {
@@ -341,14 +341,15 @@ describe('Page Render Smoke Tests (Preventing runtime crashes)', () => {
     });
 
     it('renders ConditionDetail with a known condition id and shows its title heading', () => {
+      const firstCondition = getAllConditions()[0];
       render(
-        <MemoryRouter initialEntries={['/conditions/pcos']}>
+        <MemoryRouter initialEntries={[`/conditions/${firstCondition.id}`]}>
           <Routes>
             <Route path="/conditions/:id" element={<ConditionDetail />} />
           </Routes>
         </MemoryRouter>
       );
-      expect(screen.getByRole('heading', { level: 1, name: /pcos/i })).toBeDefined();
+      expect(screen.getByRole('heading', { level: 1, name: firstCondition.title })).toBeDefined();
     });
 
     it('renders DoctorReport without throwing and shows its main heading', async () => {
@@ -613,20 +614,71 @@ describe('Page Render Smoke Tests (Preventing runtime crashes)', () => {
   // ----------------------------------------------------
   // 4. CONDITION DETAIL FOR EVERY CONDITION & UNKNOWN ID
   // ----------------------------------------------------
-  describe('ConditionDetail for All 8 Conditions + Unknown ID', () => {
-    it.each(CONDITIONS.map((c) => [c.id, c.title]))(
-      'renders ConditionDetail for condition id "%s" without crashing',
-      (conditionId, expectedTitle) => {
+  describe('ConditionDetail for All Real Conditions + Unknown ID', () => {
+    const allConditions = getAllConditions();
+    let renderedConditionsCount = 0;
+
+    beforeEach(() => {
+      setRealisticData();
+    });
+
+    it.each(allConditions)(
+      'renders ConditionDetail for condition id "$id" ($title) with realistic data, verifies title, doctor section, disclaimer, and accordion expansion',
+      (condition) => {
         render(
-          <MemoryRouter initialEntries={[`/conditions/${conditionId}`]}>
+          <MemoryRouter initialEntries={[`/conditions/${condition.id}`]}>
             <Routes>
               <Route path="/conditions/:id" element={<ConditionDetail />} />
             </Routes>
           </MemoryRouter>
         );
-        expect(screen.getByRole('heading', { level: 1, name: expectedTitle })).toBeDefined();
+
+        // 1. Condition title is shown
+        expect(
+          screen.getByRole('heading', { level: 1, name: condition.title })
+        ).toBeDefined();
+
+        // 2. "When to see a doctor" section is visible
+        expect(
+          screen.getByRole('heading', { name: /when to see a doctor/i })
+        ).toBeDefined();
+
+        // 3. Disclaimer is shown
+        expect(
+          screen.getByText((content) =>
+            content.includes(CONDITIONS_DISCLAIMER) ||
+            content.includes('This educational guide provides general information only')
+          )
+        ).toBeDefined();
+
+        // 4. Accordions: find all accordion buttons and expand each
+        const accordionButtons = screen
+          .getAllByRole('button')
+          .filter((btn) => btn.hasAttribute('aria-expanded'));
+        expect(accordionButtons.length).toBe(5);
+
+        accordionButtons.forEach((btn) => {
+          if (btn.getAttribute('aria-expanded') === 'false') {
+            fireEvent.click(btn);
+            expect(btn.getAttribute('aria-expanded')).toBe('true');
+          } else {
+            // Toggle closed then back open to ensure expanding works
+            fireEvent.click(btn);
+            expect(btn.getAttribute('aria-expanded')).toBe('false');
+            fireEvent.click(btn);
+            expect(btn.getAttribute('aria-expanded')).toBe('true');
+          }
+        });
+
+        renderedConditionsCount += 1;
       }
     );
+
+    it('guard test: the number of rendered conditions must equal getAllConditions().length, and it must be at least 8', () => {
+      const conditions = getAllConditions();
+      expect(conditions.length).toBeGreaterThanOrEqual(8);
+      expect(renderedConditionsCount).toBe(conditions.length);
+    });
 
     it('renders friendly "Condition Not Found" page for an unknown id without crashing', () => {
       render(
