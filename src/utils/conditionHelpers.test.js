@@ -50,7 +50,7 @@ describe('Condition Helpers (Tasks 6.2k, 6.2l)', () => {
   });
 
   describe('isValidConditionId', () => {
-    it('returns true for all 8 real condition IDs', () => {
+    it('returns true for all 11 real condition IDs', () => {
       const validIds = [
         'pcos',
         'pms',
@@ -60,6 +60,9 @@ describe('Condition Helpers (Tasks 6.2k, 6.2l)', () => {
         'endometriosis',
         'thyroid',
         'irregular-periods',
+        'fibroids',
+        'adenomyosis',
+        'pmdd',
       ];
       validIds.forEach((id) => {
         expect(isValidConditionId(id)).toBe(true);
@@ -144,20 +147,22 @@ describe('Condition Helpers (Tasks 6.2k, 6.2l)', () => {
       });
     });
 
-    it('maps anemia_possible to multiple conditions (heavy-periods and anemia)', () => {
+    it('maps anemia_possible to multiple conditions (heavy-periods, anemia, and fibroids)', () => {
       const conditions = getConditionsForRiskFlag('anemia_possible');
       const ids = conditions.map((c) => c.id);
-      expect(ids.length).toBe(2);
+      expect(ids.length).toBe(3);
       expect(ids).toContain('heavy-periods');
       expect(ids).toContain('anemia');
+      expect(ids).toContain('fibroids');
     });
 
-    it('maps severe_pain_possible to multiple conditions (dysmenorrhea and endometriosis)', () => {
+    it('maps severe_pain_possible to multiple conditions (dysmenorrhea, endometriosis, and adenomyosis)', () => {
       const conditions = getConditionsForRiskFlag('severe_pain_possible');
       const ids = conditions.map((c) => c.id);
-      expect(ids.length).toBe(2);
+      expect(ids.length).toBe(3);
       expect(ids).toContain('dysmenorrhea');
       expect(ids).toContain('endometriosis');
+      expect(ids).toContain('adenomyosis');
     });
 
     it('maps pcos_possible to pcos condition', () => {

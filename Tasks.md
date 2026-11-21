@@ -62,6 +62,7 @@ Work in order. One task at a time. Tick the box when done and update Memory.md.
 - [x] 6.2j Build Conditions Library list page (`pages/Conditions.jsx`) with live search, category filter chips, condition preview cards, medical disclaimer, and register `/conditions` route in App.jsx
 - [x] 6.2k Build Condition Detail page (`pages/ConditionDetail.jsx`) at `/conditions/:id` with expandable sections (symptoms, doctor red flags, comfort care, clinical tests, myths vs facts, related workouts link, matching risk flag banner), 44px tap targets, and expert review badge
 - [x] 6.2l Integrate Conditions Library entry points across app: link matching Insights risk flag cards to `/conditions/:id`, add library discovery cards on Dashboard, Tips page, and related condition links in Workouts
+- [x] 6.2m Add fibroids, adenomyosis, pmdd
 - [ ] 6.3 Configure Firebase AI Logic client SDK with Gemini Developer API on the free Spark plan and App Check (reCAPTCHA v3 / debug provider for localhost)
 - [ ] 6.4 System prompt (educational, non-diagnostic, condition library citations), pre-call red-flag detection short-circuit, Firestore soft daily rate limiter (users/{uid}/aiUsage/{date}), and AI consent check with Google review disclosure
 - [ ] 6.5 Assistant chat page (`pages/Assistant.jsx`) with suggested questions, phase/symptom context injection, friendly rate-limit error handling (429 resource-exhausted), and disclaimer banner

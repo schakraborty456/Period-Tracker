@@ -493,6 +493,193 @@ export const CONDITIONS = [
     relatedRiskFlagId: 'see_doctor_soon',
     needsReview: true,
   },
+
+  {
+    id: 'fibroids',
+    title: 'Uterine Fibroids (Leiomyomas)',
+    shortName: 'Fibroids',
+    category: 'flow-blood',
+    categoryLabel: 'Flow & Blood',
+    summary:
+      'Uterine fibroids are common non-cancerous growths of smooth muscle and fibrous tissue that develop within or around the muscular walls of the uterus. Many people have fibroids without any noticeable symptoms, while others may experience heavier menstrual bleeding, prolonged bleeding, or a feeling of pelvic pressure.',
+    symptoms: [
+      'Heavy menstrual bleeding that may include blood clots',
+      'Periods that last longer than usual (more than 7 days)',
+      'A feeling of pelvic fullness, heaviness, or lower abdominal pressure',
+      'Frequent urge to urinate due to pressure on the bladder',
+      'Lower back ache or dull aching in the pelvic region',
+      'Fatigue or sluggishness related to noticeable blood loss',
+    ],
+    whenToSeeDoctor: [
+      'Bleeding so heavy that you soak through a pad or tampon every hour for two or more consecutive hours',
+      'Menstrual bleeding that continues for more than 7 consecutive days',
+      'Feeling faint, unusually dizzy, lightheaded, or short of breath with bleeding',
+      'Severe, sharp, or sudden pelvic pain that does not settle',
+      'Difficulty emptying your bladder or persistent lower abdominal swelling',
+    ],
+    homeComfort: {
+      food:
+        'Eating balanced meals rich in natural dietary iron (such as lentils, dal, dark leafy greens like shak, eggs, and fish) along with citrus fruits may help ease discomfort by supporting energy and natural blood building.',
+      sleep:
+        'Resting in comfortable positions, such as sleeping on your side with a small pillow between your knees, may help ease discomfort from pelvic and lower back pressure.',
+      stress:
+        'Calm breathing exercises, quiet rest, and soothing evening routines may help ease discomfort caused by daily physical tension.',
+      hydration:
+        'Sipping warm water, clear broths, and staying well-hydrated throughout the day may help ease discomfort and maintain gentle circulation.',
+      heatAndMovement:
+        'Applying a warm heating pad to the lower abdomen or lower back, along with gentle walking and light stretching, may help ease discomfort in the pelvis.',
+    },
+    whatDoctorMayCheck: [
+      'Pelvic ultrasound (abdominal or transvaginal) to examine the size, number, and location of any fibroids',
+      'Complete Blood Count (CBC) to screen for low red blood cells or anemia caused by blood loss',
+      'Pelvic examination to assess the size and contour of the uterus',
+      'Discussion of symptom history, bleeding patterns, and personalized care options',
+    ],
+    mythsVsFacts: [
+      {
+        myth: 'Myth: Fibroids are cancerous and always dangerous.',
+        fact:
+          'Fact: Uterine fibroids are benign (non-cancerous) growths and are very common; they do not increase the risk of uterine cancer.',
+      },
+      {
+        myth: 'Myth: Having fibroids always requires major surgery.',
+        fact:
+          'Fact: Many fibroids need no intervention at all if they cause no symptoms, and doctors offer a range of non-surgical and monitoring approaches.',
+      },
+      {
+        myth: 'Myth: Every person with fibroids experiences heavy bleeding.',
+        fact:
+          'Fact: Many individuals with small or non-intrusive fibroids have completely normal cycles and may only discover them during a routine checkup.',
+      },
+    ],
+    relatedWorkoutIds: ['lower-back-soother', 'cramps-relief'],
+    relatedRiskFlagId: 'anemia_possible',
+    needsReview: true,
+  },
+
+  {
+    id: 'adenomyosis',
+    title: 'Adenomyosis',
+    shortName: 'Adenomyosis',
+    category: 'pain-discomfort',
+    categoryLabel: 'Pain & Discomfort',
+    summary:
+      'Adenomyosis occurs when tissue that normally lines the inside of the uterus (the endometrium) grows into the surrounding muscular wall of the uterus (the myometrium). This displaced tissue continues to thicken, break down, and bleed during each menstrual cycle, which can cause an enlarged uterus, painful cramps, and heavier flow.',
+    symptoms: [
+      'Intense, sharp, or throbbing pelvic cramps during menstruation',
+      'Heavy menstrual bleeding or passing noticeable blood clots',
+      'Prolonged menstrual periods lasting more than a week',
+      'Pelvic tenderness, pressure, or a feeling of a swollen, heavy lower abdomen',
+      'Deep aching in the lower back and radiating down the thighs',
+    ],
+    whenToSeeDoctor: [
+      'Pelvic pain that is severe, disabling, or stops you from performing normal daily activities',
+      'Bleeding so heavy that you need to change a pad or tampon every hour for several consecutive hours',
+      'Bleeding or spotting that continues beyond 7 consecutive days',
+      'Sudden, worsening pelvic pain or unmanageable cramping',
+      'Extreme dizziness, lightheadedness, or feeling faint alongside bleeding',
+    ],
+    homeComfort: {
+      food:
+        'Enjoying warm, home-cooked meals featuring antioxidant-rich vegetables, lentils, dal, seasonal fruits, and warm ginger or turmeric broths may help ease discomfort during painful days.',
+      sleep:
+        'Prioritizing 8 hours of quiet nighttime rest in a curled fetal position with a pillow supporting the abdomen may help ease discomfort in the lower pelvic muscles.',
+      stress:
+        'Mindful deep breathing, gentle guided relaxation, and quiet pauses throughout the day may help ease discomfort by calming the nervous system.',
+      hydration:
+        'Drinking plenty of warm water and warm decaffeinated fluids throughout the day may help ease discomfort and reduce feelings of abdominal bloat.',
+      heatAndMovement:
+        'Placing a warm water bottle or heating pad on the lower abdomen, accompanied by restorative resting poses like child’s pose, may help ease discomfort from uterine contractions.',
+    },
+    whatDoctorMayCheck: [
+      'High-resolution pelvic ultrasound to evaluate the thickness and texture of the uterine muscular wall',
+      'Pelvic MRI scan, which can provide clear imaging of the junctional zone between the lining and muscle',
+      'Complete Blood Count (CBC) to screen for anemia from heavy menstrual bleeding',
+      'Review of menstrual history, pain severity timelines, and physical pelvic examination',
+    ],
+    mythsVsFacts: [
+      {
+        myth: 'Myth: Adenomyosis and endometriosis are the exact same condition.',
+        fact:
+          'Fact: While both involve endometrial-like tissue, in adenomyosis the tissue grows inside the muscular wall of the uterus, whereas in endometriosis it grows outside the uterus on other pelvic organs.',
+      },
+      {
+        myth: 'Myth: Severe period pain that keeps you in bed is just normal menstrual cramping.',
+        fact:
+          'Fact: Menstrual pain so severe that it interrupts daily life or school is not something you must simply endure; a gynecologist can evaluate for underlying factors like adenomyosis.',
+      },
+      {
+        myth: 'Myth: Adenomyosis only happens after multiple pregnancies.',
+        fact:
+          'Fact: Although it is frequently identified in women in their 30s and 40s who have had children, it can also occur in individuals who have never been pregnant.',
+      },
+    ],
+    relatedWorkoutIds: ['cramps-relief', 'lower-back-soother'],
+    relatedRiskFlagId: 'severe_pain_possible',
+    needsReview: true,
+  },
+
+  {
+    id: 'pmdd',
+    title: 'PMDD (Premenstrual Dysphoric Disorder)',
+    shortName: 'PMDD',
+    category: 'hormonal-systemic',
+    categoryLabel: 'Hormonal & Systemic',
+    summary:
+      'Premenstrual Dysphoric Disorder (PMDD) is a severe, recognized cyclical health condition where noticeable emotional and physical symptoms appear during the luteal phase (usually 7 to 10 days before bleeding) and improve shortly after menstruation starts. It is understood as a heightened neurological sensitivity to normal monthly hormonal changes.',
+    symptoms: [
+      'Intense irritability, sudden anger, or heightened tension before periods',
+      'Deep sadness, tearfulness, or feelings of despair that lift after bleeding begins',
+      'Marked anxiety, feeling overwhelmed, or being unable to cope with daily tasks',
+      'Severe physical fatigue, low stamina, or difficulty concentrating (brain fog)',
+      'Sleep disturbances, including insomnia or excessive daytime sleepiness',
+      'Physical discomforts such as breast tenderness, headaches, joint aches, or bloating',
+    ],
+    whenToSeeDoctor: [
+      'Emotional or mood symptoms that feel severe, unmanageable, or cause intense distress before your period',
+      'Experiencing feelings of hopelessness or thoughts of self-harm',
+      'Mood changes that severely disrupt your daily relationships, work, or ability to function',
+      'Symptoms that do not improve within a few days after your period starts',
+    ],
+    homeComfort: {
+      food:
+        'Consuming regular, balanced meals with complex carbohydrates (such as oats, brown rice, whole wheat roti, and dal) to support steady blood sugar and daily energy may help ease discomfort.',
+      sleep:
+        'Maintaining a calm, consistent sleep schedule and creating a quiet, dark bedroom environment may help ease discomfort associated with premenstrual fatigue and restlessness.',
+      stress:
+        'Scheduling quieter days in the late luteal phase, engaging in gentle mindfulness, journaling, and stepping back from high-pressure commitments may help ease discomfort.',
+      hydration:
+        'Drinking regular glasses of clean water throughout the day and limiting high-salt snacks may help ease discomfort from fluid retention and premenstrual headaches.',
+      heatAndMovement:
+        'Gentle restorative yoga, slow outdoor walks in natural light, and quiet stretching may help ease discomfort by boosting calming brain signals without physical strain.',
+    },
+    whatDoctorMayCheck: [
+      'Symptom tracking calendar across at least two consecutive cycles to confirm the luteal timing of symptoms',
+      'Thyroid screening blood tests to rule out overlapping endocrine factors',
+      'Evaluation using standardized clinical diagnostic criteria (such as DSM-5 criteria for PMDD)',
+      'Discussion of personal and family mental wellness history alongside cycle timelines',
+    ],
+    mythsVsFacts: [
+      {
+        myth: 'Myth: PMDD is just standard PMS or moodiness that someone should just get over.',
+        fact:
+          'Fact: PMDD is a recognized medical condition involving real biological sensitivity to hormone shifts, causing severe distress that deserves clinical validation and support.',
+      },
+      {
+        myth: 'Myth: People with PMDD experience symptoms all month long.',
+        fact:
+          'Fact: PMDD is strictly cyclical; symptoms occur in the luteal window and resolve completely within a few days after menstrual bleeding begins, leaving symptom-free weeks.',
+      },
+      {
+        myth: 'Myth: There are no clinical options for PMDD.',
+        fact:
+          'Fact: Qualified healthcare providers have established clinical guidelines and evidence-informed support plans to help manage PMDD effectively.',
+      },
+    ],
+    relatedWorkoutIds: ['luteal-grounding', 'bloat-relief'],
+    relatedRiskFlagId: null,
+    needsReview: true,
+  },
 ];
 
 /**

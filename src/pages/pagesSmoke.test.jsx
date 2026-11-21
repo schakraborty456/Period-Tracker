@@ -674,9 +674,9 @@ describe('Page Render Smoke Tests (Preventing runtime crashes)', () => {
       }
     );
 
-    it('guard test: the number of rendered conditions must equal getAllConditions().length, and it must be at least 8', () => {
+    it('guard test: the number of rendered conditions must equal getAllConditions().length, and it must be at least 11', () => {
       const conditions = getAllConditions();
-      expect(conditions.length).toBeGreaterThanOrEqual(8);
+      expect(conditions.length).toBeGreaterThanOrEqual(11);
       expect(renderedConditionsCount).toBe(conditions.length);
     });
 

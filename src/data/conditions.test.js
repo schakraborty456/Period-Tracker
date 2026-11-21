@@ -93,7 +93,7 @@ function scanConditionForBannedWords(condition) {
   return violations;
 }
 
-describe('Conditions Library Complete 8 Conditions & Schema (Tasks 6.2g, 6.2h, 6.2i)', () => {
+describe('Conditions Library Complete 11 Conditions & Schema (Tasks 6.2g, 6.2h, 6.2i, 6.2m)', () => {
   const EXPECTED_IDS = [
     'pcos',
     'pms',
@@ -103,10 +103,13 @@ describe('Conditions Library Complete 8 Conditions & Schema (Tasks 6.2g, 6.2h, 6
     'endometriosis',
     'thyroid',
     'irregular-periods',
+    'fibroids',
+    'adenomyosis',
+    'pmdd',
   ];
 
-  it('contains exactly the 8 planned conditions with expected IDs', () => {
-    expect(CONDITIONS.length).toBe(8);
+  it('contains exactly the 11 planned conditions with expected IDs', () => {
+    expect(CONDITIONS.length).toBe(11);
     const ids = CONDITIONS.map((c) => c.id);
     EXPECTED_IDS.forEach((expectedId) => {
       expect(ids).toContain(expectedId);
@@ -212,12 +215,41 @@ describe('Conditions Library Complete 8 Conditions & Schema (Tasks 6.2g, 6.2h, 6
       }
     });
 
-    // Check specific flag pairings per Task 6.2h
+    // Check specific flag pairings per Task 6.2h & 6.2m
     expect(getConditionById('heavy-periods')?.relatedRiskFlagId).toBe('anemia_possible');
     expect(getConditionById('anemia')?.relatedRiskFlagId).toBe('anemia_possible');
     expect(getConditionById('endometriosis')?.relatedRiskFlagId).toBe('severe_pain_possible');
     expect(getConditionById('thyroid')?.relatedRiskFlagId).toBe('thyroid_possible');
     expect(getConditionById('irregular-periods')?.relatedRiskFlagId).toBe('see_doctor_soon');
+    expect(getConditionById('fibroids')?.relatedRiskFlagId).toBe('anemia_possible');
+    expect(getConditionById('adenomyosis')?.relatedRiskFlagId).toBe('severe_pain_possible');
+    expect(getConditionById('pmdd')?.relatedRiskFlagId).toBeNull();
+  });
+
+  it('verifies specific content rules for fibroids, adenomyosis, and pmdd (Task 6.2m)', () => {
+    const fibroids = getConditionById('fibroids');
+    const adenomyosis = getConditionById('adenomyosis');
+    const pmdd = getConditionById('pmdd');
+
+    expect(fibroids).toBeDefined();
+    expect(adenomyosis).toBeDefined();
+    expect(pmdd).toBeDefined();
+
+    // pmdd whenToSeeDoctor must mention seeing a doctor when mood symptoms feel severe or include thoughts of self-harm
+    const pmddRedFlags = pmdd.whenToSeeDoctor.join(' ').toLowerCase();
+    expect(pmddRedFlags).toContain('self-harm');
+    expect(pmddRedFlags).toContain('severe');
+
+    // fibroids and adenomyosis make NO claims about fertility outcomes or causes
+    const fibroidsText = JSON.stringify(fibroids).toLowerCase();
+    expect(fibroidsText).not.toContain('infertility');
+    expect(fibroidsText).not.toContain('infertile');
+    expect(fibroidsText).not.toContain('cure');
+
+    const adenoText = JSON.stringify(adenomyosis).toLowerCase();
+    expect(adenoText).not.toContain('infertility');
+    expect(adenoText).not.toContain('infertile');
+    expect(adenoText).not.toContain('cure');
   });
 
   it('verifies specific content rules for anemia and heavy periods', () => {
@@ -268,7 +300,7 @@ describe('Conditions Library Complete 8 Conditions & Schema (Tasks 6.2g, 6.2h, 6
     expect(allText).not.toContain('cure');
   });
 
-  it('passes strict banned-words check across all 8 conditions, reporting exact condition and field', () => {
+  it('passes strict banned-words check across all 11 conditions, reporting exact condition and field', () => {
     const allViolations = [];
 
     CONDITIONS.forEach((condition) => {
@@ -320,37 +352,47 @@ describe('Conditions Library Complete 8 Conditions & Schema (Tasks 6.2g, 6.2h, 6
     ).toEqual([]);
   });
 
-  describe('Helper Functions across all 8 Conditions', () => {
+  describe('Helper Functions across all 11 Conditions', () => {
     it('getConditionById returns the correct condition or undefined', () => {
       expect(getConditionById('heavy-periods')?.shortName).toBe('Heavy Periods');
       expect(getConditionById('AnEmIa')?.shortName).toBe('Anemia');
+      expect(getConditionById('fibroids')?.shortName).toBe('Fibroids');
+      expect(getConditionById('adenomyosis')?.shortName).toBe('Adenomyosis');
+      expect(getConditionById('pmdd')?.shortName).toBe('PMDD');
       expect(getConditionById('non-existent')).toBeUndefined();
       expect(getConditionById(null)).toBeUndefined();
     });
 
     it('getConditionsByCategory filters correctly across all 4 categories', () => {
       const all = getConditionsByCategory('all');
-      expect(all.length).toBe(8);
+      expect(all.length).toBe(11);
 
       const hormonal = getConditionsByCategory('hormonal-systemic');
-      expect(hormonal.map((c) => c.id).sort()).toEqual(['pcos', 'thyroid'].sort());
+      expect(hormonal.map((c) => c.id).sort()).toEqual(['pcos', 'pmdd', 'thyroid'].sort());
 
       const pain = getConditionsByCategory('pain-discomfort');
-      expect(pain.map((c) => c.id).sort()).toEqual(['dysmenorrhea', 'endometriosis', 'pms'].sort());
+      expect(pain.map((c) => c.id).sort()).toEqual(
+        ['adenomyosis', 'dysmenorrhea', 'endometriosis', 'pms'].sort()
+      );
 
       const flow = getConditionsByCategory('flow-blood');
-      expect(flow.map((c) => c.id).sort()).toEqual(['anemia', 'heavy-periods'].sort());
+      expect(flow.map((c) => c.id).sort()).toEqual(
+        ['anemia', 'fibroids', 'heavy-periods'].sort()
+      );
 
       const cycle = getConditionsByCategory('cycle-irregularity');
       expect(cycle.map((c) => c.id)).toEqual(['irregular-periods']);
     });
 
-    it('searchConditions finds conditions across all 8 entries', () => {
+    it('searchConditions finds conditions across all 11 entries', () => {
       expect(searchConditions('thyroid').some((c) => c.id === 'thyroid')).toBe(true);
       expect(searchConditions('iron').some((c) => c.id === 'anemia')).toBe(true);
       expect(searchConditions('endometriosis').some((c) => c.id === 'endometriosis')).toBe(true);
       expect(searchConditions('clots').some((c) => c.id === 'heavy-periods')).toBe(true);
       expect(searchConditions('amenorrhea').some((c) => c.id === 'irregular-periods')).toBe(true);
+      expect(searchConditions('fibroid').some((c) => c.id === 'fibroids')).toBe(true);
+      expect(searchConditions('myometrium').some((c) => c.id === 'adenomyosis')).toBe(true);
+      expect(searchConditions('dysphoric').some((c) => c.id === 'pmdd')).toBe(true);
       expect(searchConditions('nonexistentxyz')).toEqual([]);
     });
 
@@ -361,38 +403,42 @@ describe('Conditions Library Complete 8 Conditions & Schema (Tasks 6.2g, 6.2h, 6
 
       // Multiple matches
       const anemiaMatches = getConditionsForRiskFlag('anemia_possible');
-      expect(anemiaMatches.length).toBe(2);
-      expect(anemiaMatches.map((c) => c.id).sort()).toEqual(['anemia', 'heavy-periods'].sort());
+      expect(anemiaMatches.length).toBe(3);
+      expect(anemiaMatches.map((c) => c.id).sort()).toEqual(
+        ['anemia', 'fibroids', 'heavy-periods'].sort()
+      );
 
       const painMatches = getConditionsForRiskFlag('severe_pain_possible');
-      expect(painMatches.length).toBe(2);
-      expect(painMatches.map((c) => c.id).sort()).toEqual(['dysmenorrhea', 'endometriosis'].sort());
+      expect(painMatches.length).toBe(3);
+      expect(painMatches.map((c) => c.id).sort()).toEqual(
+        ['adenomyosis', 'dysmenorrhea', 'endometriosis'].sort()
+      );
 
       expect(getConditionsForRiskFlag('non_existent')).toEqual([]);
     });
 
-    it('getAllConditions returns all 8 conditions', () => {
+    it('getAllConditions returns all 11 conditions', () => {
       expect(getAllConditions()).toBe(CONDITIONS);
-      expect(getAllConditions().length).toBe(8);
+      expect(getAllConditions().length).toBe(11);
     });
 
     describe('filterConditions (combined category & search query logic)', () => {
       it('returns all conditions when no filter or empty params are provided', () => {
-        expect(filterConditions().length).toBe(8);
-        expect(filterConditions({ category: 'all', query: '' }).length).toBe(8);
+        expect(filterConditions().length).toBe(11);
+        expect(filterConditions({ category: 'all', query: '' }).length).toBe(11);
       });
 
       it('filters correctly by category only', () => {
         const painConditions = filterConditions({ category: 'pain-discomfort' });
-        expect(painConditions.length).toBe(3);
+        expect(painConditions.length).toBe(4);
         expect(painConditions.map((c) => c.id).sort()).toEqual(
-          ['dysmenorrhea', 'endometriosis', 'pms'].sort()
+          ['adenomyosis', 'dysmenorrhea', 'endometriosis', 'pms'].sort()
         );
 
         const flowConditions = filterConditions({ category: 'flow-blood' });
-        expect(flowConditions.length).toBe(2);
+        expect(flowConditions.length).toBe(3);
         expect(flowConditions.map((c) => c.id).sort()).toEqual(
-          ['anemia', 'heavy-periods'].sort()
+          ['anemia', 'fibroids', 'heavy-periods'].sort()
         );
       });
 
@@ -407,13 +453,23 @@ describe('Conditions Library Complete 8 Conditions & Schema (Tasks 6.2g, 6.2h, 6
       });
 
       it('combines category filter and search query correctly', () => {
-        // In 'flow-blood', searching 'coin' or 'clots' should match only heavy-periods
-        const combined = filterConditions({
+        // In 'flow-blood', searching 'coin' should match only heavy-periods
+        const coinCombined = filterConditions({
+          category: 'flow-blood',
+          query: 'coin',
+        });
+        expect(coinCombined.length).toBe(1);
+        expect(coinCombined[0].id).toBe('heavy-periods');
+
+        // In 'flow-blood', searching 'clots' matches both heavy-periods and fibroids
+        const clotsCombined = filterConditions({
           category: 'flow-blood',
           query: 'clots',
         });
-        expect(combined.length).toBe(1);
-        expect(combined[0].id).toBe('heavy-periods');
+        expect(clotsCombined.length).toBe(2);
+        expect(clotsCombined.map((c) => c.id).sort()).toEqual(
+          ['fibroids', 'heavy-periods'].sort()
+        );
 
         // In 'pain-discomfort', searching 'luteal' should match only pms
         const pmsCombined = filterConditions({
@@ -440,8 +496,12 @@ describe('Conditions Library Complete 8 Conditions & Schema (Tasks 6.2g, 6.2h, 6
 
       it('handles whitespace and mixed casing smoothly', () => {
         const trimmed = filterConditions({ query: '   EndoMetriosis   ' });
-        expect(trimmed.length).toBe(1);
-        expect(trimmed[0].id).toBe('endometriosis');
+        expect(trimmed.length).toBe(2);
+        expect(trimmed.map((c) => c.id).sort()).toEqual(['adenomyosis', 'endometriosis'].sort());
+
+        const dysmenorrhea = filterConditions({ query: '   DysMenORRhea   ' });
+        expect(dysmenorrhea.length).toBe(1);
+        expect(dysmenorrhea[0].id).toBe('dysmenorrhea');
       });
     });
   });
