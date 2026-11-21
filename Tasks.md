@@ -44,7 +44,7 @@ Work in order. One task at a time. Tick the box when done and update Memory.md.
 - [x] 5.3 Add vite-plugin-pwa (manifest, icons, offline shell)
 - [x] 5.4 Accessibility and responsive review
 - [x] 5.5 Test Firestore security rules (own data allowed, other users blocked)
-- [ ] 5.6 Deploy to Firebase Hosting
+- [ ] 5.6 Deploy to Firebase Hosting (Deploy last: only after all features, AI and security hardening are done)
 - [ ] 5.7 Nutrition content reviewed by an expert (owner)
 
 ## Phase 6: Version 2
@@ -62,13 +62,20 @@ Work in order. One task at a time. Tick the box when done and update Memory.md.
 - [x] 6.2j Build Conditions Library list page (`pages/Conditions.jsx`) with live search, category filter chips, condition preview cards, medical disclaimer, and register `/conditions` route in App.jsx
 - [x] 6.2k Build Condition Detail page (`pages/ConditionDetail.jsx`) at `/conditions/:id` with expandable sections (symptoms, doctor red flags, comfort care, clinical tests, myths vs facts, related workouts link, matching risk flag banner), 44px tap targets, and expert review badge
 - [x] 6.2l Integrate Conditions Library entry points across app: link matching Insights risk flag cards to `/conditions/:id`, add library discovery cards on Dashboard, Tips page, and related condition links in Workouts
-- [ ] 6.3 Set up AI backend (Cloud Function or Firebase AI Logic), key stored server side
-- [ ] 6.4 System prompt, red-flag detection, rate limiting, consent check
-- [ ] 6.5 Assistant chat page with suggested questions and disclaimer
-- [ ] 6.6 Reminders (period, water) using FCM or email
+- [ ] 6.3 Configure Firebase AI Logic client SDK with Gemini Developer API on the free Spark plan and App Check (reCAPTCHA v3 / debug provider for localhost)
+- [ ] 6.4 System prompt (educational, non-diagnostic, condition library citations), pre-call red-flag detection short-circuit, Firestore soft daily rate limiter (users/{uid}/aiUsage/{date}), and AI consent check with Google review disclosure
+- [ ] 6.5 Assistant chat page (`pages/Assistant.jsx`) with suggested questions, phase/symptom context injection, friendly rate-limit error handling (429 resource-exhausted), and disclaimer banner
+- [ ] 6.6 Reminders: in-app cycle phase countdowns, late period card, and doctor visit calendar integration (Push & email notifications out of scope: requires paid or server-side services)
 - [ ] 6.7 Exercise / yoga tips, water tracker improvements
 - [ ] 6.8 Irregular cycle alert in the UI
 - [ ] 6.9 Dark mode
+
+## Security hardening (do later, after AI works)
+- [ ] (1) Replace the wildcard Firestore rule with explicit subcollection rules (profile, periods, dailyLogs, doctorVisits, aiUsage)
+- [ ] (2) aiUsage soft daily cap rule plus updated rules tests
+- [ ] (3) Friendly rate-limit error handling
+- [ ] (4) Privacy page and README wording about Google processing AI questions
+- [ ] (5) Re-verify the model name against the Firebase AI Logic supported models page
 
 ## Phase 7: Version 3
 - [ ] 7.1 AI pattern insights from logs

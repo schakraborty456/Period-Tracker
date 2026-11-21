@@ -17,7 +17,7 @@ Built as a portfolio / resume project to show full-stack, AI integration, and se
 |---|---|---|
 | Frontend | React (Vite) + Tailwind | Requested by owner, simple and fast |
 | Backend | Firebase (Auth, Firestore, Hosting) | No custom backend needed, free tier |
-| AI | Gemini API via Firebase AI Logic or Cloud Functions | Same Google ecosystem, free tier, key stays server side |
+| AI | Firebase AI Logic client SDK (Gemini Developer API on free Spark plan) + App Check (reCAPTCHA v3) | 100% free learning/portfolio project; no Cloud Functions, no credit card/Blaze required; App Check (mandatory Nov 2026) + soft Firestore daily rate counter (15 chats/day); transparent Google free-tier data review disclosure |
 | Prediction logic | Rule-based formula, no AI | Accuracy and trust |
 | Nutrition content | Static reviewed content file | Safe, free, no AI errors |
 | App type | PWA (installable website) | Works on all devices, one codebase |
@@ -41,8 +41,7 @@ Built as a portfolio / resume project to show full-stack, AI integration, and se
 - Condition comfort phrasing convention: Always *"may help ease discomfort"*, never *"cure"*, *"treat"*, or medicine names.
 
 ## 5. Current Status
-- Phase: Phase 5 (Tasks 5.1–5.5 completed) & Phase 6 (Tasks 6.2a–6.2l completed).
-- Next task: Task 6.3 in Tasks.md (Set up AI backend).
+Testing phase, AI next
 
 ## 6. Open Questions
 - Who will review the nutrition content (doctor / nutritionist)?
@@ -53,6 +52,7 @@ Built as a portfolio / resume project to show full-stack, AI integration, and se
 - Health content must be reviewed by an expert before public launch.
 - AI answers must never be treated as medical advice.
 - Irregular cycles make predictions less accurate; always show ranges or "around" wording.
+- Security hardening is deferred by the owner. Existing owner-only Firestore rules stay in place. Model gemini-1.5-flash and gemini-2.0-flash are retired; use a stable current model and verify at build time. Do not use reCAPTCHA Enterprise (paid). Hosting deploy is last.
 
 ## 8. Change Log
 | Date | Change |
@@ -97,5 +97,8 @@ Built as a portfolio / resume project to show full-stack, AI integration, and se
 | 2026-11-18 | Added Google Sign-In integration: Implemented loginWithGoogle (GoogleAuthProvider + signInWithPopup) in AuthContext.jsx. Added accessible "Continue with Google" action buttons to Login.jsx and Signup.jsx with comprehensive error handling (popup closed, blocked, unauthorized domain, operation not allowed). |
 | 2026-11-18 | Completed Task 6.2k: Replaced ConditionDetail placeholder with full interactive guide (src/pages/ConditionDetail.jsx). Features: back navigation, review status badge, standard medical disclaimer, ordered sections (What is it, Common signs, When to see a doctor red flags, Home comfort tips grouped by food/sleep/stress/hydration/heat with mandatory non-treatment intro line, Clinical tests overview, Myths vs facts). Built expandable accordions with aria-expanded, persistent red-flag highlighting, related workouts deep-links (?routine=), pattern insights CTA, and same-category condition recommendations. Created src/utils/conditionHelpers.js with 8 unit tests (169 tests passing total). |
 | 2026-11-20 | Completed Task 6.2l: Integrated Conditions Library entry points across app. Added "Learn more: [Condition] →" links on Insights risk flag cards (linking multiple conditions like heavy-periods & anemia for anemia_possible, dysmenorrhea & endometriosis for severe_pain_possible). Added small "Read about this in Library →" link on RedFlagEscalationCard keeping urgent wording/actions intact. Added compact, calm Conditions Library link card below main content on Dashboard. Added reverse condition lookup (getConditionsForWorkout) displaying "Related Guide: [Condition] →" links on workout cards and inside the Routine Player modal. Bottom navigation kept untouched at 4 tabs. Added 17 new unit tests in conditionHelpers.test.js (186 total tests passing). |
+| 2026-11-20 | Completed Task 6.3 Planning: Evaluated Firebase AI Logic (client SDK) vs Firebase Callable Cloud Function. Selected Callable Cloud Function (`askAssistant`) for strict server-side key protection, native Firebase Auth ID token verification, and tamper-proof per-user daily rate limiting in Firestore. Documented strict zero-PII cycle context payload, multi-tier safety pipeline (client-side pre-call red-flag intercept, educational system prompt, zero medicine/dosage, verified condition library citations), aiConsent gate requirement, and exact manual Firebase Console/GCP budget alert setup steps. Updated Architecture.md §6. |
+| 2026-11-20 | Docs Revision for Tasks 6.3–6.6: Switched AI plan to 100% free Spark plan using Firebase AI Logic client SDK with Gemini Developer API and App Check (reCAPTCHA v3). Zero billing/credit card constraint for student portfolio. Documented exact console setup, localhost debug token workflow, 100 RPM gateway limit, 429 resource-exhausted friendly handling, soft Firestore daily counter rules, and mandatory Google review terms disclosure ("Your question and cycle context are processed by Google and may be reviewed"). Marked Task 6.6 (push/email) as out-of-scope (paid/server-side) preserving in-app countdowns. Updated Architecture.md §6 and Tasks.md. |
+| 2026-11-21 | Docs update: Un-paused AI assistant tasks (6.3–6.5) to stay in V2 and be built after manual testing. Task 6.6 stays out of scope (in-app countdown cards remain the reminder feature). App Check (reCAPTCHA v3, free) kept inside Task 6.3. Added 'Security hardening (do later, after AI works)' section to Tasks.md. Added 'Deploy last' note to Task 5.6. In Memory.md noted that security hardening is deferred by owner, owner-only rules stay in place, gemini-1.5-flash and gemini-2.0-flash are retired (use stable current model and verify at build time), do not use reCAPTCHA Enterprise (paid), and hosting deploy is last. Updated Current Status to 'Testing phase, AI next'. |
 
 (Add a new row after each completed task: date, what changed, any decision made.)
