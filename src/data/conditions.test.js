@@ -32,6 +32,13 @@ const BANNED_PATTERNS = [
   { word: 'supplement', regex: /\bsupplements?\b/i },
   { word: 'herbal', regex: /\bherbal\b/i },
   { word: 'iron tablets', regex: /\biron\s+tablets?\b/i },
+  { word: 'anti-inflammatory', regex: /\banti-?inflammator(y|ies)\b/i },
+  { word: 'detox', regex: /\bdetox(ification|ing|s)?\b/i },
+  { word: 'balance hormones', regex: /\bbalance\s+(\w+\s+)?hormones?\b/i },
+  { word: 'boost immunity', regex: /\bboost(s|ing)?\s+immunity\b/i },
+  { word: 'reduces', regex: /\breduces?\b/i },
+  { word: 'prevents', regex: /\bprevents?\b/i },
+  { word: 'improves fertility', regex: /\bimprove(s|d|ing)?\s+fertility\b/i },
 ];
 
 /**
@@ -235,9 +242,11 @@ describe('Conditions Library Complete 11 Conditions & Schema (Tasks 6.2g, 6.2h, 
     expect(adenomyosis).toBeDefined();
     expect(pmdd).toBeDefined();
 
-    // pmdd whenToSeeDoctor must mention seeing a doctor when mood symptoms feel severe or include thoughts of self-harm
+    // pmdd whenToSeeDoctor must mention seeing a doctor when mood symptoms feel severe or include thoughts of self-harm / harming yourself
     const pmddRedFlags = pmdd.whenToSeeDoctor.join(' ').toLowerCase();
-    expect(pmddRedFlags).toContain('self-harm');
+    expect(
+      pmddRedFlags.includes('harming yourself') || pmddRedFlags.includes('self-harm')
+    ).toBe(true);
     expect(pmddRedFlags).toContain('severe');
 
     // fibroids and adenomyosis make NO claims about fertility outcomes or causes
@@ -350,6 +359,32 @@ describe('Conditions Library Complete 11 Conditions & Schema (Tasks 6.2g, 6.2h, 
       violations,
       `Banned words scanner should not flag whole words like "health" or "healthy": ${JSON.stringify(violations)}`
     ).toEqual([]);
+  });
+
+  it('strictly flags health claims including anti-inflammatory, detox, balance hormones, boost immunity, reduces, prevents, and improves fertility', () => {
+    const testCases = [
+      { text: 'This anti-inflammatory tea soothes cramps.', bannedWord: 'anti-inflammatory' },
+      { text: 'A quick detox routine cleanses the body.', bannedWord: 'detox' },
+      { text: 'Eat this food to balance hormones naturally.', bannedWord: 'balance hormones' },
+      { text: 'These habits boost immunity during periods.', bannedWord: 'boost immunity' },
+      { text: 'This stretch reduces pain instantly.', bannedWord: 'reduces' },
+      { text: 'Regular exercise prevents cramps completely.', bannedWord: 'prevents' },
+      { text: 'This diet improves fertility fast.', bannedWord: 'improves fertility' },
+    ];
+
+    testCases.forEach(({ text, bannedWord }) => {
+      const mockCondition = {
+        id: 'mock-claim-test',
+        title: 'Mock Guide',
+        shortName: 'Mock',
+        summary: text,
+      };
+      const violations = scanConditionForBannedWords(mockCondition);
+      expect(
+        violations.some((v) => v.bannedWord === bannedWord),
+        `Expected scanner to flag banned word "${bannedWord}" in "${text}"`
+      ).toBe(true);
+    });
   });
 
   describe('Helper Functions across all 11 Conditions', () => {

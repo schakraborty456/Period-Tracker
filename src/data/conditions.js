@@ -33,7 +33,7 @@ export const CONDITIONS = [
     category: 'hormonal-systemic',
     categoryLabel: 'Hormonal & Systemic',
     summary:
-      'Polycystic Ovary Syndrome (PCOS), frequently also referred to as PCOD (Polycystic Ovarian Disease), is a common hormonal pattern where ovaries may develop small follicles and cycles become irregular. It is linked with variations in hormone balance, insulin response, and cycle regularity.',
+      'Polycystic Ovary Syndrome (PCOS), frequently also referred to as PCOD (Polycystic Ovarian Disease), is a common hormonal pattern where ovaries may develop small follicles and cycles become irregular. It is linked with variations in hormone levels, insulin response, and cycle regularity.',
     symptoms: [
       'Irregular, delayed, or missed menstrual cycles',
       'Persistent acne or oily skin, particularly along the jawline',
@@ -108,7 +108,7 @@ export const CONDITIONS = [
     ],
     whenToSeeDoctor: [
       'Severe emotional distress, hopelessness, or panic that disrupts school, work, or relationships',
-      'Severe physical pain that prevents everyday activities',
+      'Severe physical pain that stops you from carrying out everyday activities',
       'Symptoms that continue all month long without easing once a period begins',
     ],
     homeComfort: {
@@ -290,7 +290,7 @@ export const CONDITIONS = [
       sleep:
         'Prioritizing an unhurried 8 hours of sleep and taking short afternoon pauses when fatigued may help ease discomfort and restore physical stamina.',
       stress:
-        'Pacing daily responsibilities and practicing slow, relaxed breathing may help ease discomfort by reducing physical strain on low-energy days.',
+        'Pacing daily responsibilities and practicing slow, relaxed breathing may help ease discomfort by easing physical strain on low-energy days.',
       hydration:
         'Drinking plenty of clean water throughout the day may help ease discomfort and maintain healthy blood volume.',
       heatAndMovement:
@@ -406,7 +406,7 @@ export const CONDITIONS = [
       sleep:
         'Maintaining consistent sleep and wake hours in a calm, dark environment may help ease discomfort and help manage daytime fatigue.',
       stress:
-        'Daily gentle walking, calming breathwork, and reducing demanding physical overexertion may help ease discomfort from metabolic strain.',
+        'Daily gentle walking, calming breathwork, and avoiding demanding physical overexertion may help ease discomfort from metabolic strain.',
       hydration:
         'Drinking adequate water throughout the day and choosing warm fluids when feeling chilly may help ease discomfort and keep digestion regular.',
       heatAndMovement:
@@ -426,7 +426,7 @@ export const CONDITIONS = [
           'Fact: Thyroid hormones directly interact with the ovaries and pituitary gland, making cycle irregularity or flow changes a common sign.',
       },
       {
-        myth: 'Myth: You can balance thyroid hormones solely through diet or lifestyle at home.',
+        myth: 'Myth: You can manage thyroid hormone levels solely through diet or lifestyle at home.',
         fact:
           'Fact: While balanced nutrition supports general wellness, true thyroid imbalances require clinical evaluation and guidance by a medical doctor.',
       },
@@ -539,17 +539,17 @@ export const CONDITIONS = [
       {
         myth: 'Myth: Fibroids are cancerous and always dangerous.',
         fact:
-          'Fact: Uterine fibroids are benign (non-cancerous) growths and are very common; they do not increase the risk of uterine cancer.',
+          'Fact: Uterine fibroids are growths that are usually not cancer, but a doctor can confirm. They are very common.',
       },
       {
         myth: 'Myth: Having fibroids always requires major surgery.',
         fact:
-          'Fact: Many fibroids need no intervention at all if they cause no symptoms, and doctors offer a range of non-surgical and monitoring approaches.',
+          'Fact: Many fibroids that cause no symptoms are simply watched by a doctor over time. What is right differs from person to person, so a doctor can advise.',
       },
       {
         myth: 'Myth: Every person with fibroids experiences heavy bleeding.',
         fact:
-          'Fact: Many individuals with small or non-intrusive fibroids have completely normal cycles and may only discover them during a routine checkup.',
+          'Fact: Many people with small fibroids have no symptoms and may only find out during a routine checkup.',
       },
     ],
     relatedWorkoutIds: ['lower-back-soother', 'cramps-relief'],
@@ -581,13 +581,13 @@ export const CONDITIONS = [
     ],
     homeComfort: {
       food:
-        'Enjoying warm, home-cooked meals featuring antioxidant-rich vegetables, lentils, dal, seasonal fruits, and warm ginger or turmeric broths may help ease discomfort during painful days.',
+        'Warm, easy-to-digest home-cooked meals featuring vegetables, lentils (dal), and seasonal fruits may help ease discomfort during painful days.',
       sleep:
         'Prioritizing 8 hours of quiet nighttime rest in a curled fetal position with a pillow supporting the abdomen may help ease discomfort in the lower pelvic muscles.',
       stress:
         'Mindful deep breathing, gentle guided relaxation, and quiet pauses throughout the day may help ease discomfort by calming the nervous system.',
       hydration:
-        'Drinking plenty of warm water and warm decaffeinated fluids throughout the day may help ease discomfort and reduce feelings of abdominal bloat.',
+        'Drinking plenty of warm water and warm decaffeinated fluids throughout the day may help ease discomfort and soothe feelings of abdominal bloat.',
       heatAndMovement:
         'Placing a warm water bottle or heating pad on the lower abdomen, accompanied by restorative resting poses like child’s pose, may help ease discomfort from uterine contractions.',
     },
@@ -637,7 +637,7 @@ export const CONDITIONS = [
     ],
     whenToSeeDoctor: [
       'Emotional or mood symptoms that feel severe, unmanageable, or cause intense distress before your period',
-      'Experiencing feelings of hopelessness or thoughts of self-harm',
+      'If you have thoughts of harming yourself, please talk to a trusted person or a doctor right away',
       'Mood changes that severely disrupt your daily relationships, work, or ability to function',
       'Symptoms that do not improve within a few days after your period starts',
     ],
@@ -651,7 +651,7 @@ export const CONDITIONS = [
       hydration:
         'Drinking regular glasses of clean water throughout the day and limiting high-salt snacks may help ease discomfort from fluid retention and premenstrual headaches.',
       heatAndMovement:
-        'Gentle restorative yoga, slow outdoor walks in natural light, and quiet stretching may help ease discomfort by boosting calming brain signals without physical strain.',
+        'Gentle restorative yoga, slow outdoor walks in natural light, and quiet stretching may help ease discomfort by encouraging calming brain signals without physical strain.',
     },
     whatDoctorMayCheck: [
       'Symptom tracking calendar across at least two consecutive cycles to confirm the luteal timing of symptoms',
