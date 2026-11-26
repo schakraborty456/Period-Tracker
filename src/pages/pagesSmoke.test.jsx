@@ -79,6 +79,9 @@ vi.mock('firebase/firestore', () => ({
 vi.mock('../firebase', () => ({
   auth: {},
   db: {},
+  ai: {},
+  appCheck: null,
+  default: {},
 }));
 
 vi.mock('../hooks/useAuth', () => ({

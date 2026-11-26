@@ -196,9 +196,9 @@ Defined in `src/data/conditions.js` as an array of static, expert-reviewable edu
 > **Zero-Cost Constraint**: This is a free learning and portfolio project for personal use and demos. **NOTHING paid**. No Cloud Functions, no Google Cloud Billing account linking, and no upgrade to the Blaze plan. The architecture operates 100% on the **free Firebase Spark plan**.
 
 ### 6.1 Core Choice: Firebase AI Logic Client SDK (Gemini Developer API)
-We utilize **Firebase AI Logic** client-side SDK (`@firebase/ai` / `firebase/ai`) configured with the **Gemini Developer API** provider (`GoogleAIBackend`) on the free Spark plan:
-- **Zero Cost / No Credit Card**: Runs completely on the free Spark plan without attaching a billing account.
-- **Client-Side Direct Access**: Client app calls Gemini models directly through Firebase's managed gateway (`firebaseml.googleapis.com`), which attaches project authentication tokens internally without exposing raw API keys in client JavaScript.
+We utilize the **Firebase AI Logic** client-side SDK (`@firebase/ai` / `firebase/ai`) configured with the **Gemini Developer API** provider (`GoogleAIBackend`) on the free Spark plan:
+- **Zero Cost / No Credit Card**: Runs completely on the free Spark plan without attaching a Google Cloud billing account.
+- **Client-Side Direct Access**: The client web app calls Gemini models directly through Firebase's managed gateway (`firebaseml.googleapis.com`), which validates App Check tokens and manages project authorization internally without exposing raw Gemini API keys in client JavaScript.
 
 ### 6.2 Firebase Console Enablement Steps (No Billing Required)
 1. Ensure your Firebase project is on the **Spark (free) plan** in the [Firebase Console](https://console.firebase.google.com/).
@@ -210,46 +210,81 @@ We utilize **Firebase AI Logic** client-side SDK (`@firebase/ai` / `firebase/ai`
 ### 6.3 Firebase App Check Setup (Mandatory from November 2, 2026)
 From November 2, 2026, Firebase enforces mandatory App Check for all Firebase AI Logic calls. Unverified requests are rejected at the gateway.
 
-#### 1. Chosen Web Provider: reCAPTCHA v3 (`ReCaptchaV3Provider`)
-- **Cost**: 100% Free on the Spark plan (up to 1,000,000 assessments/month at no charge).
-- **No Billing Warning**: Avoid Google Cloud reCAPTCHA Enterprise features or Cloud Armor policies that require a Cloud Billing account. Standard reCAPTCHA v3 requires zero billing.
-- *(Note on reCAPTCHA Enterprise: While Enterprise has a 10,000 assessment/mo free tier, on the Spark plan it limits risk scores to 4 discrete values and fails with 429 when exceeded. reCAPTCHA v3 is simpler and safer for free portfolio projects).*
+#### 1. Provider & Cost Policy: reCAPTCHA Enterprise (`ReCaptchaEnterpriseProvider`)
+- **Provider Choice**: reCAPTCHA Enterprise (Fraud Defense) using a score-based website key in the Essentials tier.
+- **Reason**: reCAPTCHA Classic is deprecated in Google Cloud and Firebase console.
+- **Zero Cost / No Billing Required**: reCAPTCHA Enterprise Essentials tier provides free monthly assessment volume without requiring a paid billing upgrade. **Do not enable billing**.
+- **Enforcement Scope**: App Check is configured as **Enforced** for **Firebase AI Logic only**. Cloud Firestore and Firebase Authentication stay **Unenforced**, ensuring standard database and authentication operations continue smoothly without blocking client requests.
 
-#### 2. Web Setup Steps:
-1. Register your site at [Google reCAPTCHA Admin Console](https://www.google.com/recaptcha/admin) choosing **reCAPTCHA v3**.
-2. Add your production domain(s) (e.g. `your-project.web.app`, `your-project.firebaseapp.com`, or Netlify domain). **Do NOT add `localhost`**.
-3. In [Firebase Console > App Check > Apps](https://console.firebase.google.com/), select your Web App, click **Register**, select **reCAPTCHA v3**, paste your reCAPTCHA Secret Key, and save.
-4. Add the public site key to your client `.env`: `VITE_RECAPTCHA_SITE_KEY=your-site-key`.
+#### 2. Manual Setup Steps in Consoles (For the Developer):
+1. **Google Cloud Console > Security > reCAPTCHA Enterprise**:
+   - Create a score-based website key (label: `period-tracker-web`).
+   - Add authorized domains (e.g. `your-project.web.app`, `your-project.firebaseapp.com`, or Netlify domain). **Do NOT add `localhost`**.
+   - Copy the public Site Key.
+2. **Firebase Console > App Check > Apps tab**:
+   - Locate your Web App and click **Register**.
+   - Select **reCAPTCHA Enterprise**.
+   - Enter your reCAPTCHA Enterprise Site Key and save.
+3. **Firebase Console > App Check > APIs tab**:
+   - Verify that **Firebase AI Logic** shows **Enforced**.
+   - Ensure **Cloud Firestore** and **Firebase Authentication** remain **Unenforced**.
+4. **Firebase Console > App Check > Apps tab (Localhost Debug Token)**:
+   - Run the local dev server (`npm run dev`) with debug mode enabled (see code steps below).
+   - Open browser DevTools console (`F12`), locate and copy the logged UUID:
+     `AppCheck debug token: "12345678-abcd-1234-ef01-123456789abc"`
+   - In Firebase Console > App Check > Apps tab, click the 3-dots menu for your Web app -> **Manage debug tokens**.
+   - Click **Add debug token**, paste the copied UUID, label it `Localhost Dev`, and save. Localhost requests are now authorized without CAPTCHA challenges.
 
-#### 3. Local Development with Debug Token (Localhost):
-When developing on `localhost`, production reCAPTCHA tokens fail. Use the App Check Debug Provider:
-1. In your app initialization (e.g., `src/firebase.js`), enable debug mode during local development:
+#### 3. Code & Environment Setup Steps:
+1. Put the public site key in your client `.env` (and add an empty placeholder in `.env.example`):
+   ```env
+   VITE_RECAPTCHA_SITE_KEY=your-recaptcha-enterprise-site-key
+   ```
+2. In app initialization (`src/firebase.js`):
    ```javascript
-   if (import.meta.env.DEV) {
-     self.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
+   import { initializeAppCheck, ReCaptchaEnterpriseProvider } from 'firebase/app-check';
+
+   const recaptchaSiteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
+
+   if (typeof window !== 'undefined' || typeof self !== 'undefined') {
+     if (import.meta.env.DEV) {
+       if (typeof self !== 'undefined') {
+         self.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
+       }
+     }
+
+     if (recaptchaSiteKey) {
+       initializeAppCheck(app, {
+         provider: new ReCaptchaEnterpriseProvider(recaptchaSiteKey),
+         isTokenAutoRefreshEnabled: true,
+       });
+     } else if (import.meta.env.DEV) {
+       console.warn(
+         'Firebase App Check: VITE_RECAPTCHA_SITE_KEY is missing. Skipping App Check initialization.'
+       );
+     }
    }
    ```
-2. Start the dev server (`npm run dev`) and open browser DevTools console (`F12`). Look for the log:
-   ```text
-   AppCheck debug token: "12345678-abcd-1234-ef01-123456789abc"
-   ```
-3. Copy the UUID token. In **Firebase Console > App Check > Apps tab**, click the 3-dots menu for your Web app -> **Manage debug tokens**.
-4. Click **Add debug token**, paste the copied UUID, label it `Localhost Dev`, and save. Localhost requests are now authorized without CAPTCHA challenges.
 
-### 6.4 Rate Limits, Models, and Friendly Error Handling
+### 6.4 Model Selection, Rate Limits, and Friendly Error Handling
 
-#### 1. Rate Limits
+#### 1. Model Selection (STABLE Only - No Preview Models)
+- **Status of Older Models**: `gemini-1.5-flash` and `gemini-2.0-flash` are retired and must not be used.
+- **Active Model Choice**: Pick a **STABLE (non-preview)** model listed on the official Firebase AI Logic supported models page, such as `gemini-2.5-flash` or `gemini-2.5-flash-lite`, and **verify at build time**.
+- **No Preview Models**: Strictly avoid experimental or `-preview` models to prevent mid-project deprecation or unexpected breaking changes.
+- **Set Output Token Limits (`maxOutputTokens`)**: Always plan to set `maxOutputTokens` (e.g., `maxOutputTokens: 600` to `1000`) in `generationConfig`. This keeps guidance short, concise, and focused, saves quota, and prevents runaway verbose outputs.
+
+#### 2. Rate Limits
 - **Gateway Per-User Limit**: Firebase AI Logic enforces a default limit of **100 requests per minute (RPM) per user** to prevent client loops from exhausting project quotas.
-- **Model Free-Tier Request Limits**:
-  - Model: `gemini-1.5-flash` or `gemini-2.0-flash` *(verify exact active model name at build time)*.
-  - Free-tier quotas via Gemini Developer API (subject to Google AI Studio limits): ~15 RPM, 1,500 RPD (requests per day), 1,000,000 TPM *(verify exact numbers at build time; do not guess)*.
+- **Model Free-Tier Request Limits**: Quotas are governed by the Gemini Developer API free-tier. **Check the Google AI Studio rate-limit page for the chosen model at build time** (do not hardcode specific RPM/RPD/TPM numbers, as free-tier quotas vary by model and change over time).
 
-#### 2. Friendly Quota & Rate Limit Error Handling
+#### 3. Friendly Quota & Rate Limit Error Handling
 When the user or project reaches a rate limit or daily quota, the Firebase SDK throws an error with `code: 'resource-exhausted'` or HTTP `429 RESOURCE_EXHAUSTED`.
 The app catches this and displays a calm, friendly alert:
 > *"We're receiving a lot of questions right now! You've reached the free-tier question limit. Please take a gentle pause and try asking again in a few minutes."*
 
 ### 6.5 Soft Daily Per-User Rate Limiter in Firestore
+
 Because the client SDK connects directly to Gemini without a custom backend server, we implement an application-level **soft rate limiter** in Firestore to pace queries (e.g., max 15 questions per user per day).
 
 #### 1. Document Structure
@@ -261,30 +296,19 @@ Path: `users/{userId}/aiUsage/{YYYY-MM-DD}`
 }
 ```
 
-#### 2. Firestore Security Rules
-```
-match /users/{userId}/aiUsage/{date} {
-  // Owner can read their own daily usage count
-  allow read: if request.auth != null && request.auth.uid == userId;
+#### 2. Firestore Rule & Wildcard Bypass Caveat
+- **Application-Level Soft Limit**: The `aiUsage` daily cap is strictly an **application-level soft limit**.
+- **Current Wildcard Rule**: The existing Firestore security rule:
+  ```
+  match /users/{userId}/{document=**} {
+    allow read, write: if request.auth != null && request.auth.uid == userId;
+  }
+  ```
+  grants the authenticated user full read and write access to their entire user document tree. This means the document owner could technically modify or reset their own `aiUsage` counter document via browser DevTools.
+- **Rule Policy for V2 Build**: We keep the rules unchanged for now. Replacing the wildcard rule with explicit subcollection rules (`profile`, `periods`, `dailyLogs`, `doctorVisits`, `aiUsage`) is tracked under **Security hardening** (to be executed after AI features are working).
+- The soft limiter effectively prevents accidental UI loops, rapid double-submits, and excessive queries during normal application usage.
 
-  // Create today's doc when starting at count 1
-  allow create: if request.auth != null && request.auth.uid == userId
-                && request.resource.data.count == 1;
-
-  // Increment strictly by 1 up to soft limit of 15 queries per day
-  allow update: if request.auth != null && request.auth.uid == userId
-                && request.resource.data.count == resource.data.count + 1
-                && request.resource.data.count <= 15;
-
-  // Prevent deletions
-  allow delete: if false;
-}
-```
-
-#### 3. Honest Documentation: Soft Limit
-This is honestly documented as a **soft limit**. While Firestore rules strictly prevent updating the database counter beyond 15, a technical user with browser DevTools could technically invoke the client SDK directly. This soft limiter effectively prevents accidental loops, rapid double-clicks, and excessive queries in standard app usage.
-
-### 6.6 Free-Tier Data Terms & Transparent Disclosures
+### 6.6 Transparent Disclosures & Consent Text
 Under Google's Gemini Developer API free-tier terms, Google may use prompt inputs and generated outputs to train and improve its products, and human reviewers may read submitted data.
 
 #### Exact Disclosure Line:
@@ -294,10 +318,10 @@ The following exact disclosure must appear prominently in the **AI Consent Scree
 #### Project Context:
 - This is a free learning and portfolio project for personal use and demonstrations, **not a medical device or medical advice**.
 - We do **not** tell users to avoid real data, but we are completely honest about where data goes.
-- Any claim that data "never leaves your device" or is "100% private from AI vendors" is strictly removed.
+- Any claim that data "never leaves your device" or is "100% private from AI vendors" is strictly prohibited.
 
 ### 6.7 Context Payload (Zero PII Privacy Principle)
-To minimize shared data, the client sends **ONLY** cycle context; **NEVER name, email, account UID, or date of birth**:
+To minimize shared data, the client sends **ONLY** sanitized cycle context; **NEVER send name, email, account UID, or date of birth**:
 ```javascript
 {
   question: "Why do I feel so tired and craving chocolate today?",
@@ -311,25 +335,35 @@ To minimize shared data, the client sends **ONLY** cycle context; **NEVER name, 
 }
 ```
 
-### 6.8 Multi-Layer Safety Flow
+### 6.8 Multi-Layer Safety Flow & Verified Condition Citations
 1. **Mandatory AI Consent Check**:
    - The user must explicitly have `profile.aiConsent === true` in Firestore before the AI assistant can be accessed.
-   - If `false`, the user is presented with the consent modal including the Google review disclosure.
+   - If `false`, the user is presented with the consent modal including the mandatory Google review disclosure.
 2. **Pre-Call Client Red-Flag Intercept**:
    - The client scans user input *before* sending anything to the AI.
    - If red-flag symptoms are detected (acute severe pain $\ge 9/10$, bleeding $> 7$ consecutive days, sudden fainting/dizziness, fever with pelvic pain), the UI **immediately short-circuits** and renders the **Urgent Doctor Referral Card** without making any AI call.
-3. **System Prompt Guardrails**:
+3. **System Prompt Guardrails & Dynamic Condition Directory**:
    - Friendly period and nutrition guide, strictly **not a doctor**.
    - Strictly prohibited from diagnosing conditions or recommending prescription medications or supplement doses.
    - Comfort care must strictly say *"may help ease discomfort"*, never cure or treat.
-   - Grounded in the app's verified educational Conditions Library: references `/conditions/:id` pages (`/conditions/pcos`, `/conditions/dysmenorrhea`, `/conditions/anemia`, etc.).
+   - **Verified Conditions Library Citation (All 11 Conditions)**:
+     To ensure the assistant only cites real, existing pages, `src/services/ai.js` dynamically imports `CONDITIONS` from `src/data/conditions.js` and formats a condition manifest:
+     ```javascript
+     import { CONDITIONS } from '../data/conditions';
+
+     const conditionsDirectory = CONDITIONS.map(
+       (c) => `- ${c.title} (${c.shortName}): /conditions/${c.id}`
+     ).join('\n');
+     ```
+     This list of 11 verified conditions (`pcos`, `pms`, `dysmenorrhea`, `heavy-periods`, `anemia`, `endometriosis`, `thyroid`, `irregular-periods`, `fibroids`, `adenomyosis`, `pmdd`) is directly injected into the system instruction:
+     > *"Verified Conditions Library pages in this app:\n${conditionsDirectory}\n\nCITATION RULES: When discussing menstrual or reproductive health conditions, cite and link ONLY to the exact paths listed above using Markdown format [Condition Name](/conditions/:id). Never invent, guess, or hallucinate URLs outside this list."*
 4. **Mandatory Post-Response Disclaimer**:
    - Every AI response bubble is permanently anchored with the standard medical disclaimer banner.
 
 ## 7. Security
 - Firestore rules: a user can only read and write documents under `users/{their own uid}`.
 - Environment variables for all Firebase config (`.env`, never committed).
-- Gemini key stored only server side.
+- No raw Gemini API key in client code (managed gateway via Firebase AI Logic + App Check).
 - AI requests require a signed-in user and are rate limited.
 - Account deletion removes the user doc and all subcollections.
 
