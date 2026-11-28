@@ -11,6 +11,7 @@ import {
   orderBy,
   limit,
   serverTimestamp,
+  runTransaction,
 } from 'firebase/firestore';
 import { db } from '../firebase';
 import { getDaysDifference, formatLocalDate } from '../utils/dateHelpers';
@@ -55,6 +56,153 @@ export async function updateRiskConsent(userId, riskConsent) {
     { merge: true }
   );
   return Boolean(riskConsent);
+}
+
+/**
+ * Updates AI assistant consent status in `users/{userId}`.
+ *
+ * @param {string} userId
+ * @param {boolean} aiConsent
+ * @returns {Promise<boolean>}
+ */
+export async function updateAiConsent(userId, aiConsent) {
+  const userRef = doc(db, 'users', userId);
+  await setDoc(
+    userRef,
+    {
+      aiConsent: Boolean(aiConsent),
+      updatedAt: serverTimestamp(),
+    },
+    { merge: true }
+  );
+  return Boolean(aiConsent);
+}
+
+// ============================================================================
+// AI USAGE RATE LIMITING (Task 6.4c)
+// ============================================================================
+
+/**
+ * Soft daily question cap for the Gemini AI assistant.
+ * Note: this limit is an application-level soft counter governed by this single
+ * constant and can be adjusted here.
+ */
+export const AI_DAILY_LIMIT = 50;
+
+export const AI_LIMIT_REACHED_MESSAGE =
+  "You have reached today's question limit. Please come back tomorrow.";
+
+export const AI_USAGE_ERROR_MESSAGE =
+  'Unable to verify your daily question limit. Please check your connection and try again.';
+
+export const AI_QUESTIONS_REMAINING_LABEL = 'questions remaining today.';
+
+/**
+ * Formats a friendly message for remaining questions.
+ *
+ * @param {number} remaining
+ * @returns {string}
+ */
+export function getRemainingQuestionsMessage(remaining) {
+  if (remaining <= 0) {
+    return AI_LIMIT_REACHED_MESSAGE;
+  }
+  if (remaining === 1) {
+    return '1 question remaining today.';
+  }
+  return `${remaining} questions remaining today.`;
+}
+
+/**
+ * Normalizes usage rate-limiting errors into standard Error objects with code 'usage-error'
+ * without leaking technical details or sensitive user data.
+ *
+ * @param {Error|any} error
+ * @returns {Error}
+ */
+export function normalizeUsageError(error) {
+  if (error?.code === 'usage-error') {
+    return error;
+  }
+  const err = new Error(AI_USAGE_ERROR_MESSAGE);
+  err.code = 'usage-error';
+  return err;
+}
+
+/**
+ * Reads the user's AI usage count for today's local date.
+ * Path: users/{userId}/aiUsage/{YYYY-MM-DD}
+ *
+ * @param {string} userId
+ * @param {string|Date} [date] Optional local date override
+ * @returns {Promise<{ count: number, limit: number, remaining: number }>}
+ */
+export async function getAiUsageToday(userId, date) {
+  try {
+    const todayStr = typeof date === 'string' ? date : formatLocalDate(date || new Date());
+    const usageRef = doc(db, 'users', userId, 'aiUsage', todayStr);
+    const snap = await getDoc(usageRef);
+    const count = snap.exists() ? Number(snap.data()?.count || 0) : 0;
+    return {
+      count,
+      limit: AI_DAILY_LIMIT,
+      remaining: Math.max(0, AI_DAILY_LIMIT - count),
+    };
+  } catch (error) {
+    throw normalizeUsageError(error);
+  }
+}
+
+/**
+ * Atomically reserves a daily AI question slot by incrementing users/{userId}/aiUsage/{YYYY-MM-DD}
+ * using a Firestore transaction.
+ *
+ * Plan for use:
+ * The chat page will call reserveAiQuestion BEFORE every AI call, so failed calls also
+ * count and a loop cannot spam the model.
+ *
+ * Stores ONLY { count, updatedAt }. Never stores question text, answer text, or any user content.
+ *
+ * @param {string} userId
+ * @param {string|Date} [date] Optional local date override
+ * @returns {Promise<{ allowed: boolean, used: number, remaining: number }>}
+ */
+export async function reserveAiQuestion(userId, date) {
+  try {
+    const todayStr = typeof date === 'string' ? date : formatLocalDate(date || new Date());
+    const usageRef = doc(db, 'users', userId, 'aiUsage', todayStr);
+
+    return await runTransaction(db, async (transaction) => {
+      const snap = await transaction.get(usageRef);
+      const currentCount = snap.exists() ? Number(snap.data()?.count || 0) : 0;
+
+      if (currentCount >= AI_DAILY_LIMIT) {
+        return {
+          allowed: false,
+          used: currentCount,
+          remaining: 0,
+        };
+      }
+
+      const newCount = currentCount + 1;
+      transaction.set(
+        usageRef,
+        {
+          count: newCount,
+          updatedAt: serverTimestamp(),
+        },
+        { merge: true }
+      );
+
+      return {
+        allowed: true,
+        used: newCount,
+        remaining: Math.max(0, AI_DAILY_LIMIT - newCount),
+      };
+    });
+  } catch (error) {
+    throw normalizeUsageError(error);
+  }
 }
 
 /**
@@ -406,7 +554,13 @@ export async function deleteUserAllData(userId) {
   const visitDeletions = visitsSnap.docs.map((d) => deleteDoc(d.ref));
   await Promise.all(visitDeletions);
 
-  // 4. Delete user profile doc
+  // 4. Delete all AI usage records (Task 6.4c)
+  const aiUsageRef = collection(db, 'users', userId, 'aiUsage');
+  const aiUsageSnap = await getDocs(aiUsageRef);
+  const aiUsageDeletions = aiUsageSnap.docs.map((d) => deleteDoc(d.ref));
+  await Promise.all(aiUsageDeletions);
+
+  // 5. Delete user profile doc
   const userRef = doc(db, 'users', userId);
   await deleteDoc(userRef);
 

@@ -7,11 +7,19 @@ import {
   deleteUserAllData,
   saveUserProfile,
   updateRiskConsent,
+  updateAiConsent,
   saveDoctorVisit,
   getUserDoctorVisits,
   getUpcomingDoctorVisit,
   updateDoctorVisitStatus,
   deleteDoctorVisit,
+  AI_DAILY_LIMIT,
+  AI_LIMIT_REACHED_MESSAGE,
+  AI_USAGE_ERROR_MESSAGE,
+  getRemainingQuestionsMessage,
+  normalizeUsageError,
+  getAiUsageToday,
+  reserveAiQuestion,
 } from './firestore';
 import { getDefaultDailyLog } from '../data/symptoms';
 
@@ -41,6 +49,17 @@ const mockAddDoc = vi.fn();
 const mockUpdateDoc = vi.fn();
 const mockDeleteDoc = vi.fn();
 
+const mockTransactionGet = vi.fn();
+const mockTransactionSet = vi.fn();
+const mockTransactionUpdate = vi.fn();
+const mockRunTransaction = vi.fn((db, callback) => {
+  return callback({
+    get: mockTransactionGet,
+    set: mockTransactionSet,
+    update: mockTransactionUpdate,
+  });
+});
+
 vi.mock('firebase/firestore', () => ({
   doc: (...args) => mockDoc(...args),
   setDoc: (...args) => mockSetDoc(...args),
@@ -54,6 +73,7 @@ vi.mock('firebase/firestore', () => ({
   serverTimestamp: () => mockServerTimestamp(),
   addDoc: (...args) => mockAddDoc(...args),
   updateDoc: (...args) => mockUpdateDoc(...args),
+  runTransaction: (...args) => mockRunTransaction(...args),
 }));
 
 describe('Daily Log Firestore Service & Data Handling (Task 4.2)', () => {
@@ -303,10 +323,11 @@ describe('Daily Log Firestore Service & Data Handling (Task 4.2)', () => {
   });
 
   describe('deleteUserAllData (Task 5.1 & GDPR)', () => {
-    it('wipes all subcollections (periods, dailyLogs, doctorVisits) and user profile document', async () => {
+    it('wipes all subcollections (periods, dailyLogs, doctorVisits, aiUsage) and user profile document', async () => {
       const mockPeriodRef = { path: `users/${userId}/periods/p1` };
       const mockLogRef = { path: `users/${userId}/dailyLogs/2026-11-05` };
       const mockVisitRef = { path: `users/${userId}/doctorVisits/v1` };
+      const mockUsageRef = { path: `users/${userId}/aiUsage/2026-11-28` };
 
       // 1. Periods query returns 1 doc
       mockGetDocs.mockResolvedValueOnce({
@@ -320,7 +341,11 @@ describe('Daily Log Firestore Service & Data Handling (Task 4.2)', () => {
       mockGetDocs.mockResolvedValueOnce({
         docs: [{ ref: mockVisitRef }],
       });
-      // 4. deleteDoc resolves
+      // 4. AiUsage query returns 1 doc (Task 6.4c)
+      mockGetDocs.mockResolvedValueOnce({
+        docs: [{ ref: mockUsageRef }],
+      });
+      // 5. deleteDoc resolves
       mockDeleteDoc.mockResolvedValue(undefined);
 
       const success = await deleteUserAllData(userId);
@@ -335,6 +360,9 @@ describe('Daily Log Firestore Service & Data Handling (Task 4.2)', () => {
 
       // Verify each doctor visit doc deleted
       expect(mockDeleteDoc).toHaveBeenCalledWith(mockVisitRef);
+
+      // Verify each aiUsage doc deleted
+      expect(mockDeleteDoc).toHaveBeenCalledWith(mockUsageRef);
 
       // Verify user document deleted
       expect(mockDoc).toHaveBeenCalledWith({ __mockDb: true }, 'users', userId);
@@ -397,6 +425,35 @@ describe('Daily Log Firestore Service & Data Handling (Task 4.2)', () => {
         expect.objectContaining({ path: `users/${userId}` }),
         expect.objectContaining({
           riskConsent: false,
+          updatedAt: 'MOCK_TIMESTAMP',
+        }),
+        { merge: true }
+      );
+    });
+
+    it('updates AI assistant consent in Firestore using updateAiConsent', async () => {
+      mockSetDoc.mockResolvedValueOnce(undefined);
+
+      const consentGranted = await updateAiConsent(userId, true);
+      expect(consentGranted).toBe(true);
+      expect(mockDoc).toHaveBeenCalledWith({ __mockDb: true }, 'users', userId);
+      expect(mockSetDoc).toHaveBeenCalledWith(
+        expect.objectContaining({ path: `users/${userId}` }),
+        expect.objectContaining({
+          aiConsent: true,
+          updatedAt: 'MOCK_TIMESTAMP',
+        }),
+        { merge: true }
+      );
+
+      // Testing revocation
+      mockSetDoc.mockResolvedValueOnce(undefined);
+      const consentRevoked = await updateAiConsent(userId, false);
+      expect(consentRevoked).toBe(false);
+      expect(mockSetDoc).toHaveBeenLastCalledWith(
+        expect.objectContaining({ path: `users/${userId}` }),
+        expect.objectContaining({
+          aiConsent: false,
           updatedAt: 'MOCK_TIMESTAMP',
         }),
         { merge: true }
@@ -525,6 +582,158 @@ describe('Daily Log Firestore Service & Data Handling (Task 4.2)', () => {
       expect(mockDeleteDoc).toHaveBeenCalledWith(
         expect.objectContaining({ path: `users/${userId}/doctorVisits/v1` })
       );
+    });
+  });
+
+  describe('AI Assistant Daily Usage Rate Limiter (Task 6.4c)', () => {
+    const testDate = '2026-11-28';
+
+    it('exports AI_DAILY_LIMIT as 50', () => {
+      expect(AI_DAILY_LIMIT).toBe(50);
+    });
+
+    it('first call allowed with used 1 and remaining AI_DAILY_LIMIT - 1', async () => {
+      mockTransactionGet.mockResolvedValueOnce({
+        exists: () => false,
+        data: () => ({}),
+      });
+
+      const result = await reserveAiQuestion(userId, testDate);
+
+      expect(result).toEqual({
+        allowed: true,
+        used: 1,
+        remaining: AI_DAILY_LIMIT - 1,
+      });
+
+      expect(mockDoc).toHaveBeenCalledWith({ __mockDb: true }, 'users', userId, 'aiUsage', testDate);
+      expect(mockTransactionSet).toHaveBeenCalledWith(
+        expect.objectContaining({ path: `users/${userId}/aiUsage/${testDate}` }),
+        expect.objectContaining({
+          count: 1,
+          updatedAt: 'MOCK_TIMESTAMP',
+        }),
+        { merge: true }
+      );
+    });
+
+    it('calls up to the limit allowed and decrements remaining', async () => {
+      mockTransactionGet.mockResolvedValueOnce({
+        exists: () => true,
+        data: () => ({ count: AI_DAILY_LIMIT - 1 }),
+      });
+
+      const result = await reserveAiQuestion(userId, testDate);
+
+      expect(result).toEqual({
+        allowed: true,
+        used: AI_DAILY_LIMIT,
+        remaining: 0,
+      });
+
+      expect(mockTransactionSet).toHaveBeenCalledWith(
+        expect.objectContaining({ path: `users/${userId}/aiUsage/${testDate}` }),
+        expect.objectContaining({
+          count: AI_DAILY_LIMIT,
+          updatedAt: 'MOCK_TIMESTAMP',
+        }),
+        { merge: true }
+      );
+    });
+
+    it('the call after the limit is not allowed and does not increment', async () => {
+      mockTransactionGet.mockResolvedValueOnce({
+        exists: () => true,
+        data: () => ({ count: AI_DAILY_LIMIT }),
+      });
+
+      const result = await reserveAiQuestion(userId, testDate);
+
+      expect(result).toEqual({
+        allowed: false,
+        used: AI_DAILY_LIMIT,
+        remaining: 0,
+      });
+
+      // Crucial: Must NOT increment or set in transaction
+      expect(mockTransactionSet).not.toHaveBeenCalled();
+    });
+
+    it('a new local date starts from zero', async () => {
+      const nextDate = '2026-11-29';
+      mockTransactionGet.mockResolvedValueOnce({
+        exists: () => false,
+        data: () => ({}),
+      });
+
+      const result = await reserveAiQuestion(userId, nextDate);
+
+      expect(result).toEqual({
+        allowed: true,
+        used: 1,
+        remaining: AI_DAILY_LIMIT - 1,
+      });
+
+      expect(mockDoc).toHaveBeenCalledWith({ __mockDb: true }, 'users', userId, 'aiUsage', nextDate);
+      expect(mockTransactionSet).toHaveBeenCalledWith(
+        expect.objectContaining({ path: `users/${userId}/aiUsage/${nextDate}` }),
+        expect.objectContaining({
+          count: 1,
+          updatedAt: 'MOCK_TIMESTAMP',
+        }),
+        { merge: true }
+      );
+    });
+
+    it('getAiUsageToday reads existing usage or returns 0 when uninitialized', async () => {
+      // 1. Existing usage doc with 5 calls
+      mockGetDoc.mockResolvedValueOnce({
+        exists: () => true,
+        data: () => ({ count: 5 }),
+      });
+
+      const usage = await getAiUsageToday(userId, testDate);
+      expect(usage).toEqual({
+        count: 5,
+        limit: AI_DAILY_LIMIT,
+        remaining: AI_DAILY_LIMIT - 5,
+      });
+
+      // 2. Uninitialized day
+      mockGetDoc.mockResolvedValueOnce({
+        exists: () => false,
+        data: () => null,
+      });
+
+      const zeroUsage = await getAiUsageToday(userId, testDate);
+      expect(zeroUsage).toEqual({
+        count: 0,
+        limit: AI_DAILY_LIMIT,
+        remaining: AI_DAILY_LIMIT,
+      });
+    });
+
+    it('normalizes Firestore errors to usage-error code without leaking user data', async () => {
+      mockRunTransaction.mockRejectedValueOnce(new Error('Internal Firestore connection drop'));
+
+      await expect(reserveAiQuestion(userId, testDate)).rejects.toMatchObject({
+        code: 'usage-error',
+        message: AI_USAGE_ERROR_MESSAGE,
+      });
+
+      mockGetDoc.mockRejectedValueOnce(new Error('Firestore read timeout'));
+
+      await expect(getAiUsageToday(userId, testDate)).rejects.toMatchObject({
+        code: 'usage-error',
+        message: AI_USAGE_ERROR_MESSAGE,
+      });
+    });
+
+    it('getRemainingQuestionsMessage returns friendly strings for limit and remaining counts', () => {
+      expect(getRemainingQuestionsMessage(0)).toBe(AI_LIMIT_REACHED_MESSAGE);
+      expect(getRemainingQuestionsMessage(-5)).toBe(AI_LIMIT_REACHED_MESSAGE);
+      expect(getRemainingQuestionsMessage(1)).toBe('1 question remaining today.');
+      expect(getRemainingQuestionsMessage(AI_DAILY_LIMIT)).toBe(`${AI_DAILY_LIMIT} questions remaining today.`);
     });
   });
 });

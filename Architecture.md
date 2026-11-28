@@ -285,7 +285,7 @@ The app catches this and displays a calm, friendly alert:
 
 ### 6.5 Soft Daily Per-User Rate Limiter in Firestore
 
-Because the client SDK connects directly to Gemini without a custom backend server, we implement an application-level **soft rate limiter** in Firestore to pace queries (e.g., max 15 questions per user per day).
+Because the client SDK connects directly to Gemini without a custom backend server, we implement an application-level **soft rate limiter** in Firestore to pace queries (e.g., max 50 questions per user per day). Note that this limit is a soft, client-side number governed by a single constant (`AI_DAILY_LIMIT = 50` in `src/services/firestore.js`) that can be changed in one place.
 
 #### 1. Document Structure
 Path: `users/{userId}/aiUsage/{YYYY-MM-DD}`
